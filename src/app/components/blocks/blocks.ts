@@ -1,144 +1,63 @@
 import * as Blockly from "blockly";
+import { variableTypes } from "./variable_types";
+import '../validators/validators';
 
 // # Variables
 Blockly.defineBlocksWithJsonArray([
-    
-    // ## Type fixed
-    {
-        type: "solidity_type_fixed",
-        message0: "Fixed Point %1",
-        args0: [
-            {
-                type: "field_dropdown",
-                name: "FIXED_TYPE",
-                options: [
-                    ["fixed", "fixed"],
-                    ["fixed128x18", "fixed128x18"],
-                    ["ufixed", "ufixed"],
-                    ["ufixed128x18", "ufixed128x18"],
-                ],
-            },
-        ],
-        output: "FixedPoint",
-        colour: 290,
-        tooltip:
-            "Fixed point number type (Not fully supported in Solidity yet)",
-        helpUrl: "",
-    },
-
-    // ## Type `address`
-    {
-        type: "solidity_type_address",
-        message0: "Address %1 %2",
-        args0: [
-            {
-                type: "field_dropdown",
-                name: "ADDRESS_TYPE",
-                options: [
-                    ["address", "address"],
-                    ["address payable", "address payable"],
-                ],
-            },
-            {
-                type: "input_value",
-                name: "ADDRESS_VALUE",
-                check: "String",
-            },
-        ],
-        output: "Address",
-        colour: 60,
-        tooltip: "Ethereum address (20 bytes)",
-        helpUrl: "",
-    },
-
-    // ## Type fixed byte
-    {
-        type: "solidity_type_bytes_fixed",
-        message0: "Fixed Bytes %1 %2",
-        args0: [
-            {
-                type: "field_dropdown",
-                name: "BYTES_TYPE",
-                options: [
-                    ["bytes1", "bytes1"],
-                    ["bytes2", "bytes2"],
-                    ["bytes3", "bytes3"],
-                    ["bytes4", "bytes4"],
-                    ["bytes5", "bytes5"],
-                    ["bytes6", "bytes6"],
-                    ["bytes7", "bytes7"],
-                    ["bytes8", "bytes8"],
-                    ["bytes9", "bytes9"],
-                    ["bytes10", "bytes10"],
-                    ["bytes11", "bytes11"],
-                    ["bytes12", "bytes12"],
-                    ["bytes13", "bytes13"],
-                    ["bytes14", "bytes14"],
-                    ["bytes15", "bytes15"],
-                    ["bytes16", "bytes16"],
-                    ["bytes17", "bytes17"],
-                    ["bytes18", "bytes18"],
-                    ["bytes19", "bytes19"],
-                    ["bytes20", "bytes20"],
-                    ["bytes21", "bytes21"],
-                    ["bytes22", "bytes22"],
-                    ["bytes23", "bytes23"],
-                    ["bytes24", "bytes24"],
-                    ["bytes25", "bytes25"],
-                    ["bytes26", "bytes26"],
-                    ["bytes27", "bytes27"],
-                    ["bytes28", "bytes28"],
-                    ["bytes29", "bytes29"],
-                    ["bytes30", "bytes30"],
-                    ["bytes31", "bytes31"],
-                    ["bytes32", "bytes32"],
-                ],
-            },
-            {
-                type: "input_value",
-                name: "BYTES_VALUE",
-                check: "String",
-            },
-        ],
-        output: "Bytes",
-        colour: 20,
-        tooltip: "Fixed-size byte array",
-        helpUrl: "",
-    },
-
-    // ## Type dynamic bytes
-    {
-        type: "solidity_type_bytes_dynamic",
-        message0: "Dynamic Bytes %1",
-        args0: [
-            {
-                type: "input_value",
-                name: "BYTES_VALUE",
-                check: "String",
-            },
-        ],
-        output: "Bytes",
-        colour: 20,
-        tooltip: "Dynamically-sized byte array",
-        helpUrl: "",
-    },
-
-    // ## Type `string`
-    {
-        type: "solidity_type_string",
-        message0: "String %1",
-        args0: [
-            {
-                type: "input_value",
-                name: "STRING_VALUE",
-                check: "String",
-            },
-        ],
-        output: "String",
-        colour: 120,
-        tooltip: "String literal (UTF-8)",
-        helpUrl: "",
-    },
+    // // ## Type fixed byte
+    // {
+    //     type: "solidity_type_bytes_fixed",
+    //     message0: "Fixed Bytes %1 %2",
+    //     args0: [
+    //         {
+    //             type: "field_dropdown",
+    //             name: "BYTES_TYPE",
+    //             options: [
+    //                 ["bytes1", "bytes1"],
+    //                 ["bytes2", "bytes2"],
+    //                 ["bytes3", "bytes3"],
+    //                 ["bytes4", "bytes4"],
+    //                 ["bytes5", "bytes5"],
+    //                 ["bytes6", "bytes6"],
+    //                 ["bytes7", "bytes7"],
+    //                 ["bytes8", "bytes8"],
+    //                 ["bytes9", "bytes9"],
+    //                 ["bytes10", "bytes10"],
+    //                 ["bytes11", "bytes11"],
+    //                 ["bytes12", "bytes12"],
+    //                 ["bytes13", "bytes13"],
+    //                 ["bytes14", "bytes14"],
+    //                 ["bytes15", "bytes15"],
+    //                 ["bytes16", "bytes16"],
+    //                 ["bytes17", "bytes17"],
+    //                 ["bytes18", "bytes18"],
+    //                 ["bytes19", "bytes19"],
+    //                 ["bytes20", "bytes20"],
+    //                 ["bytes21", "bytes21"],
+    //                 ["bytes22", "bytes22"],
+    //                 ["bytes23", "bytes23"],
+    //                 ["bytes24", "bytes24"],
+    //                 ["bytes25", "bytes25"],
+    //                 ["bytes26", "bytes26"],
+    //                 ["bytes27", "bytes27"],
+    //                 ["bytes28", "bytes28"],
+    //                 ["bytes29", "bytes29"],
+    //                 ["bytes30", "bytes30"],
+    //                 ["bytes31", "bytes31"],
+    //                 ["bytes32", "bytes32"],
+    //             ],
+    //         },
+    //         {
+    //             type: "input_value",
+    //             name: "BYTES_VALUE",
+    //             check: "String",
+    //         },
+    //     ],
+    //     output: "Bytes",
+    //     colour: 20,
+    //     tooltip: "Fixed-size byte array",
+    //     helpUrl: "",
+    // },
 
     // ## Type `enum`
     {
@@ -178,104 +97,26 @@ Blockly.defineBlocksWithJsonArray([
         tooltip: "Value within an enumeration",
         helpUrl: "",
     },
-
-    // ## Type contract
-    {
-        type: "solidity_type_contract",
-        message0: "Contract %1",
-        args0: [
-            {
-                type: "field_input",
-                name: "CONTRACT_NAME",
-                text: "ContractName",
-            },
-        ],
-        output: "Contract",
-        colour: 30,
-        tooltip: "Contract type reference",
-        helpUrl: "",
-    },
-
-    // ## Type user defined
-    {
-        type: "solidity_type_user_defined",
-        message0: "User Defined Type %1 is %2",
-        args0: [
-            {
-                type: "field_input",
-                name: "TYPE_NAME",
-                text: "CustomType",
-            },
-            {
-                type: "input_value",
-                name: "UNDERLYING_TYPE",
-                check: [
-                    "Boolean",
-                    "Integer",
-                    "FixedPoint",
-                    "Address",
-                    "Bytes",
-                    "String",
-                ],
-            },
-        ],
-        output: "UserType",
-        colour: 200,
-        tooltip: "User-defined value type",
-        helpUrl: "",
-    },
-
-    // ## Type String literal
-    {
-        type: "solidity_string_literal",
-        message0: "%1",
-        args0: [
-            {
-                type: "field_input",
-                name: "TEXT",
-                text: "",
-            },
-        ],
-        output: "String",
-        colour: 120,
-        tooltip: "String literal",
-        helpUrl: "",
-    },
-
-    // ## Type hex literal
-    {
-        type: "solidity_hex_literal",
-        message0: "hex %1",
-        args0: [
-            {
-                type: "field_input",
-                name: "HEX",
-                text: '"00112233"',
-            },
-        ],
-        output: "Bytes",
-        colour: 20,
-        tooltip: "Hexadecimal literal",
-        helpUrl: "",
-    },
-
-    // ## Type unicode literal
-    {
-        type: "solidity_unicode_literal",
-        message0: "unicode %1",
-        args0: [
-            {
-                type: "field_input",
-                name: "TEXT",
-                text: '"Hello 😃"',
-            },
-        ],
-        output: "String",
-        colour: 120,
-        tooltip: "Unicode string literal",
-        helpUrl: "",
-    },
 ]);
+
+// # Basic Types Value
+Blockly.defineBlocksWithJsonArray(
+    Object.keys(variableTypes).map((type: string) => ({
+        type: `solidity_${type}`,
+        message0: `${type} %1`,
+        args0: [
+            {
+                type: "field_input",
+                name: `${type.toUpperCase()}_VAL`,
+            },
+        ],
+        output: type,
+        colour: variableTypes[type].colour,
+        tooltip: variableTypes[type].colour,
+        helpUrl: "",
+        extensions: [`${type}_validator`]
+    }))
+);
 
 // # Operators
 Blockly.defineBlocksWithJsonArray([

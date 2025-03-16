@@ -11,108 +11,35 @@ You probably don't need every single block, and should consider either rewriting
 your toolbox from scratch, or carefully choosing whether you need each block
 listed here.
 */
+import { variableTypes } from "../blocks/variable_types";
 
 export const blocklyToolbox = {
     kind: "categoryToolbox",
     contents: [
-        // {
-        //     kind: "category",
-        //     name: "Types",
-        //     colour: "#5C68A6",
-        //     contents: [
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_boolean",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_int",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_uint",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_fixed",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_address",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_bytes_fixed",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_bytes_dynamic",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_string",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_enum",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_enum_value",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_contract",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_user_defined",
-        //         },
-        //     ],
-        // },
-        // {
-        //     kind: "category",
-        //     name: "Literals & Values",
-        //     colour: "#5BA58C",
-        //     contents: [
-        //         {
-        //             kind: "block",
-        //             type: "solidity_string_literal",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_hex_literal",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_unicode_literal",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_conversion",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_payable_conversion",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_min_max",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_user_type_wrap",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_user_type_unwrap",
-        //         },
-        //         {
-        //             kind: "block",
-        //             type: "solidity_type_modifier",
-        //         },
-        //     ],
-        // },
+        {
+            kind: "category",
+            name: "Types",
+            colour: "#5C68A6",
+            contents: [
+                {
+                    kind: "block",
+                    type: "solidity_type_enum",
+                },
+                {
+                    kind: "block",
+                    type: "solidity_type_enum_value",
+                },
+            ],
+        },
+        {
+            kind: "category",
+            name: "Values",
+            colour: "#5BA58C",
+            contents: Object.keys(variableTypes).map((type: string) => ({
+                kind: "block",
+                type: `solidity_${type}`,
+            })),
+        },
         // {
         //     kind: "category",
         //     name: "Operators",
@@ -869,8 +796,7 @@ export const blocklyToolbox = {
             kind: "category",
             name: "Variables",
             categorystyle: "variable_category",
-            custom: "SOLIDITY_TYPE"
-
+            custom: "SOLIDITY_TYPE",
         },
         // {
         //     kind: "category",

@@ -11,13 +11,13 @@ const setters = Object.keys(variableTypes).map((type: string) => ({
             type: "field_variable",
             name: "VAR",
             variable: "%{BKY_VARIABLES_DEFAULT_NAME}%",
-            variableType: [`${type}`],
-            defaultType: `${type}`,
+            variableType: [type],
+            defaultType: type,
         },
     ],
-    output: `${type}`,
-    tooltip: `${type} type getter`,
-    colour: variableTypes[type],
+    output: type,
+    tooltip: variableTypes[type].tooltip,
+    colour: variableTypes[type].colour,
 }));
 
 const getters = Object.keys(variableTypes).map((type: string) =>
@@ -30,21 +30,20 @@ const getters = Object.keys(variableTypes).map((type: string) =>
                 type: "field_variable",
                 name: "VAR",
                 variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
-                variableTypes: [`${type}`],
-                defaultType: `${type}`,
+                variableTypes: [type],
+                defaultType: type,
             },
             {
                 type: "input_value",
                 name: "VALUE",
-                check: `${type}`,
+                check: type,
             },
         ],
         previousStatement: null,
         nextStatement: null,
-        tooltip: `${type} type setter`,
-        colour: variableTypes[type],
+        tooltip: variableTypes[type].tooltip,
+        colour: variableTypes[type].colour,
     })
 );
-
 
 Blockly.defineBlocksWithJsonArray([...getters, ...setters]);
