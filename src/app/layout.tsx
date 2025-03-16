@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blockchain4All",
+  title: "Solmix",
   description: "Create, edit, and deploy your smart contract. Easy.",
 };
 

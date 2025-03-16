@@ -1,5 +1,5 @@
 {
-  "name": "blockchain4all",
+  "name": "solmix",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@blockly/field-date": "^9.0.12",
     "blockly": "^11.2.1",
     "next": "15.2.1",
     "react": "^19.0.0",
