@@ -24,22 +24,3 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
-
-/* Add these styles to your global CSS file */
-.blockly-div {
-  display: block !important;
-  width: 100% !important;
-  height: 600px !important;
-}
-
-/* Fix for Blockly workspace SVG */
-.blockly-div > svg {
-  width: 100% !important;
-  height: 100% !important;
-  position: absolute !important;
-}
-
-/* Ensure blockly toolbox renders correctly */
-.blocklyToolboxDiv {
-  box-sizing: content-box !important;
-}

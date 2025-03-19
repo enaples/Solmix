@@ -18,7 +18,7 @@ export const blocklyToolbox = {
     contents: [
         {
             kind: "category",
-            name: "Types",
+            name: "Structures",
             colour: "#5C68A6",
             contents: [
                 {
