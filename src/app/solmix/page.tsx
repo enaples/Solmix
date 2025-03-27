@@ -1,16 +1,32 @@
-import BlocklyEditor from "./components/workspace";
+"use client"; // This is a client component
+import BlocklyEditor from "@/app/solmix/blockly/workspace";
+import NavbarTool from "@/app/ui/navbar-tool";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import { useState } from "react";
+import Solidity from "@/app/solmix/solidity/page";
 
 export default function SolmixHome() {
+    const [state, setState] = useState("");
     return (
-        <div
-            className="flex flex-col flex-1"
-            style={{ minHeight: "calc(100vh - 120px)" }}
-        >
-            <main className="flex-1 relative">
-                <div className="blockly-container absolute inset-y-0 left-0 right-8 p-2">
-                    <BlocklyEditor />
-                </div>
-            </main>
-        </div>
+        <main className="w-full min-h-screen">
+            <NavbarTool/>
+            <Tabs>
+                <TabList>
+                    <Tab>Blockly</Tab>
+                    <Tab>Smart Contract</Tab>
+                </TabList>
+                <TabPanel>
+                    <div className="w-full min-h-screen grid">
+                        <div className="bg-pink-500 solmix-tools p-5">
+                            <BlocklyEditor/>
+                        </div>
+                    </div>
+                </TabPanel>
+                <TabPanel>
+                    <Solidity/>
+                </TabPanel>
+            </Tabs>
+
+        </main>
     );
 }
