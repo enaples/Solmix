@@ -9,25 +9,17 @@ import Link from "next/link";
 export default function SolmixHome() {
     const [state, setState] = useState("");
     return (
+
         <main className="w-full min-h-screen">
             <NavbarTool/>
-            <Tabs>
-                <TabList>
-                    <Tab>Blockly</Tab>
-                    <Tab>Smart Contract</Tab>
-                </TabList>
-                <TabPanel>
-                    <div className="w-full min-h-screen grid">
-                        <div className="solmix-tools p-5">
-                            <BlocklyEditor/>
-                        </div>
-                    </div>
-                </TabPanel>
-                <TabPanel>
-                    <Solidity/>
-                </TabPanel>
-            </Tabs>
+            <div className="w-full min-h-screen grid grid-cols-3">
+                <div className="col-span-2 solmix-tools p-5">
+                    <BlocklyEditor/>
+                </div>
+                <div className="col-span-1 solmix-tools">05</div>
+            </div>
 
         </main>
-    );
+    )
+        ;
 }

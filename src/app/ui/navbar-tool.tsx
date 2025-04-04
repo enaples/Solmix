@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NavbarTool() {
     return (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900">
+        <nav className="border-gray-200 bg-foreground">
             <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
                 <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <span

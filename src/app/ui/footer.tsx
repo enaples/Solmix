@@ -1,10 +1,10 @@
 export default function Footer() {
     return (
-        <footer className="bg-white rounded-lg shadow-sm m-4">
+        <footer className="bg-white">
             <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
                 <div className="flex mt-4 sm:justify-center sm:mt-0">
                     <a href="mailto:https://www.blockchain4all.it/info@blockchain4all.it"
-                       className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5">
+                       className="text-global-color-text hover:text-foreground ms-5">
                         <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor" viewBox="0 0 23 23">
                             <path fillRule="evenodd"
@@ -13,7 +13,7 @@ export default function Footer() {
                         </svg>
                     </a>
                     <a href="https://twitter.com/b4a_project"
-                       className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+                       className="text-global-color-text hover:text-foreground ms-5"
                        target="_blank">
                         <svg className="w-4 h-4"
                              xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@ export default function Footer() {
                                   clipRule="evenodd"/>
                         </svg>
                     </a>
-                    <a href="#" className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5">
+                    <a href="#" className="text-global-color-text hover:text-foreground ms-5">
                         <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd"
@@ -35,12 +35,12 @@ export default function Footer() {
                 </div>
                 <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-400 lg:my-8"/>
 
-                <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a
+                <span className="block text-sm text-global-color-text sm:text-center dark:text-gray-400">© 2025 <a
                     href="https://www.blockchain4all.it/"
                     className="hover:underline">Blockchain4All (B4A) PRIN project</a>, funded with support of Ministero dell’Università e della Ricerca (MUR).</span>
 
                 <span
-                    className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">All Rights Reserved.</span>
+                    className="block text-sm text-global-color-text sm:text-center dark:text-gray-400">All Rights Reserved.</span>
             </div>
         </footer>
     );

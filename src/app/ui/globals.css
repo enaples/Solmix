@@ -5,9 +5,10 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #171717;
-  --global-color-text: #7A7A7A;
+  --background: #ffffff;
+  --foreground: #f27b48;
+  --global-color-title: #121212;
+  --global-color-text: #616161;
 
   --primary-color: #f27b48;
   --secondary-color: #FCF4EC;
@@ -19,12 +20,6 @@
   --color-text: var(--global-color-text);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
@@ -33,6 +28,16 @@ body {
 
 .solmix-tools{
   min-height: inherit;
+}
+
+::-moz-selection { /* Code for Firefox */
+  color: var(--secondary-color);
+  background: var(--foreground);
+}
+
+::selection {
+  color: var(--secondary-color);
+  background: var(--foreground);
 }
 
 
