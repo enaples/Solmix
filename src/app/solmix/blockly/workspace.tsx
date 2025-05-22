@@ -85,6 +85,8 @@ export default function BlocklyEditor() {
                 right: 0,
                 bottom: 0,
             }}
+
+            className="rounded-md"
         >
             <div
                 ref={blocklyDivRef}
@@ -92,6 +94,8 @@ export default function BlocklyEditor() {
                     width: "100%",
                     height: "100%"
                 }}
+
+                className="rounded-md"
             />
         </div>
     );
