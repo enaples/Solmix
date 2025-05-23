@@ -1,11 +1,11 @@
-import {
-    UserGroupIcon,
-    HomeIcon,
-    DocumentDuplicateIcon,
-} from '@heroicons/react/24/outline';
+// import {
+//     UserGroupIcon,
+//     HomeIcon,
+//     DocumentDuplicateIcon,
+// } from '@heroicons/react/24/outline';
 
 import Link from 'next/link';
-import {LinkIcon} from "@heroicons/react/16/solid";
+// import {LinkIcon} from "@heroicons/react/16/solid";
 import Navbar from "@/app/ui/navbar";
 
 export default function Home() {

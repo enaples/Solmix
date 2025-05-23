@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./ui/globals.css";
 import { inter } from '@/app/ui/fonts';
 import Footer from '@/app/ui/footer';
-import Navbar from "@/app/ui/navbar";
+// import Navbar from "@/app/ui/navbar";
 
 export const metadata: Metadata = {
     title: "Solmix",

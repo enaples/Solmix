@@ -1,6 +1,6 @@
 "use client"; // This is a client component
 import BlocklyEditor from "@/app/solmix/blockly/workspace";
-import { useState } from "react";
+// import { useState } from "react";
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 
 import { FloatingChat } from './components/FloatingChat';
@@ -13,7 +13,7 @@ function sendPoeMessage(question: string): string {
 }
 
 export default function SolmixHome() {
-    const [state, setState] = useState("");
+    // const [state, setState] = useState("");
 
     return (
 
