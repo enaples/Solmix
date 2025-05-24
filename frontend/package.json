@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prestart": "cp scripts/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit && echo 'hook copied'",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -38,8 +39,4 @@
     "tailwindcss": "^4.1.7",
     "typescript": "^5.8.3"
   },
-  "husky": {
-    "hooks": {}
-  }
-
 }
