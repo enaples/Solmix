@@ -1,52 +1,40 @@
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/*
-This toolbox contains nearly every single built-in block that Blockly offers,
-in addition to the custom block 'add_text' this sample app adds.
-You probably don't need every single block, and should consider either rewriting
-your toolbox from scratch, or carefully choosing whether you need each block
-listed here.
-*/
-import { variableTypes } from "../blocks/variable_types";
+// import { variableTypes } from "../blocks/variable_types";
 
 export const blocklyToolbox = {
     kind: "categoryToolbox",
+    categoryStyle: "logic_category",
     contents: [
-        {
-            kind: "category",
-            name: "Structures",
-            colour: "#5C68A6",
-            contents: [
-                {
-                    kind: "block",
-                    type: "solidity_type_enum",
-                },
-                {
-                    kind: "block",
-                    type: "solidity_type_enum_value",
-                },
-            ],
-        },
-        {
-            kind: "category",
-            name: "Values",
-            colour: "#5BA58C",
-            contents: Object.keys(variableTypes).map((type: string) => ({
-                kind: "block",
-                type: `solidity_${type}`,
-            })),
-        },
+        // {
+        //     kind: "category",
+        //     name: "Structures",
+        //     colour: "#5C68A6",
+        //     contents: [
+        //         {
+        //             kind: "block",
+        //             type: "solidity_type_enum",
+        //         },
+        //         {
+        //             kind: "block",
+        //             type: "solidity_type_enum_value",
+        //         },
+        //     ],
+        // },
+        // {
+        //     kind: "category",
+        //     name: "Values",
+        //     colour: "#5BA58C",
+        //     contents: Object.keys(variableTypes).map((type: string) => ({
+        //         kind: "block",
+        //         type: `solidity_${type}`,
+        //     })),
+        // },
 
-        {
-            kind: "category",
-            name: "Variables",
-            categorystyle: "variable_category",
-            custom: "SOLIDITY_TYPE",
-        },
+        // {
+        //     kind: "category",
+        //     name: "Variables",
+        //     categorystyle: "variable_category",
+        //     custom: "SOLIDITY_TYPE",
+        // },
 
         {
             kind: "category",

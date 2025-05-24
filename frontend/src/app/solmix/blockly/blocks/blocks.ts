@@ -1177,6 +1177,30 @@ Blockly.defineBlocksWithJsonArray([
         tooltip:
             "Governor smart contract:\n Voting Delay: delay since proposal is created until voting starts.\n Voting period: length of period during which people can cast their vote.\n Proposal threshold: minimum number of votes an account must have to create a proposal.\n Quorum: quorum required for a proposal to pass. ",
     },
+    {
+        type: "state",
+        message0: "State Function",
+        previousStatement: [true, "governor_method"],
+        nextStatement: [true, "governor_method"],
+        colour: 230,
+        tooltip: "State Function.", //descrizione funzione
+    },
+    {
+        type: "proposalNeedsQueuing",
+        message0: "ProposalNeedsQueuing Function",
+        previousStatement: [true, "governor_method"],
+        nextStatement: [true, "governor_method"],
+        colour: 230,
+        tooltip: "ProposalNeedsQueuing Function.", //descrizione funzione
+    },
+    {
+        type: "proposalThreshold",
+        message0: "ProposalThreshold Function",
+        previousStatement: [true, "governor_method"],
+        nextStatement: [true, "governor_method"],
+        colour: 230,
+        tooltip: "ProposalThreshold Function.", //descrizione funzione
+    },
 ]);
 
 // # ERC20 block contract

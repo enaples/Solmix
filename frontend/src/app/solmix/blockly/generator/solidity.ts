@@ -10,68 +10,68 @@ const Order = {
 
 // Type mappings for reusability
 const SOLIDITY_TYPES = {
-  'TYPE_BOOL': 'bool',
-  'TYPE_INT': 'int',
-  'TYPE_UINT': 'uint',
-  'TYPE_UINT256': 'uint256',
-  'TYPE_UINT8': 'uint8',
-  'TYPE_STRING': 'string',
-  'TYPE_ADDRESS': 'address',
-  'TYPE_BYTES32': 'bytes32',
-  'TYPE_BYTES': 'bytes',
+  TYPE_BOOL: 'bool',
+  TYPE_INT: 'int',
+  TYPE_UINT: 'uint',
+  TYPE_UINT256: 'uint256',
+  TYPE_UINT8: 'uint8',
+  TYPE_STRING: 'string',
+  TYPE_ADDRESS: 'address',
+  TYPE_BYTES32: 'bytes32',
+  TYPE_BYTES: 'bytes',
 } as const;
 
 const ARRAY_TYPES = {
-  'TYPE_BOOL': 'bool[]',
-  'TYPE_INT': 'int[]',
-  'TYPE_UINT': 'uint[]',
-  'TYPE_UINT256': 'uint256[]',
-  'TYPE_UINT8': 'uint8[]',
-  'TYPE_STRING': 'string[]',
-  'TYPE_ADDRESS': 'address[]',
-  'TYPE_BYTES32': 'bytes32[]',
-  'TYPE_BYTES': 'bytes[]',
+  TYPE_BOOL: 'bool[]',
+  TYPE_INT: 'int[]',
+  TYPE_UINT: 'uint[]',
+  TYPE_UINT256: 'uint256[]',
+  TYPE_UINT8: 'uint8[]',
+  TYPE_STRING: 'string[]',
+  TYPE_ADDRESS: 'address[]',
+  TYPE_BYTES32: 'bytes32[]',
+  TYPE_BYTES: 'bytes[]',
 } as const;
 
 const ACCESS_MODIFIERS = {
-  'TYPE_PUBLIC': 'public',
-  'TYPE_PRIVATE': 'private',
-  'TYPE_INTERNAL': 'internal',
-  'TYPE_EXTERNALE': 'external',
+  TYPE_PUBLIC: 'public',
+  TYPE_PRIVATE: 'private',
+  TYPE_INTERNAL: 'internal',
+  TYPE_EXTERNALE: 'external',
 } as const;
 
 const RETURN_TYPES = {
-  'TYPE_YES': 'returns',
-  'TYPE_FALSE': '',
+  TYPE_YES: 'returns',
+  TYPE_FALSE: '',
 } as const;
 
 const VIEW_TYPES = {
-  'TYPE_YES': 'view',
-  'TYPE_FALSE': '',
+  TYPE_YES: 'view',
+  TYPE_FALSE: '',
 } as const;
 
 const PURE_TYPES = {
-  'TYPE_YES': 'pure',
-  'TYPE_FALSE': '',
+  TYPE_YES: 'pure',
+  TYPE_FALSE: '',
 } as const;
 
 const PAYABLE_TYPES = {
-  'TYPE_YES': 'payable',
-  'TYPE_FALSE': '',
+  TYPE_YES: 'payable',
+  TYPE_FALSE: '',
 } as const;
 
 const REQUIRE_OPERATORS = {
-  'NOT': '!',
-  'NOT_EQUAL': '!=',
-  'EQUAL': '==',
+  NOT: '!',
+  NOT_EQUAL: '!=',
+  EQUAL: '==',
   'BIGGER OR EQUAL TO': '>=',
-  'LOWER OR EQUAL TO': '<=',
+  'LOWER OR EQUALTO': '<=',
   'BIGGER THAN': '>',
   'LOWER THAN': '<',
 } as const;
 
 // # import block code generator
-solidityGenerator.forBlock["import"] = function (block, generator) {
+solidityGenerator.forBlock["import"] = function (block) {
     const imp1 = block.getFieldValue("Imp1");
     const imp2 = block.getFieldValue("Imp2");
     return "import {" + imp1 + '} from "' + imp2 + '";\n';
@@ -129,71 +129,29 @@ solidityGenerator.forBlock["contract"] = function (block, generator) {
 };
 
 // # Code generator for array
-solidityGenerator.forBlock["array"] = function (block, generator) {
+solidityGenerator.forBlock["array"] = function (block) {
     const name = block.getFieldValue("NAME");
     //addArray(name);
-    const type1 = block.getFieldValue("TYPE1");
+    const solidityType = block.getFieldValue("TYPE1") as keyof typeof SOLIDITY_TYPES;
     //addArray(name, type1);
-    const type3 = block.getFieldValue("TYPE3") as
-        | "TYPE_PUBLIC"
-        | "TYPE_PRIVATE"
-        | "TYPE_INTERNAL"
-        | "TYPE_EXTERNALE";
-    const types: { [key: string]: string } = {
-        TYPE_BOOL: "bool[]",
-        TYPE_INT: "int[]",
-        TYPE_UINT: "uint[]",
-        TYPE_UINT256: "uint256[]",
-        TYPE_UINT8: "uint8[]",
-        TYPE_STRING: "string[]",
-        TYPE_ADDRESS: "address[]",
-        TYPE_BYTES32: "bytes32[]",
-        TYPE_BYTES: "bytes[]",
-    };
-    const types_1 = {
-        TYPE_PUBLIC: "public",
-        TYPE_PRIVATE: "private",
-        TYPE_INTERNAL: "internal",
-        TYPE_EXTERNALE: "external",
-    };
-    const code = types[type1] + " " + types_1[type3] + " " + name + ";\n";
+    const visibility = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
+    const code = SOLIDITY_TYPES[solidityType] + " " + ACCESS_MODIFIERS[visibility] + " " + name + ";\n";
     return code;
 };
 
 //  # Code generation for mapping
-solidityGenerator.forBlock["mapping"] = function (block, generator) {
+solidityGenerator.forBlock["mapping"] = function (block) {
     const name = block.getFieldValue("NAME");
-    const type1 = block.getFieldValue("TYPE1");
-    const type2 = block.getFieldValue("TYPE2");
-    const type3 = block.getFieldValue("TYPE3") as
-        | "TYPE_PUBLIC"
-        | "TYPE_PRIVATE"
-        | "TYPE_INTERNAL"
-        | "TYPE_EXTERNALE";
-    const types: { [key: string]: string } = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
-    const types_1 = {
-        TYPE_PUBLIC: "public",
-        TYPE_PRIVATE: "private",
-        TYPE_INTERNAL: "internal",
-        TYPE_EXTERNALE: "external",
-    };
+    const solidityVar1 = block.getFieldValue("TYPE1") as keyof typeof SOLIDITY_TYPES;
+    const solidityVar2 = block.getFieldValue("TYPE2") as keyof typeof SOLIDITY_TYPES;
+    const visibility = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
     const code =
         "mapping(" +
-        types[type1] +
+        SOLIDITY_TYPES[solidityVar1] +
         "=>" +
-        types[type2] +
+        SOLIDITY_TYPES[solidityVar2] +
         ") " +
-        types_1[type3] +
+        ACCESS_MODIFIERS[visibility] +
         " " +
         name +
         ";\n";
@@ -209,241 +167,121 @@ solidityGenerator.forBlock["event"] = function (block, generator) {
 };
 
 // # Code generator for function input
-solidityGenerator.forBlock["function_input"] = function (block, generator) {
-    const name = block.getFieldValue("NAME");
-    const type = block.getFieldValue("TYPE") as
-        | "TYPE_BOOL"
-        | "TYPE_INT"
-        | "TYPE_UINT"
-        | "TYPE_UINT256"
-        | "TYPE_UINT8"
-        | "TYPE_STRING"
-        | "TYPE_ADDRESS"
-        | "TYPE_BYTES32"
-        | "TYPE_BYTES";
-    const types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
+solidityGenerator.forBlock["function_input"] = function (block) {
+  const name = block.getFieldValue("NAME");
+  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
 
-    const nextBlock = block.getNextBlock();
-    var parentBlock = block.getParent();
+  const nextBlock = block.getNextBlock();
+  let parentBlock = block.getParent();
 
-    // Risaliamo nella catena finché troviamo il vero parent di tipo 'variables_get_modifieri'
-    while (parentBlock) {
-        if (parentBlock.type === "variables_get_modifiers") {
-            break; // Se lo troviamo, usciamo dal ciclo
-        }
-        parentBlock = parentBlock.getParent();
+  // Walk up the chain until we find the true parent of type 'variables_get_modifieri'
+  while (parentBlock) {
+    if (parentBlock.type === "variables_get_modifiers") {
+      break;
     }
+    parentBlock = parentBlock.getParent();
+  }
 
-    var code;
-    if (parentBlock && parentBlock.type === "variables_get_modifiers") {
-        // Se esiste un blocco precedente di tipo func_inputs, significa che non è il primo
-        const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-        code = name + sep;
-    } else {
-        //const nextBlock = block.getNextBlock();
-        const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-        code = types[type] + " " + name + sep;
-    }
-    return code;
+  let code;
+  if (parentBlock && parentBlock.type === "variables_get_modifiers") {
+    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+    code = name + sep;
+  } else {
+    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+    code = SOLIDITY_TYPES[type] + " " + name + sep;
+  }
+  return code;
 };
 
 // # Code generator for function return type
-solidityGenerator.forBlock["function_return"] = function (block, generator) {
-    const type = block.getFieldValue("TYPE") as
-        | "TYPE_BOOL"
-        | "TYPE_INT"
-        | "TYPE_UINT"
-        | "TYPE_UINT256"
-        | "TYPE_UINT8"
-        | "TYPE_STRING"
-        | "TYPE_ADDRESS"
-        | "TYPE_BYTES32"
-        | "TYPE_BYTES";
-    const types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
+solidityGenerator.forBlock["function_return"] = function (block) {
+  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+  const name = block.getFieldValue("NAME");
+  const nextBlock = block.getNextBlock();
 
-    var nextBlock = block.getNextBlock();
-
-    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-    const code = types[type] + " " + name + sep;
-    return code;
+  const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+  const code = SOLIDITY_TYPES[type] + " " + name + sep;
+  return code;
 };
 
-// # Code generator for constract state
-solidityGenerator.forBlock["state"] = function (block, generator) {
-    const name = block.getFieldValue("NAME");
+// # Code generator for contract state
+solidityGenerator.forBlock["state"] = function (block) {
+  const name = block.getFieldValue("NAME");
+  let value = block.getFieldValue("VALUE");
+  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+  
+  const defaultValue = {
+    TYPE_BOOL: "false",
+    TYPE_INT: "0",
+    TYPE_UINT: "0",
+    TYPE_UINT256: "0",
+    TYPE_UINT8: "0",
+    TYPE_STRING: '""',
+    TYPE_ADDRESS: "address(0)",
+    TYPE_BYTES32: '0x0',
+    TYPE_BYTES: '0x0'
+  };
 
-    var value = block.getFieldValue("VALUE");
-    var type = block.getFieldValue("TYPE") as
-        | "TYPE_BOOL"
-        | "TYPE_INT"
-        | "TYPE_UINT";
-    const types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-    };
-    var defaultValue = {
-        TYPE_BOOL: "false",
-        TYPE_INT: "0",
-        TYPE_UINT: "0",
-    };
+  if (value === "") {
+    value = defaultValue[type];
+  }
 
-    if (value === "") {
-        value = defaultValue[type];
-    }
-
-    return types[type] + " " + name + " = " + value + ";\n";
+  return SOLIDITY_TYPES[type] + " " + name + " = " + value + ";\n";
 };
 
 // # Code generator for contract structures
-solidityGenerator.forBlock["structure"] = function (block, generator) {
-    const name = block.getFieldValue("NAME");
-    // Estrai i blocchi figli dallo statement STATES
-    const firstFieldBlock = block.getInputTargetBlock("STATES");
-    var types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
+solidityGenerator.forBlock["structure"] = function (block) {
+  const name = block.getFieldValue("NAME");
+  const firstFieldBlock = block.getInputTargetBlock("STATES");
+  
+  let code = "";
+  let current = firstFieldBlock;
+  while (current) {
+    const type = current.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+    const varName = current.getFieldValue("NAME");
+    code += `  ${SOLIDITY_TYPES[type]} ${varName};\n`;
+    current = current.getNextBlock();
+  }
 
-    const structAttributes = [];
-    let code = "";
-
-    let current = firstFieldBlock;
-    while (current) {
-        const type = current.getFieldValue("TYPE") as keyof typeof types;
-        const varName = current.getFieldValue("NAME");
-
-        // Salviamo l'attributo per il registry
-        structAttributes.push({
-            name: varName,
-            type: types[type],
-        });
-
-        // Generiamo la riga Solidity
-        code += `  ${types[type]} ${varName};\n`;
-
-        // Passiamo al prossimo blocco collegato
-        current = current.getNextBlock();
-    }
-
-    // Salviamo nel registry
-    //saveStruct(name, structAttributes);
-    //addStruct(name); // se ti serve per un altro scopo
-    return `struct ${name} {\n${code}}\n`;
+  return `struct ${name} {\n${code}}\n`;
 };
 
 // # Code generator for struct variables
-solidityGenerator.forBlock["struct_variables"] = function (block, generator) {
-    var name = block.getFieldValue("NAME");
-    var type = block.getFieldValue("TYPE") as
-        | "TYPE_BOOL"
-        | "TYPE_INT"
-        | "TYPE_UINT"
-        | "TYPE_UINT256"
-        | "TYPE_UINT8"
-        | "TYPE_STRING"
-        | "TYPE_ADDRESS"
-        | "TYPE_BYTES32"
-        | "TYPE_BYTES";
-    var types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
-    return types[type] + " " + name + ";\n";
+solidityGenerator.forBlock["struct_variables"] = function (block) {
+  const name = block.getFieldValue("NAME");
+  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+  return SOLIDITY_TYPES[type] + " " + name + ";\n";
 };
 
 // # Code generator for contract variables
-solidityGenerator.forBlock["variables"] = function (block, generator) {
-    var name = block.getFieldValue("NAME");
-    var type = block.getFieldValue("TYPE") as
-        | "TYPE_BOOL"
-        | "TYPE_INT"
-        | "TYPE_UINT"
-        | "TYPE_UINT256"
-        | "TYPE_UINT8"
-        | "TYPE_STRING"
-        | "TYPE_ADDRESS"
-        | "TYPE_BYTES32"
-        | "TYPE_BYTES";
-    var type3 = block.getFieldValue("TYPE3") as
-        | "TYPE_PUBLIC"
-        | "TYPE_PRIVATE"
-        | "TYPE_INTERNAL"
-        | "TYPE_EXTERNALE";
-    var types = {
-        TYPE_BOOL: "bool",
-        TYPE_INT: "int",
-        TYPE_UINT: "uint",
-        TYPE_UINT256: "uint256",
-        TYPE_UINT8: "uint8",
-        TYPE_STRING: "string",
-        TYPE_ADDRESS: "address",
-        TYPE_BYTES32: "bytes32",
-        TYPE_BYTES: "bytes",
-    };
-    var types_1 = {
-        TYPE_PUBLIC: "public",
-        TYPE_PRIVATE: "private",
-        TYPE_INTERNAL: "internal",
-        TYPE_EXTERNALE: "external",
-    };
-    return types[type] + " " + types_1[type3] + " " + name + ";\n";
+solidityGenerator.forBlock["variables"] = function (block) {
+  const name = block.getFieldValue("NAME");
+  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+  const accessType = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
+  
+  return SOLIDITY_TYPES[type] + " " + ACCESS_MODIFIERS[accessType] + " " + name + ";\n";
 };
 
 // # Code generator for unknown code
-solidityGenerator.forBlock["unknown_code"] = function (block, generator) {
+solidityGenerator.forBlock["unknown_code"] = function (block) {
     const code = block.getFieldValue("CODE");
     return code + "\n";
 };
 
 // # Code generator for internal function
-solidityGenerator.forBlock["internal_function"] = function (block, generator) {
+solidityGenerator.forBlock["internal_function"] = function (block) {
     const text = block.getFieldValue("CODE");
     return "" + text + "\n";
 };
 
 // # Code generator for internal assignment
-solidityGenerator.forBlock["internalAss"] = function (block, generator) {
+solidityGenerator.forBlock["internalAss"] = function (block) {
     const text = block.getFieldValue("CODE");
     return "" + text + "\n";
 };
 
 // # Code generator for local variables
-solidityGenerator.forBlock["localVariable"] = function (block, generator) {
+solidityGenerator.forBlock["localVariable"] = function (block) {
     const text = block.getFieldValue("CODE");
     return "" + text + "\n";
 };
@@ -530,7 +368,7 @@ solidityGenerator.forBlock["require_condition_method1"] = function (
 };
 
 // Import block generator (from your example)
-solidityGenerator.forBlock["import"] = function (block: Blockly.Block, generator: Blockly.Generator) {
+solidityGenerator.forBlock["import"] = function (block: Blockly.Block) {
   const imp1 = block.getFieldValue("Imp1");
   const imp2 = block.getFieldValue("Imp2");
   return "import {" + imp1 + '} from "' + imp2 + '";\n';
@@ -627,7 +465,7 @@ solidityGenerator.forBlock['if_elseif_else_container'] = function(block: Blockly
 solidityGenerator.forBlock['method'] = function(block: Blockly.Block, generator: Blockly.Generator) {
   const name = block.getFieldValue("NAME");
   const access = block.getFieldValue("ACCESS");
-  const type = block.getFieldValue("TYPE");
+  // const type = block.getFieldValue("TYPE");
   const view = block.getFieldValue("VIEW");
   const pure = block.getFieldValue("PURE");
   const payable = block.getFieldValue("PAYABLE");
@@ -780,19 +618,270 @@ solidityGenerator.forBlock['input_diff'] = function(block: Blockly.Block) {
 };
 
 // Address-related generators
-solidityGenerator.forBlock['address_zero'] = function(block: Blockly.Block) {
+solidityGenerator.forBlock['address_zero'] = function() {
   const code = "address(0)";
   return [code, Order.ATOMIC];
 };
 
-solidityGenerator.forBlock['address_this'] = function(block: Blockly.Block) {
+solidityGenerator.forBlock['address_this'] = function() {
   const code = "address(this)";
   return [code, Order.ATOMIC];
 };
 
-solidityGenerator.forBlock['address_this_balance'] = function(block: Blockly.Block) {
+solidityGenerator.forBlock['address_this_balance'] = function() {
   const code = "address(this).balance";
   return [code, Order.ATOMIC];
+};
+
+// # Code generator for ERC20 template
+solidityGenerator.forBlock["erc20"] = function (block) {
+    const name = block.getFieldValue("NAME");
+    const mintable = block.getFieldValue("Mintable");
+    const burnable = block.getFieldValue("Burnable");
+    const pausable = block.getFieldValue("Pausable");
+    const callback = block.getFieldValue("Callback");
+    const permit = block.getFieldValue("Permit");
+    const flash_Minting = block.getFieldValue("Flash_Minting");
+    const imports = [];
+
+    // Import base
+    imports.push(
+        'import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";'
+    );
+
+    // Condizionali
+    if (mintable === "TYPE_YES") {
+        imports.push(
+            'import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";'
+        );
+    }
+
+    if (burnable === "TYPE_YES") {
+        imports.push(
+            'import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";'
+        );
+    }
+
+    if (permit === "TYPE_YES") {
+        imports.push(
+            'import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";'
+        );
+    }
+
+    if (pausable === "TYPE_YES") {
+        if (mintable === "TYPE_NOT") {
+            imports.push(
+                'import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";\n import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";'
+            );
+        } else {
+            imports.push(
+                'import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";'
+            );
+        }
+    }
+
+    if (flash_Minting === "TYPE_YES") {
+        imports.push(
+            'import {ERC20FlashMint} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20FlashMint.sol";'
+        );
+    }
+
+    if (callback === "TYPE_YES") {
+        imports.push(
+            'import {ERC1363} from "@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol";'
+        );
+    }
+
+    let constructor = "";
+    if (mintable === "TYPE_YES" || pausable === "TYPE_YES") {
+        constructor =
+            'constructor(address initialOwner)\n ERC20("MyToken", "MTK")\n ERC20Permit("MyToken")\n Ownable(initialOwner)\n  {}\n';
+    } else {
+        constructor =
+            'constructor() ERC20("MyToken", "MTK") ERC20Permit("MyToken") {}';
+    }
+
+    const methods = [];
+    if (mintable === "TYPE_YES") {
+        methods.push(
+            "function mint(address to, uint256 amount) public onlyOwner {\n _mint(to, amount);\n}\n\n"
+        );
+    }
+    if (pausable === "TYPE_YES") {
+        methods.push(
+            "function pause() public onlyOwner{\n _pause();\n }\n\n function unpause() public onlyOwner {\n _unpause();\n }\n\n function _update(address from, address to, uint256 value)\n internal\n override(ERC20, ERC20Pausable)\n {\n super._update(from, to, value);\n}\n\n"
+        );
+    }
+
+    const contract_is = [];
+    contract_is.push("is ERC20, ERC20Permit");
+    if (mintable === "TYPE_NOT") {
+        contract_is.push("Ownable");
+    }
+    if (pausable === "TYPE_YES") {
+        if (mintable === "TYPE_NOT") {
+            contract_is.push("ERC20Pausable, Ownable");
+        } else {
+            contract_is.push("ERC20Pausable");
+        }
+    }
+    if (burnable === "TYPE_YES") {
+        contract_is.push("ERC20Burnable");
+    }
+    /*if (permit === 'TYPE_YES') {
+    contract_is.push('ERC20Pausable');
+  }*/
+    if (flash_Minting === "TYPE_YES") {
+        contract_is.push("ERC20FlashMint");
+    }
+    if (callback === "TYPE_YES") {
+        contract_is.push("ERC1363");
+    }
+
+    // Generazione finale del codice
+    const code = `pragma solidity ^0.8.27;\n\n${imports.join(
+        "\n"
+    )}\n\n contract ${name} ${contract_is.join(
+        ", "
+    )} {\n\n ${constructor}\n ${methods.join("\n")}\n}`;
+    return code;
+};
+
+// # Code generator for Governor template
+solidityGenerator.forBlock["Governor"] = function (block, generator) {
+    const name = block.getFieldValue("NAME");
+    const delay = block.getFieldValue("voting_delay");
+    const voting_period = block.getFieldValue("voting_period");
+    const quorum = block.getFieldValue("quorum");
+    const methods = generator.statementToCode(block, "METHODS");
+    const proposal_threshold = block.getFieldValue("proposal_threshold");
+
+    const imports =
+        'import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";\n' +
+        'import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";\n' +
+        'import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";\n' +
+        'import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";\n' +
+        'import {GovernorVotes} from "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";\n' +
+        'import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";\n' +
+        'import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";\n' +
+        'import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";\n';
+
+    const internalMthod1 =
+        "function _queueOperations(uint256 proposalId, address[] memory targets, uint256[] memory values, bytes[] memory calldatas, bytes32 descriptionHash)\n" +
+        "internal\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (uint48)\n" +
+        "{\n" +
+        "return super._queueOperations(proposalId, targets, values, calldatas, descriptionHash);\n" +
+        "}\n";
+
+    const internalMethod2 =
+        "function _executeOperations(uint256 proposalId, address[] memory targets, uint256[] memory values, bytes[] memory calldatas, bytes32 descriptionHash)\n" +
+        "internal\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "{\n" +
+        "return super._executeOperations(proposalId, targets, values, calldatas, descriptionHash);\n" +
+        "}\n";
+
+    const internalMethod3 =
+        "function _cancel(address[] memory targets, uint256[] memory values, bytes[] memory calldatas, bytes32 descriptionHash)\n" +
+        "internal\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (uint256)\n" +
+        "{\n" +
+        "return super._cancel(targets, values, calldatas, descriptionHash);\n" +
+        "}\n";
+
+    const internalMethod4 =
+        "function _executor()\n" +
+        "internal\n" +
+        "view" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (address)\n" +
+        "{\n" +
+        "return super._executor();\n" +
+        "}\n";
+
+    const code =
+        "pragma solidity ^0.8.27;\n\n" +
+        imports +
+        "\n\n" +
+        "contract" +
+        name +
+        "is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl" +
+        " {\n\n" +
+        "constructor(IVotes _token, TimelockController _timelock)\n" +
+        'Governor(" ' +
+        name +
+        ' ")\n' +
+        "GovernorSettings(" +
+        delay +
+        ", " +
+        voting_period +
+        ", " +
+        proposal_threshold +
+        ")\n" /*7200 /* 1 day */ /*, 50400 /* 1 week */ /*, 0)'*/ +
+        "GovernorVotes(_token)\n" +
+        "GovernorVotesQuorumFraction( " +
+        quorum +
+        ")\n" +
+        "GovernorTimelockControl(_timelock)\n" +
+        "{}\n\n" +
+        methods +
+        "\n\n" +
+        internalMthod1 +
+        "\n\n" +
+        internalMethod2 +
+        "\n\n" +
+        internalMethod3 +
+        "\n\n" +
+        internalMethod4 +
+        "\n\n" +
+        "}\n";
+
+    return code;
+};
+
+solidityGenerator.forBlock["state"] = function () {
+    const code =
+        "function state(uint256 proposalId)\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (ProposalState)\n" +
+        "{\n" +
+        "return super.state(proposalId);\n" +
+        "}\n";
+    return code;
+};
+
+// # Code generator for proposalNeedsQueuing
+solidityGenerator.forBlock["proposalNeedsQueuing"] = function (
+) {
+    const code =
+        "function proposalNeedsQueuing(uint256 proposalId)\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (bool)\n" +
+        "{\n" +
+        "return super.proposalNeedsQueuing(proposalId);\n" +
+        "}\n";
+    return code;
+};
+
+// # Code generator for proposalThreshold
+solidityGenerator.forBlock["proposalThreshold"] = function () {
+    const code =
+        "function proposalThreshold()\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (uint256)\n" +
+        "{\n" +
+        "return super.proposalThreshold();\n" +
+        "}\n";
+    return code;
 };
 
 export default solidityGenerator;
