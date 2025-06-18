@@ -3,12 +3,11 @@
 import { useState } from "react";
 import BlocklyEditor from "@/app/solmix/blockly/workspace";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { FloatingChat } from "./components/FloatingChat";
+import { FloatingChat } from "./FloatingChat";
 import CodeViewer from "./blockly/codeViewer";
+import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
 
-function sendPoeMessage(question: string): string {
-    return `Custom response to: "${question}"`;
-}
+// todo: precompilare template, estetica tab
 
 export default function SolmixHome() {
     const [code, setCode] = useState<string>("no code yet");
@@ -60,7 +59,9 @@ export default function SolmixHome() {
                 title="Solmix AI Assistant"
                 initialMessage="Hello! How do you want to edit your Smart Contract?"
                 customResponse={async (message) => {
-                    return sendPoeMessage(`${message}`);
+                    let generated_code = sendLLMessage(`${message}`, `${code}`);
+                    setCode(await generated_code);
+                    return generated_code;
                 }}
                 primaryColor="#f27b48"
             />
