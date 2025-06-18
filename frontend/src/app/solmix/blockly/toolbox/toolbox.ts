@@ -36,103 +36,36 @@ export const blocklyToolbox = {
         //     custom: "SOLIDITY_TYPE",
         // },
 
+        // # Category "Smart Contract Blocks"
         {
             kind: "category",
-            name: "Smart Contract Blocks",
+            name: "Smart Contract Basic Blocks",
             //colour: "#6456BF",
             contents: [
-                {
-                    kind: "block",
-                    type: "structure",
-                },
-                {
-                    kind: "block",
-                    type: "import",
-                },
-                {
-                    kind: "block",
-                    type: "contract",
-                    //custom: 'INITIALIZE_VARIABLES'
-                },
+                // {
+                //     kind: "block",
+                //     type: "structure",
+                // },
+                // {
+                //     kind: "block",
+                //     type: "import",
+                // },
+                // {
+                //     kind: "block",
+                //     type: "contract",
+                //     //custom: 'INITIALIZE_VARIABLES'
+                // },
                 {
                     kind: "category",
                     name: "Init",
                     colour: "#D74C22",
                     contents: [
-                        /*{
-              kind: "category",
-              name: "Import",
-              colour: "#D74C22",
-              contents : [
-                {
-                  kind: "block",
-                  type: "import"
-                }
-              ]
-            },*/
                         {
                             kind: "category",
                             name: "Variables",
                             colour: "#D74C22", //"#F89A33",
                             id: "variables",
-                            contents: [
-                                {
-                                    kind: "block",
-                                    type: "define_variable",
-                                    //colour: "#FA7E00",
-                                },
-                                {
-                                    kind: "block",
-                                    type: "define_variable_with_assignment",
-                                },
-                                {
-                                    kind: "block",
-                                    type: "define_variable_with_assignment1",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "String",
-                                    colour: "#FDC18D",
-                                    //colour: "#FE414C",
-                                    //colour: "230",
-                                    custom: "NEW_STRING_VARIABLE",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "Uint",
-                                    colour: "#FDC18D",
-                                    //colour: "330",
-                                    custom: "NEW_UINT_VARIABLE",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "Int",
-                                    colour: "#FDC18D",
-                                    //colour: '%{BKY_VARIABLES_DYNAMIC_HUE}',
-                                    custom: "NEW_INT_VARIABLE",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "Address",
-                                    colour: "#FDC18D",
-                                    //colour: '%{BKY_LOGIC_HUE}',
-                                    custom: "NEW_ADDRESS_VARIABLE",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "Boolean",
-                                    colour: "#FDC18D",
-                                    //colour: "175",
-                                    custom: "NEW_BOOL_VARIABLE",
-                                },
-                                {
-                                    kind: "category",
-                                    name: "Bytes",
-                                    colour: "#FDC18D",
-                                    //colour: "175",
-                                    custom: "NEW_BYTES_VARIABLE",
-                                },
-                            ],
+                            custom: "SOLIDITY_TYPE",
                         },
                         {
                             kind: "category",
@@ -263,59 +196,82 @@ export const blocklyToolbox = {
                 },
             ],
         },
+
+        // # Category Template
         {
             kind: "category",
-            name: "Governor Smart Contract",
-            //colour: "#6456BF",
+            name: "Smart Contract Template",
+            id: "template",
             contents: [
-                {
-                    kind: "block",
-                    type: "Governor",
-                    //custom: 'INITIALIZE_VARIABLES'
-                },
+                // # Category "Governor"
                 {
                     kind: "category",
-                    name: "Methods",
-                    colour: "896C94",
+                    name: "Governor",
+                    //colour: "#6456BF",
                     contents: [
                         {
                             kind: "block",
-                            type: "state",
+                            type: "Governor",
+                            //custom: 'INITIALIZE_VARIABLES'
                         },
                         {
-                            kind: "block",
-                            type: "proposalNeedsQueuing",
-                        },
-                        {
-                            kind: "block",
-                            type: "proposalThreshold",
+                            kind: "category",
+                            name: "Methods",
+                            colour: "896C94",
+                            contents: [
+                                {
+                                    kind: "block",
+                                    type: "state",
+                                },
+                                {
+                                    kind: "block",
+                                    type: "proposalNeedsQueuing",
+                                },
+                                {
+                                    kind: "block",
+                                    type: "proposalThreshold",
+                                },
+                            ],
                         },
                     ],
                 },
-            ],
-        },
-        {
-            kind: "category",
-            name: "ERC20 Smart Contract",
-            //colour: "#6456BF",
-            contents: [
+
+                // # Category "ERC20 Smart contract"
                 {
-                    kind: "block",
-                    type: "erc20",
+                    kind: "category",
+                    name: "ERC20",
+                    //colour: "#6456BF",
+                    contents: [
+                        {
+                            kind: "block",
+                            type: "erc20",
+                        },
+                    ],
                 },
-                /*{
-          kind: 'category',
-          name: 'Methods',
-          colour: "896C94",
-          contents: [
-            {
-              kind: 'block',
-              type: 'mint',
-              //id: 'mint',
-              //disabled: true,
-            },
-          ]
-        }*/
+
+                // # Category "ERC721 Smart contract"
+                {
+                    kind: "category",
+                    name: "ERC721",
+                    //colour: "#6456BF",
+                    contents: [],
+                },
+
+                // # Category "Stablecoin"
+                {
+                    kind: "category",
+                    name: "Stablecoin",
+                    //colour: "#6456BF",
+                    contents: [],
+                },
+
+                // # Category "E-commerce"
+                {
+                    kind: "category",
+                    name: "E-commerce",
+                    //colour: "#6456BF",
+                    contents: [],
+                },
             ],
         },
     ],

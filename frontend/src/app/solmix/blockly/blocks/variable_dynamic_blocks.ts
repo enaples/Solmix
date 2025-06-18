@@ -1,7 +1,8 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "./variable_types";
 
-const setters = Object.keys(variableTypes).map((type: string) => ({
+// # Getter dynamic blocks
+const getters = Object.keys(variableTypes).map((type: string) => ({
     // ### type getter
 
     type: `solidity_get_${type}`,
@@ -20,7 +21,8 @@ const setters = Object.keys(variableTypes).map((type: string) => ({
     colour: variableTypes[type].colour,
 }));
 
-const getters = Object.keys(variableTypes).map((type: string) =>
+// # Setter dynamic blocks
+const setters = Object.keys(variableTypes).map((type: string) =>
     // ### type setter
     ({
         type: `solidity_set_${type}`,
@@ -28,22 +30,25 @@ const getters = Object.keys(variableTypes).map((type: string) =>
         args0: [
             {
                 type: "field_variable",
-                name: "VAR",
+                name: `VAR`,
                 variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
                 variableTypes: [type],
                 defaultType: type,
             },
             {
-                type: "input_value",
-                name: "VALUE",
-                check: type,
+                type: "field_input",
+                name: `${type.toUpperCase()}_VAL`,
+                text: ""
             },
         ],
         previousStatement: null,
         nextStatement: null,
         tooltip: variableTypes[type].tooltip,
         colour: variableTypes[type].colour,
+        extension: [`${type}_validator`]
     })
 );
 
 Blockly.defineBlocksWithJsonArray([...getters, ...setters]);
+
+

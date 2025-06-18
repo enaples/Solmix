@@ -6,7 +6,6 @@ import * as Blockly from "blockly";
 export default function solidityTypesFlyoutCallback(
     workspace: WorkspaceSvg
 ): Element[] {
-
     const varTypes: string[] = Object.keys(variableTypes);
 
     const xmlButtons = varTypes.map((type: string) => {
@@ -44,8 +43,6 @@ export function solidityTypeFlyoutCategoryBlocks(
     const varTypes: string[] = Object.keys(variableTypes);
     const xmlList: Element[] = [];
     if (variableModelList.length > 0) {
-        console.log(Blockly.Blocks);
-
         // Process each variable type and create appropriate blocks
         varTypes.forEach((type) => {
             // Filter variables of this specific type
@@ -59,11 +56,18 @@ export function solidityTypeFlyoutCategoryBlocks(
                 if (Blockly.Blocks[`solidity_set_${type}`]) {
                     const firstVariable = typeVariables[0];
                     const block = Blockly.utils.xml.createElement("block");
+                    block.setAttribute("NAME", firstVariable.name);
                     block.setAttribute("type", `solidity_set_${type}`);
                     block.setAttribute("gap", "24");
                     block.appendChild(
                         Variables.generateVariableFieldDom(firstVariable)
                     );
+
+                    // Add input field
+                    const value = Blockly.utils.xml.createElement("field");
+                    value.setAttribute("name", `${type.toUpperCase()}_VAL`);
+                    value.setAttribute("text", "");
+                    block.appendChild(value);
                     xmlList.push(block);
                 }
 
@@ -75,6 +79,31 @@ export function solidityTypeFlyoutCategoryBlocks(
                         const variable = typeVariables[i];
                         const block = Blockly.utils.xml.createElement("block");
                         block.setAttribute("type", `solidity_get_${type}`);
+                        block.setAttribute("message0", "%1");
+
+                        const args0 = Blockly.utils.xml.createElement("args0");
+                        const field =
+                            Blockly.utils.xml.createElement("field_variable");
+                        field.setAttribute("type", "field_variable");
+                        field.setAttribute("name", "VAR");
+                        field.setAttribute(
+                            "variable",
+                            "%{BKY_VARIABLES_DEFAULT_NAME}%"
+                        );
+                        field.setAttribute("variableType", type);
+                        field.setAttribute("defaultType", type);
+                        args0.appendChild(field);
+                        block.appendChild(args0);
+
+                        block.setAttribute("output", type);
+                        block.setAttribute(
+                            "tooltip",
+                            variableTypes[type].tooltip
+                        );
+                        block.setAttribute(
+                            "colour",
+                            variableTypes[type].colour
+                        );
                         block.setAttribute("gap", "8");
                         block.appendChild(
                             Variables.generateVariableFieldDom(variable)

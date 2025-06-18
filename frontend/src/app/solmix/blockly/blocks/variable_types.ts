@@ -4,6 +4,7 @@ export const variableTypes: Record<
         colour: string;
         tooltip: string;
         validator: (value: string) => string | null;
+        errorMessage?: string; // Optional error message for validation failures
     }
 > = {
     boolean: {
@@ -12,6 +13,7 @@ export const variableTypes: Record<
         validator: (value: string) => {
             return /^(true|false)$/i.test(value) ? value : null;
         },
+        errorMessage: "Value must be true or false",
     },
     address: {
         colour: "#7FFF00",
@@ -20,6 +22,7 @@ export const variableTypes: Record<
             // Check for valid Ethereum address format (0x followed by 40 hex chars)
             return /^0x[0-9a-fA-F]{40}$/.test(value) ? value : null;
         },
+        errorMessage: "Invalid Ethereum address format",
     },
     string: {
         colour: "#008B8B",
@@ -28,6 +31,7 @@ export const variableTypes: Record<
             // Strings can be anything, but should be properly quoted
             return value;
         },
+        errorMessage: "Invalid string format",
     },
     int8: {
         colour: "#66B2FF",
@@ -36,6 +40,7 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= -128 && num <= 127 ? value : null;
         },
+        errorMessage: "Value must be an 8-bit signed integer (-128 to 127)",
     },
     int16: {
         colour: "#66FF66",
@@ -44,6 +49,7 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= -32768 && num <= 32767 ? value : null;
         },
+        errorMessage: "Value must be a 16-bit signed integer (-32,768 to 32,767)",
     },
     int32: {
         colour: "#FFB266",
@@ -54,6 +60,7 @@ export const variableTypes: Record<
                 ? value
                 : null;
         },
+        errorMessage: "Value must be a 32-bit signed integer (-2,147,483,648 to 2,147,483,647)",
     },
     int64: {
         colour: "#FF66FF",
@@ -71,6 +78,8 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage:
+            "Value must be a 64-bit signed integer (-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)",
     },
     int128: {
         colour: "#B266FF",
@@ -83,6 +92,7 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage: "Value must be a valid 128-bit signed integer",
     },
     int256: {
         colour: "#66FFFF",
@@ -95,6 +105,7 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage: "Value must be a valid 256-bit signed integer",
     },
     uint8: {
         colour: "#FFFF66",
@@ -103,6 +114,7 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= 0 && num <= 255 ? value : null;
         },
+        errorMessage: "Value must be an 8-bit unsigned integer (0 to 255)",
     },
     uint16: {
         colour: "#FF8000",
@@ -111,6 +123,7 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= 0 && num <= 65535 ? value : null;
         },
+        errorMessage: "Value must be a 16-bit unsigned integer (0 to 65,535)",
     },
     uint32: {
         colour: "#00FF80",
@@ -119,6 +132,7 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= 0 && num <= 4294967295 ? value : null;
         },
+        errorMessage: "Value must be a 32-bit unsigned integer (0 to 4,294,967,295)",
     },
     uint64: {
         colour: "#8000FF",
@@ -133,6 +147,7 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage: "Value must be a 64-bit unsigned integer (0 to 18,446,744,073,709,551,615)",
     },
     uint128: {
         colour: "#FFCC99",
@@ -145,6 +160,7 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage: "Value must be a valid 128-bit unsigned integer",
     },
     uint256: {
         colour: "#99FFCC",
@@ -157,5 +173,6 @@ export const variableTypes: Record<
                 return null;
             }
         },
+        errorMessage: "Value must be a valid 256-bit unsigned integer",
     },
 };
