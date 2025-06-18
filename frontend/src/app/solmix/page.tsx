@@ -3,10 +3,12 @@
 import { useState } from "react";
 import BlocklyEditor from "@/app/solmix/blockly/workspace";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
-import { FloatingChat } from "./components/FloatingChat";
 import CodeViewer from "./components/CodeEditor/codeEditor";
 import CardList from "./components/CardList/CardList";
 import {defaultOptDetectionCard, defaultVulDetectionCard} from "./components/CardList/types";
+import { FloatingChat } from "./FloatingChat";
+import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
+
 
 // load the governor-vul-analysis.json from the public/ folder
 import data from "../../../public/governor-vul-analysis.json";
@@ -20,9 +22,6 @@ interface AnalysisData {
 }
 
 const detectors: Detector[] = (data as AnalysisData).results.detectors ?? [];
-import { FloatingChat } from "./FloatingChat";
-import CodeViewer from "./blockly/codeViewer";
-import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
 
 // todo: precompilare template, estetica tab
 
