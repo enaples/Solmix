@@ -1,14 +1,11 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
 import { parse } from "solidity-antlr4";
+import { Request, Response } from "express";
 
-const app = express();
-// ✅ Abilita il parsing del body JSON
-app.use(express.json());//)express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
-app.post('/parse-solidity', async (req: Request, res: Response) => {
+
+export const parseSolidity = async (req: Request, res: Response) => {
+  console.log('Received request to parse Solidity contract');
+  console.log('Request body:', req.body);
   try {
     const { solidityCode } = req.body;
 
@@ -92,12 +89,4 @@ app.post('/parse-solidity', async (req: Request, res: Response) => {
       error: error instanceof Error ? error.message : 'Unknown parsing error occurred'
     });
   }
-});
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-    console.log(`✅ Server in ascolto su http://localhost:${PORT}`);
-});
-
-
+}
