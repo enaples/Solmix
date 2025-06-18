@@ -39,3 +39,6 @@
 # typescript
 */*.tsbuildinfo
 */next-env.d.ts
+
+# Http
+*/Http*

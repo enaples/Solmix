@@ -1,3 +1,4 @@
+// Ref. https://developers.google.com/blockly/guides/configure/web/appearance/themes
 import * as Blockly from "blockly";
 
 /**
@@ -8,7 +9,7 @@ export default Blockly.Theme.defineTheme('dark', {
     componentStyles: {
         workspaceBackgroundColour: '#1e1e1e',
         toolboxBackgroundColour: 'blackBackground',
-        toolboxForegroundColour: '#fff',
+        toolboxForegroundColour: 'black',
         flyoutBackgroundColour: '#252526',
         flyoutForegroundColour: '#ccc',
         flyoutOpacity: 1,
@@ -17,6 +18,12 @@ export default Blockly.Theme.defineTheme('dark', {
         insertionMarkerOpacity: 0.3,
         scrollbarOpacity: 0.4,
         cursorColour: '#d0d0d0',
+
     },
+    fontStyle: {
+            family: 'Arial, sans-serif',
+            weight: 'normal',
+            size: 14,
+        },
     name: "dark"
 });

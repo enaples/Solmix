@@ -1,74 +1,94 @@
 import * as Blockly from "blockly";
+import { variableTypes } from "../blocks/variable_types";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
 
 // Define order constants for proper precedence
 const Order = {
-  ATOMIC: 0,
-  ASSIGNMENT: 1,
+    ATOMIC: 0,
+    ASSIGNMENT: 1,
 };
 
 // Type mappings for reusability
 const SOLIDITY_TYPES = {
-  TYPE_BOOL: 'bool',
-  TYPE_INT: 'int',
-  TYPE_UINT: 'uint',
-  TYPE_UINT256: 'uint256',
-  TYPE_UINT8: 'uint8',
-  TYPE_STRING: 'string',
-  TYPE_ADDRESS: 'address',
-  TYPE_BYTES32: 'bytes32',
-  TYPE_BYTES: 'bytes',
+    TYPE_BOOL: "bool",
+    TYPE_INT: "int",
+    TYPE_UINT: "uint",
+    TYPE_UINT256: "uint256",
+    TYPE_UINT8: "uint8",
+    TYPE_STRING: "string",
+    TYPE_ADDRESS: "address",
+    TYPE_BYTES32: "bytes32",
+    TYPE_BYTES: "bytes",
 } as const;
 
 const ARRAY_TYPES = {
-  TYPE_BOOL: 'bool[]',
-  TYPE_INT: 'int[]',
-  TYPE_UINT: 'uint[]',
-  TYPE_UINT256: 'uint256[]',
-  TYPE_UINT8: 'uint8[]',
-  TYPE_STRING: 'string[]',
-  TYPE_ADDRESS: 'address[]',
-  TYPE_BYTES32: 'bytes32[]',
-  TYPE_BYTES: 'bytes[]',
+    TYPE_BOOL: "bool[]",
+    TYPE_INT: "int[]",
+    TYPE_UINT: "uint[]",
+    TYPE_UINT256: "uint256[]",
+    TYPE_UINT8: "uint8[]",
+    TYPE_STRING: "string[]",
+    TYPE_ADDRESS: "address[]",
+    TYPE_BYTES32: "bytes32[]",
+    TYPE_BYTES: "bytes[]",
 } as const;
 
 const ACCESS_MODIFIERS = {
-  TYPE_PUBLIC: 'public',
-  TYPE_PRIVATE: 'private',
-  TYPE_INTERNAL: 'internal',
-  TYPE_EXTERNALE: 'external',
+    TYPE_PUBLIC: "public",
+    TYPE_PRIVATE: "private",
+    TYPE_INTERNAL: "internal",
+    TYPE_EXTERNALE: "external",
 } as const;
 
 const RETURN_TYPES = {
-  TYPE_YES: 'returns',
-  TYPE_FALSE: '',
+    TYPE_YES: "returns",
+    TYPE_FALSE: "",
 } as const;
 
 const VIEW_TYPES = {
-  TYPE_YES: 'view',
-  TYPE_FALSE: '',
+    TYPE_YES: "view",
+    TYPE_FALSE: "",
 } as const;
 
 const PURE_TYPES = {
-  TYPE_YES: 'pure',
-  TYPE_FALSE: '',
+    TYPE_YES: "pure",
+    TYPE_FALSE: "",
 } as const;
 
 const PAYABLE_TYPES = {
-  TYPE_YES: 'payable',
-  TYPE_FALSE: '',
+    TYPE_YES: "payable",
+    TYPE_FALSE: "",
 } as const;
 
 const REQUIRE_OPERATORS = {
-  NOT: '!',
-  NOT_EQUAL: '!=',
-  EQUAL: '==',
-  'BIGGER OR EQUAL TO': '>=',
-  'LOWER OR EQUALTO': '<=',
-  'BIGGER THAN': '>',
-  'LOWER THAN': '<',
+    NOT: "!",
+    NOT_EQUAL: "!=",
+    EQUAL: "==",
+    "BIGGER OR EQUAL TO": ">=",
+    "LOWER OR EQUALTO": "<=",
+    "BIGGER THAN": ">",
+    "LOWER THAN": "<",
 } as const;
+
+// # Variable set generator
+Object.keys(variableTypes).forEach((type: string) => {
+    solidityGenerator.forBlock[`solidity_set_${type}`] = function (
+        block: Blockly.Block
+    ) {
+      console.log("New block:", block);
+        const varName = block.getFieldValue("NAME");
+        const value = block.getFieldValue(`${type.toUpperCase()}_VAL`);
+        return `${varName} = ${value};\n`;
+    };
+
+    solidityGenerator.forBlock[`solidity_get_${type}`] = function (
+        block: Blockly.Block
+    ) {
+        const varName = block.getFieldValue("VAR");
+        return [varName, Order.ATOMIC];
+    };
+});
 
 // # import block code generator
 solidityGenerator.forBlock["import"] = function (block) {
@@ -132,19 +152,35 @@ solidityGenerator.forBlock["contract"] = function (block, generator) {
 solidityGenerator.forBlock["array"] = function (block) {
     const name = block.getFieldValue("NAME");
     //addArray(name);
-    const solidityType = block.getFieldValue("TYPE1") as keyof typeof SOLIDITY_TYPES;
+    const solidityType = block.getFieldValue(
+        "TYPE1"
+    ) as keyof typeof SOLIDITY_TYPES;
     //addArray(name, type1);
-    const visibility = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
-    const code = SOLIDITY_TYPES[solidityType] + " " + ACCESS_MODIFIERS[visibility] + " " + name + ";\n";
+    const visibility = block.getFieldValue(
+        "TYPE3"
+    ) as keyof typeof ACCESS_MODIFIERS;
+    const code =
+        SOLIDITY_TYPES[solidityType] +
+        " " +
+        ACCESS_MODIFIERS[visibility] +
+        " " +
+        name +
+        ";\n";
     return code;
 };
 
 //  # Code generation for mapping
 solidityGenerator.forBlock["mapping"] = function (block) {
     const name = block.getFieldValue("NAME");
-    const solidityVar1 = block.getFieldValue("TYPE1") as keyof typeof SOLIDITY_TYPES;
-    const solidityVar2 = block.getFieldValue("TYPE2") as keyof typeof SOLIDITY_TYPES;
-    const visibility = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
+    const solidityVar1 = block.getFieldValue(
+        "TYPE1"
+    ) as keyof typeof SOLIDITY_TYPES;
+    const solidityVar2 = block.getFieldValue(
+        "TYPE2"
+    ) as keyof typeof SOLIDITY_TYPES;
+    const visibility = block.getFieldValue(
+        "TYPE3"
+    ) as keyof typeof ACCESS_MODIFIERS;
     const code =
         "mapping(" +
         SOLIDITY_TYPES[solidityVar1] +
@@ -168,98 +204,109 @@ solidityGenerator.forBlock["event"] = function (block, generator) {
 
 // # Code generator for function input
 solidityGenerator.forBlock["function_input"] = function (block) {
-  const name = block.getFieldValue("NAME");
-  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+    const name = block.getFieldValue("NAME");
+    const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
 
-  const nextBlock = block.getNextBlock();
-  let parentBlock = block.getParent();
+    const nextBlock = block.getNextBlock();
+    let parentBlock = block.getParent();
 
-  // Walk up the chain until we find the true parent of type 'variables_get_modifieri'
-  while (parentBlock) {
-    if (parentBlock.type === "variables_get_modifiers") {
-      break;
+    // Walk up the chain until we find the true parent of type 'variables_get_modifieri'
+    while (parentBlock) {
+        if (parentBlock.type === "variables_get_modifiers") {
+            break;
+        }
+        parentBlock = parentBlock.getParent();
     }
-    parentBlock = parentBlock.getParent();
-  }
 
-  let code;
-  if (parentBlock && parentBlock.type === "variables_get_modifiers") {
-    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-    code = name + sep;
-  } else {
-    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-    code = SOLIDITY_TYPES[type] + " " + name + sep;
-  }
-  return code;
+    let code;
+    if (parentBlock && parentBlock.type === "variables_get_modifiers") {
+        const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+        code = name + sep;
+    } else {
+        const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+        code = SOLIDITY_TYPES[type] + " " + name + sep;
+    }
+    return code;
 };
 
 // # Code generator for function return type
 solidityGenerator.forBlock["function_return"] = function (block) {
-  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
-  const name = block.getFieldValue("NAME");
-  const nextBlock = block.getNextBlock();
+    const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+    const name = block.getFieldValue("NAME");
+    const nextBlock = block.getNextBlock();
 
-  const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
-  const code = SOLIDITY_TYPES[type] + " " + name + sep;
-  return code;
+    const sep = nextBlock && nextBlock.type == block.type ? ", " : "";
+    const code = SOLIDITY_TYPES[type] + " " + name + sep;
+    return code;
 };
 
 // # Code generator for contract state
 solidityGenerator.forBlock["state"] = function (block) {
-  const name = block.getFieldValue("NAME");
-  let value = block.getFieldValue("VALUE");
-  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
-  
-  const defaultValue = {
-    TYPE_BOOL: "false",
-    TYPE_INT: "0",
-    TYPE_UINT: "0",
-    TYPE_UINT256: "0",
-    TYPE_UINT8: "0",
-    TYPE_STRING: '""',
-    TYPE_ADDRESS: "address(0)",
-    TYPE_BYTES32: '0x0',
-    TYPE_BYTES: '0x0'
-  };
+    const name = block.getFieldValue("NAME");
+    let value = block.getFieldValue("VALUE");
+    const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
 
-  if (value === "") {
-    value = defaultValue[type];
-  }
+    const defaultValue = {
+        TYPE_BOOL: "false",
+        TYPE_INT: "0",
+        TYPE_UINT: "0",
+        TYPE_UINT256: "0",
+        TYPE_UINT8: "0",
+        TYPE_STRING: '""',
+        TYPE_ADDRESS: "address(0)",
+        TYPE_BYTES32: "0x0",
+        TYPE_BYTES: "0x0",
+    };
 
-  return SOLIDITY_TYPES[type] + " " + name + " = " + value + ";\n";
+    if (value === "") {
+        value = defaultValue[type];
+    }
+
+    return SOLIDITY_TYPES[type] + " " + name + " = " + value + ";\n";
 };
 
 // # Code generator for contract structures
 solidityGenerator.forBlock["structure"] = function (block) {
-  const name = block.getFieldValue("NAME");
-  const firstFieldBlock = block.getInputTargetBlock("STATES");
-  
-  let code = "";
-  let current = firstFieldBlock;
-  while (current) {
-    const type = current.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
-    const varName = current.getFieldValue("NAME");
-    code += `  ${SOLIDITY_TYPES[type]} ${varName};\n`;
-    current = current.getNextBlock();
-  }
+    const name = block.getFieldValue("NAME");
+    const firstFieldBlock = block.getInputTargetBlock("STATES");
 
-  return `struct ${name} {\n${code}}\n`;
+    let code = "";
+    let current = firstFieldBlock;
+    while (current) {
+        const type = current.getFieldValue(
+            "TYPE"
+        ) as keyof typeof SOLIDITY_TYPES;
+        const varName = current.getFieldValue("NAME");
+        code += `  ${SOLIDITY_TYPES[type]} ${varName};\n`;
+        current = current.getNextBlock();
+    }
+
+    return `struct ${name} {\n${code}}\n`;
 };
 
 // # Code generator for struct variables
 solidityGenerator.forBlock["struct_variables"] = function (block) {
-  const name = block.getFieldValue("NAME");
-  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
-  return SOLIDITY_TYPES[type] + " " + name + ";\n";
+    const name = block.getFieldValue("NAME");
+    const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+    return SOLIDITY_TYPES[type] + " " + name + ";\n";
 };
 
 // # Code generator for contract variables
 solidityGenerator.forBlock["variables"] = function (block) {
-  const name = block.getFieldValue("NAME");
-  const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
-  const accessType = block.getFieldValue("TYPE3") as keyof typeof ACCESS_MODIFIERS;
-  
-  return SOLIDITY_TYPES[type] + " " + ACCESS_MODIFIERS[accessType] + " " + name + ";\n";
+    const name = block.getFieldValue("NAME");
+    const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
+    const accessType = block.getFieldValue(
+        "TYPE3"
+    ) as keyof typeof ACCESS_MODIFIERS;
+
+    return (
+        SOLIDITY_TYPES[type] +
+        " " +
+        ACCESS_MODIFIERS[accessType] +
+        " " +
+        name +
+        ";\n"
+    );
 };
 
 // # Code generator for unknown code
@@ -329,29 +376,39 @@ solidityGenerator.forBlock["modifier"] = function (block, generator) {
 };
 
 // # Code generator for require condition
-solidityGenerator.forBlock["require"] = function (block: Blockly.Block, generator: Blockly.Generator) {
-  const operator = block.getFieldValue("OPERATOR");
-  const leftOperand = generator.valueToCode(block, "LEFT", Order.ATOMIC) || "false";
-  const rightOperand = generator.valueToCode(block, "RIGHT", Order.ATOMIC) || "false";
-  
-  let code = "";
-  
-  if (operator === "NOT") {
-    code = "! " + leftOperand;
-  } else if (operator in REQUIRE_OPERATORS && operator !== "NOT") {
-    const operatorSymbol = REQUIRE_OPERATORS[operator as keyof typeof REQUIRE_OPERATORS];
-    code = leftOperand + " " + operatorSymbol + " " + rightOperand;
-  }
-  
-  return [code, Order.ATOMIC];
+solidityGenerator.forBlock["require"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const operator = block.getFieldValue("OPERATOR");
+    const leftOperand =
+        generator.valueToCode(block, "LEFT", Order.ATOMIC) || "false";
+    const rightOperand =
+        generator.valueToCode(block, "RIGHT", Order.ATOMIC) || "false";
+
+    let code = "";
+
+    if (operator === "NOT") {
+        code = "! " + leftOperand;
+    } else if (operator in REQUIRE_OPERATORS && operator !== "NOT") {
+        const operatorSymbol =
+            REQUIRE_OPERATORS[operator as keyof typeof REQUIRE_OPERATORS];
+        code = leftOperand + " " + operatorSymbol + " " + rightOperand;
+    }
+
+    return [code, Order.ATOMIC];
 };
 
 // Require statement generator
-solidityGenerator.forBlock["require_statement"] = function (block: Blockly.Block, generator: Blockly.Generator) {
-  const condition = generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
-  const message = block.getFieldValue("MESSAGE") || "Error";
-  const code = 'require(' + condition + ', "' + message + '");\n';
-  return code;
+solidityGenerator.forBlock["require_statement"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const condition =
+        generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
+    const message = block.getFieldValue("MESSAGE") || "Error";
+    const code = "require(" + condition + ', "' + message + '");\n';
+    return code;
 };
 
 // # Solidity code generator for require consition method1
@@ -361,276 +418,388 @@ solidityGenerator.forBlock["require_condition_method1"] = function (
 ) {
     const message = block.getFieldValue("MESSAGE");
     const condition =
-        generator.valueToCode(block, "CONDITION", Order.ATOMIC) ||
-        "false";
+        generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
     const code = "require(" + condition + ', "' + message + '");\n';
     return code;
 };
 
 // Import block generator (from your example)
 solidityGenerator.forBlock["import"] = function (block: Blockly.Block) {
-  const imp1 = block.getFieldValue("Imp1");
-  const imp2 = block.getFieldValue("Imp2");
-  return "import {" + imp1 + '} from "' + imp2 + '";\n';
+    const imp1 = block.getFieldValue("Imp1");
+    const imp2 = block.getFieldValue("Imp2");
+    return "import {" + imp1 + '} from "' + imp2 + '";\n';
 };
 
 // Modifier block generator
-solidityGenerator.forBlock['modifier1'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const name = block.getFieldValue("NAME");
-  const message = block.getFieldValue("MESSAGE");
-  const params = generator.statementToCode(block, 'PARAMS').trim();
-  const condition = generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
+solidityGenerator.forBlock["modifier1"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const name = block.getFieldValue("NAME");
+    const message = block.getFieldValue("MESSAGE");
+    const params = generator.statementToCode(block, "PARAMS").trim();
+    const condition =
+        generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
 
-  const code = 'modifier ' + name + '( ' + params + ') {\n' + 
-               'require(' + condition + ', "' + message + '");\n' + 
-               '_;\n' + 
-               '}\n';
+    const code =
+        "modifier " +
+        name +
+        "( " +
+        params +
+        ") {\n" +
+        "require(" +
+        condition +
+        ', "' +
+        message +
+        '");\n' +
+        "_;\n" +
+        "}\n";
 
-  return code;
+    return code;
 };
 
 // If statement generator
-solidityGenerator.forBlock['if'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const condition = generator.valueToCode(block, "IF", Order.ATOMIC) || "false";
-  const branch = generator.statementToCode(block, 'DO');
-  const code = 'if ' + condition + ' {\n' + branch + '}';
-  return code;
+solidityGenerator.forBlock["if"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const condition =
+        generator.valueToCode(block, "IF", Order.ATOMIC) || "false";
+    const branch = generator.statementToCode(block, "DO");
+    const code = "if " + condition + " {\n" + branch + "}";
+    return code;
 };
 
 // Else if statement generator
-solidityGenerator.forBlock['else_if'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const condition = generator.valueToCode(block, "ELSE_IF", Order.ATOMIC) || "false";
-  const branch = generator.statementToCode(block, 'DO');
-  const code = 'else if ' + condition + ' {\n' + branch + '}';
-  return code;
+solidityGenerator.forBlock["else_if"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const condition =
+        generator.valueToCode(block, "ELSE_IF", Order.ATOMIC) || "false";
+    const branch = generator.statementToCode(block, "DO");
+    const code = "else if " + condition + " {\n" + branch + "}";
+    return code;
 };
 
 // Else statement generator
-solidityGenerator.forBlock['else'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const branch = generator.statementToCode(block, 'DO');
-  const code = 'else {\n' + branch + '}';
-  return code;
+solidityGenerator.forBlock["else"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const branch = generator.statementToCode(block, "DO");
+    const code = "else {\n" + branch + "}";
+    return code;
 };
 
 // If container generator
-solidityGenerator.forBlock['if_container'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const ifCondition = generator.statementToCode(block, 'IF');
-  const elseIfCondition = generator.statementToCode(block, 'ELSE_IF');
-  const elseStatement = generator.statementToCode(block, 'ELSE');
-  let code = ifCondition;
+solidityGenerator.forBlock["if_container"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const ifCondition = generator.statementToCode(block, "IF");
+    const elseIfCondition = generator.statementToCode(block, "ELSE_IF");
+    const elseStatement = generator.statementToCode(block, "ELSE");
+    let code = ifCondition;
 
-  if (elseIfCondition) {
-    code += elseIfCondition;
-  }
+    if (elseIfCondition) {
+        code += elseIfCondition;
+    }
 
-  if (elseStatement) {
-    code += elseStatement;
-  }
+    if (elseStatement) {
+        code += elseStatement;
+    }
 
-  return code;
+    return code;
 };
 
 // If-else container generator
-solidityGenerator.forBlock['if_else_container'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const ifCondition = generator.statementToCode(block, 'IF');
-  const elseStatement = generator.statementToCode(block, 'ELSE');
-  let code = ifCondition;
+solidityGenerator.forBlock["if_else_container"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const ifCondition = generator.statementToCode(block, "IF");
+    const elseStatement = generator.statementToCode(block, "ELSE");
+    let code = ifCondition;
 
-  if (elseStatement) {
-    code += elseStatement;
-  }
+    if (elseStatement) {
+        code += elseStatement;
+    }
 
-  return code;
+    return code;
 };
 
 // If-elseif-else container generator
-solidityGenerator.forBlock['if_elseif_else_container'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const ifCondition = generator.statementToCode(block, 'IF');
-  const elseIfCondition = generator.statementToCode(block, 'ELSE_IF');
-  const elseStatement = generator.statementToCode(block, 'ELSE');
-  let code = ifCondition;
+solidityGenerator.forBlock["if_elseif_else_container"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const ifCondition = generator.statementToCode(block, "IF");
+    const elseIfCondition = generator.statementToCode(block, "ELSE_IF");
+    const elseStatement = generator.statementToCode(block, "ELSE");
+    let code = ifCondition;
 
-  if (elseIfCondition) {
-    code += elseIfCondition;
-  }
+    if (elseIfCondition) {
+        code += elseIfCondition;
+    }
 
-  if (elseStatement) {
-    code += elseStatement;
-  }
+    if (elseStatement) {
+        code += elseStatement;
+    }
 
-  return code;
+    return code;
 };
 
 // Method/Function generator
-solidityGenerator.forBlock['method'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const name = block.getFieldValue("NAME");
-  const access = block.getFieldValue("ACCESS");
-  // const type = block.getFieldValue("TYPE");
-  const view = block.getFieldValue("VIEW");
-  const pure = block.getFieldValue("PURE");
-  const payable = block.getFieldValue("PAYABLE");
-  const return_ = block.getFieldValue("RETURN");
-  const override = block.getFieldValue("OVERRIDE");
+solidityGenerator.forBlock["method"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const name = block.getFieldValue("NAME");
+    const access = block.getFieldValue("ACCESS");
+    // const type = block.getFieldValue("TYPE");
+    const view = block.getFieldValue("VIEW");
+    const pure = block.getFieldValue("PURE");
+    const payable = block.getFieldValue("PAYABLE");
+    const return_ = block.getFieldValue("RETURN");
+    const override = block.getFieldValue("OVERRIDE");
 
-  const params = generator.statementToCode(block, 'PARAMS').trim();
-  const values = generator.statementToCode(block, 'RETURN_VALUES').trim();
-  const modifiers = generator.valueToCode(block, 'MODIFIERS', Order.ASSIGNMENT) || '';
-  const branch = generator.statementToCode(block, 'STACK');
-  const require = generator.statementToCode(block, 'REQUIRE').trim() || "";
+    const params = generator.statementToCode(block, "PARAMS").trim();
+    const values = generator.statementToCode(block, "RETURN_VALUES").trim();
+    const modifiers =
+        generator.valueToCode(block, "MODIFIERS", Order.ASSIGNMENT) || "";
+    const branch = generator.statementToCode(block, "STACK");
+    const require = generator.statementToCode(block, "REQUIRE").trim() || "";
 
-  const accessValue = ACCESS_MODIFIERS[access as keyof typeof ACCESS_MODIFIERS];
-  const returnValue = RETURN_TYPES[return_ as keyof typeof RETURN_TYPES];
-  const viewValue = VIEW_TYPES[view as keyof typeof VIEW_TYPES];
-  const pureValue = PURE_TYPES[pure as keyof typeof PURE_TYPES];
-  const payableValue = PAYABLE_TYPES[payable as keyof typeof PAYABLE_TYPES];
+    const accessValue =
+        ACCESS_MODIFIERS[access as keyof typeof ACCESS_MODIFIERS];
+    const returnValue = RETURN_TYPES[return_ as keyof typeof RETURN_TYPES];
+    const viewValue = VIEW_TYPES[view as keyof typeof VIEW_TYPES];
+    const pureValue = PURE_TYPES[pure as keyof typeof PURE_TYPES];
+    const payableValue = PAYABLE_TYPES[payable as keyof typeof PAYABLE_TYPES];
 
-  let code = 'function ' + name + '( ' + params + ')' + ' ' + accessValue + ' ' + 
-             payableValue + ' ' + viewValue + ' ' + pureValue + ' ' + modifiers + ' ' + returnValue;
+    let code =
+        "function " +
+        name +
+        "( " +
+        params +
+        ")" +
+        " " +
+        accessValue +
+        " " +
+        payableValue +
+        " " +
+        viewValue +
+        " " +
+        pureValue +
+        " " +
+        modifiers +
+        " " +
+        returnValue;
 
-  // Add the return type only if there is a return value
-  if (returnValue === 'returns') {
-    code += ' ( ' + values + ' )';
-  }
-
-  // Handle override
-  if (override) {
-    code = 'function ' + name + '( ' + params + ')' + ' ' + accessValue + ' ' + 
-           payableValue + ' ' + viewValue + ' ' + pureValue + ' override(' + override + ')' + 
-           ' ' + modifiers + ' ' + returnValue;
-    if (returnValue === 'returns') {
-      code += ' ( ' + values + ' )';
+    // Add the return type only if there is a return value
+    if (returnValue === "returns") {
+        code += " ( " + values + " )";
     }
-  }
 
-  // Add function body
-  if (require) {
-    code += ' {\n' + require + '\n' + branch + '\n' + '}\n';
-  } else {
-    code += ' {\n' + branch + '\n' + '}\n';
-  }
+    // Handle override
+    if (override) {
+        code =
+            "function " +
+            name +
+            "( " +
+            params +
+            ")" +
+            " " +
+            accessValue +
+            " " +
+            payableValue +
+            " " +
+            viewValue +
+            " " +
+            pureValue +
+            " override(" +
+            override +
+            ")" +
+            " " +
+            modifiers +
+            " " +
+            returnValue;
+        if (returnValue === "returns") {
+            code += " ( " + values + " )";
+        }
+    }
 
-  return code;
+    // Add function body
+    if (require) {
+        code += " {\n" + require + "\n" + branch + "\n" + "}\n";
+    } else {
+        code += " {\n" + branch + "\n" + "}\n";
+    }
+
+    return code;
 };
 
 // Variable definition generator
-solidityGenerator.forBlock['define_variable'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || 'null';
-  return value + ";\n";
+solidityGenerator.forBlock["define_variable"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const value =
+        generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "null";
+    return value + ";\n";
 };
 
 // Variable definition with assignment generator
-solidityGenerator.forBlock['define_variable_with_assignment'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || 'null';
-  const assigned_value = block.getFieldValue('ASSIGNED_VALUE') || "";
-  
-  console.log("VALUE:", value, "ASSIGNED_VALUE:", assigned_value);
-  
-  if (assigned_value.trim() !== "") {
-    return value + " = " + assigned_value + ";\n";
-  } else {
-    return "";
-  }
+solidityGenerator.forBlock["define_variable_with_assignment"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const value =
+        generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "null";
+    const assigned_value = block.getFieldValue("ASSIGNED_VALUE") || "";
+
+    console.log("VALUE:", value, "ASSIGNED_VALUE:", assigned_value);
+
+    if (assigned_value.trim() !== "") {
+        return value + " = " + assigned_value + ";\n";
+    } else {
+        return "";
+    }
 };
 
 // Struct variable definition with assignment generator
-solidityGenerator.forBlock['define_struct_variable_with_assignment'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const assigned_struct = generator.valueToCode(block, 'ASSIGNED_STRUCT', Order.ASSIGNMENT) || 'null';
-  const structName = block.getFieldValue('NAME') || "";
-  const type_struct = block.getFieldValue('TYPE') || "";
-  
-  console.log("NAME:", structName, "ASSIGNED_STRUCT:", assigned_struct);
-  
-  if (assigned_struct.trim() !== "") {
-    return type_struct + ' ' + structName + " = " + assigned_struct + ";\n";
-  } else {
-    return "";
-  }
-};
+solidityGenerator.forBlock["define_struct_variable_with_assignment"] =
+    function (block: Blockly.Block, generator: Blockly.Generator) {
+        const assigned_struct =
+            generator.valueToCode(block, "ASSIGNED_STRUCT", Order.ASSIGNMENT) ||
+            "null";
+        const structName = block.getFieldValue("NAME") || "";
+        const type_struct = block.getFieldValue("TYPE") || "";
+
+        console.log("NAME:", structName, "ASSIGNED_STRUCT:", assigned_struct);
+
+        if (assigned_struct.trim() !== "") {
+            return (
+                type_struct + " " + structName + " = " + assigned_struct + ";\n"
+            );
+        } else {
+            return "";
+        }
+    };
 
 // Array variable definition generator
-solidityGenerator.forBlock['define_arrayVariable'] = function(block: Blockly.Block) {
-  const arrayName = block.getFieldValue('NAME') || "";
-  const type_array = block.getFieldValue('TYPE') || "";
-  const type_array1 = block.getFieldValue('TYPE1') || "";
-  const values = block.getFieldValue('VALUES') || "";
-  
-  console.log("ARRAY VARIABLE: ", arrayName, type_array, type_array1, values);
-  return type_array + '[] ' + arrayName + ' = new ' + type_array1 + '[]( ' + values + ' );\n';
+solidityGenerator.forBlock["define_arrayVariable"] = function (
+    block: Blockly.Block
+) {
+    const arrayName = block.getFieldValue("NAME") || "";
+    const type_array = block.getFieldValue("TYPE") || "";
+    const type_array1 = block.getFieldValue("TYPE1") || "";
+    const values = block.getFieldValue("VALUES") || "";
+
+    console.log("ARRAY VARIABLE: ", arrayName, type_array, type_array1, values);
+    return (
+        type_array +
+        "[] " +
+        arrayName +
+        " = new " +
+        type_array1 +
+        "[]( " +
+        values +
+        " );\n"
+    );
 };
 
 // Assign values to variable array generator
-solidityGenerator.forBlock['assign_values_to_variable_array'] = function(block: Blockly.Block) {
-  const arrayName = block.getFieldValue('NAME');
-  const type_array = block.getFieldValue('TYPE1');
-  const type_access = block.getFieldValue('TYPE3');
-  const values = block.getFieldValue('VALUES') || "";
+solidityGenerator.forBlock["assign_values_to_variable_array"] = function (
+    block: Blockly.Block
+) {
+    const arrayName = block.getFieldValue("NAME");
+    const type_array = block.getFieldValue("TYPE1");
+    const type_access = block.getFieldValue("TYPE3");
+    const values = block.getFieldValue("VALUES") || "";
 
-  const typeValue = ARRAY_TYPES[type_array as keyof typeof ARRAY_TYPES];
-  const accessValue = ACCESS_MODIFIERS[type_access as keyof typeof ACCESS_MODIFIERS];
+    const typeValue = ARRAY_TYPES[type_array as keyof typeof ARRAY_TYPES];
+    const accessValue =
+        ACCESS_MODIFIERS[type_access as keyof typeof ACCESS_MODIFIERS];
 
-  return typeValue + ' ' + accessValue + ' ' + arrayName + ' = ' + '[ ' + values + ' ];\n';
+    return (
+        typeValue +
+        " " +
+        accessValue +
+        " " +
+        arrayName +
+        " = " +
+        "[ " +
+        values +
+        " ];\n"
+    );
 };
 
-// String variable definition with assignment generator  
-solidityGenerator.forBlock['define_variable_with_assignment1'] = function(block: Blockly.Block, generator: Blockly.Generator) {
-  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || 'null';
-  const assigned_value = block.getFieldValue('ASSIGNED_VALUE') || "";
-  
-  console.log("VALUE:", value, "ASSIGNED_VALUE:", assigned_value);
+// String variable definition with assignment generator
+solidityGenerator.forBlock["define_variable_with_assignment1"] = function (
+    block: Blockly.Block,
+    generator: Blockly.Generator
+) {
+    const value =
+        generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "null";
+    const assigned_value = block.getFieldValue("ASSIGNED_VALUE") || "";
 
-  if (assigned_value.trim() !== "") {
-    return value + " = " + " '" + assigned_value + "';\n";
-  } else {
-    return "";
-  }
+    console.log("VALUE:", value, "ASSIGNED_VALUE:", assigned_value);
+
+    if (assigned_value.trim() !== "") {
+        return value + " = " + " '" + assigned_value + "';\n";
+    } else {
+        return "";
+    }
 };
 
 // Input generators
-solidityGenerator.forBlock['input'] = function(block: Blockly.Block) {
-  const textValue = block.getFieldValue("input_name");
-  return [textValue, 0];
+solidityGenerator.forBlock["input"] = function (block: Blockly.Block) {
+    const textValue = block.getFieldValue("input_name");
+    return [textValue, 0];
 };
 
-solidityGenerator.forBlock['input_right'] = function(block: Blockly.Block) {
-  const textValue = block.getFieldValue("input_name");
-  return [textValue, 0];
+solidityGenerator.forBlock["input_right"] = function (block: Blockly.Block) {
+    const textValue = block.getFieldValue("input_name");
+    return [textValue, 0];
 };
 
 // Return block generator
-solidityGenerator.forBlock['return_block'] = function(block: Blockly.Block) {
-  const textValue = block.getFieldValue("input_name");
-  return "return " + textValue + ";\n";
+solidityGenerator.forBlock["return_block"] = function (block: Blockly.Block) {
+    const textValue = block.getFieldValue("input_name");
+    return "return " + textValue + ";\n";
 };
 
 // Mathematical operation generators
-solidityGenerator.forBlock['input_somma'] = function(block: Blockly.Block) {
-  const textValue = block.getFieldValue("input_name");
-  const value = block.getFieldValue("input_increment");
-  const code = textValue + "+ " + value;
-  return [code, 0];
+solidityGenerator.forBlock["input_somma"] = function (block: Blockly.Block) {
+    const textValue = block.getFieldValue("input_name");
+    const value = block.getFieldValue("input_increment");
+    const code = textValue + "+ " + value;
+    return [code, 0];
 };
 
-solidityGenerator.forBlock['input_diff'] = function(block: Blockly.Block) {
-  const textValue = block.getFieldValue("input_name");
-  const value = block.getFieldValue("input_decrement");
-  const code = textValue + "- " + value;
-  return [code, 0];
+solidityGenerator.forBlock["input_diff"] = function (block: Blockly.Block) {
+    const textValue = block.getFieldValue("input_name");
+    const value = block.getFieldValue("input_decrement");
+    const code = textValue + "- " + value;
+    return [code, 0];
 };
 
 // Address-related generators
-solidityGenerator.forBlock['address_zero'] = function() {
-  const code = "address(0)";
-  return [code, Order.ATOMIC];
+solidityGenerator.forBlock["address_zero"] = function () {
+    const code = "address(0)";
+    return [code, Order.ATOMIC];
 };
 
-solidityGenerator.forBlock['address_this'] = function() {
-  const code = "address(this)";
-  return [code, Order.ATOMIC];
+solidityGenerator.forBlock["address_this"] = function () {
+    const code = "address(this)";
+    return [code, Order.ATOMIC];
 };
 
-solidityGenerator.forBlock['address_this_balance'] = function() {
-  const code = "address(this).balance";
-  return [code, Order.ATOMIC];
+solidityGenerator.forBlock["address_this_balance"] = function () {
+    const code = "address(this).balance";
+    return [code, Order.ATOMIC];
 };
 
 // # Code generator for ERC20 template
@@ -856,8 +1025,7 @@ solidityGenerator.forBlock["state"] = function () {
 };
 
 // # Code generator for proposalNeedsQueuing
-solidityGenerator.forBlock["proposalNeedsQueuing"] = function (
-) {
+solidityGenerator.forBlock["proposalNeedsQueuing"] = function () {
     const code =
         "function proposalNeedsQueuing(uint256 proposalId)\n" +
         "public\n" +

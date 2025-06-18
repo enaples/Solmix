@@ -3,6 +3,23 @@
 import { useState } from "react";
 import BlocklyEditor from "@/app/solmix/blockly/workspace";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
+import { FloatingChat } from "./components/FloatingChat";
+import CodeViewer from "./components/CodeEditor/codeEditor";
+import CardList from "./components/CardList/CardList";
+import {defaultOptDetectionCard, defaultVulDetectionCard} from "./components/CardList/types";
+
+// load the governor-vul-analysis.json from the public/ folder
+import data from "../../../public/governor-vul-analysis.json";
+
+import { Detector } from "./components/CardList/types";
+
+interface AnalysisData {
+    results: {
+        detectors: Detector[];
+    };
+}
+
+const detectors: Detector[] = (data as AnalysisData).results.detectors ?? [];
 import { FloatingChat } from "./FloatingChat";
 import CodeViewer from "./blockly/codeViewer";
 import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
@@ -15,40 +32,43 @@ export default function SolmixHome() {
     return (
         <main className="w-full min-h-screen bg-foreground">
             <div className="w-full min-h-screen grid grid-cols-3">
-                <div className="col-span-2 solmix-tools p-5 rounded-md">
-                    <BlocklyEditor setCode={setCode} />
+                {/* Blockly Editor Section */}
+                <div className="col-span-2 solmix-tools p-5 rounded-md flex flex-col">
+                    <div className="flex-grow overflow-hidden">
+                        <BlocklyEditor setCode={setCode} />
+                    </div>
                 </div>
 
-                <div className="col-span-1 solmix-tools pt-5 pb-5 pr-5">
-                    <div className="rounded-md bg-background w-full min-h-full">
+                {/* Tabs Section */}
+                <div className="col-span-1 solmix-tools p-5 flex flex-col">
+                    <div className="bg-background rounded-md flex flex-col h-full">
                         <Tabs
                             selectedTabClassName="border-b-2 border-orange-500 text-orange-600 font-semibold"
                             selectedTabPanelClassName="block"
                         >
-                            <TabList className="flex space-x-4 border-b border-gray-300 bg-white px-2">
-                                <Tab className="px-4 py-2 cursor-pointer hover:text-orange-500">
-                                    Source Report
+                            <TabList className="flex space-x-6 border-b border-gray-300 bg-white px-4">
+                                <Tab className="px-4 py-3 cursor-pointer hover:text-orange-500 [&.react-tabs__tab--selected]:bg-orange-50">
+                                    Code Editor
                                 </Tab>
-                                <Tab className="px-4 py-2 cursor-pointer hover:text-orange-500">
+                                <Tab className="px-4 py-3 cursor-pointer hover:text-orange-500 [&.react-tabs__tab--selected]:bg-orange-50">
                                     Vulnerability Report
                                 </Tab>
-                                <Tab className="px-4 py-2 cursor-pointer hover:text-orange-500">
+                                <Tab className="px-4 py-3 cursor-pointer hover:text-orange-500 [&.react-tabs__tab--selected]:bg-orange-50">
                                     Code optimization
                                 </Tab>
                             </TabList>
 
-                            <TabPanel className="p-0">
-                                
+                            <TabPanel className="p-0 flex-grow overflow-auto">
                                 <CodeViewer
                                     onCodeChange={setCode}
                                     code={code}
                                 />
                             </TabPanel>
-                            <TabPanel className="p-0">
-                                Content for Tab 2
+                            <TabPanel className="p-0 flex-grow overflow-auto">
+                                <CardList data={{ detectors }} toKeep={["High", "Medium", "Low"]} defaultData={defaultVulDetectionCard}/>
                             </TabPanel>
-                            <TabPanel className="p-0">
-                                Content for Tab 3
+                            <TabPanel className="p-0 flex-grow overflow-auto">
+                                <CardList data={{ detectors }} toKeep={["Optimization"]} defaultData={defaultOptDetectionCard}/>
                             </TabPanel>
                         </Tabs>
                     </div>
