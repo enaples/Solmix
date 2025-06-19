@@ -9,24 +9,20 @@ import {defaultOptDetectionCard, defaultVulDetectionCard} from "./components/Car
 import { FloatingChat } from "./FloatingChat";
 import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
 
-
-// load the governor-vul-analysis.json from the public/ folder
-import data from "../../../public/governor-vul-analysis.json";
-
 import { Detector } from "./components/CardList/types";
 
-interface AnalysisData {
-    results: {
-        detectors: Detector[];
-    };
-}
+// interface AnalysisData {
+//     results: {
+//         detectors: Detector[];
+//     };
+// }
 
-const detectors: Detector[] = (data as AnalysisData).results.detectors ?? [];
 
 // todo: precompilare template, estetica tab
 
 export default function SolmixHome() {
     const [code, setCode] = useState<string>("no code yet");
+    const detectors: Detector[] = [];
 
     return (
         <main className="w-full min-h-screen bg-foreground">
@@ -78,7 +74,7 @@ export default function SolmixHome() {
                 title="Solmix AI Assistant"
                 initialMessage="Hello! How do you want to edit your Smart Contract?"
                 customResponse={async (message) => {
-                    let generated_code = sendLLMessage(`${message}`, `${code}`);
+                    const generated_code = sendLLMessage(`${message}`, `${code}`);
                     setCode(await generated_code);
                     return generated_code;
                 }}

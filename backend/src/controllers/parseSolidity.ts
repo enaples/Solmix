@@ -4,8 +4,7 @@ import { Request, Response } from "express";
 
 
 export const parseSolidity = async (req: Request, res: Response) => {
-  console.log('Received request to parse Solidity contract');
-  console.log('Request body:', req.body);
+  
   try {
     const { solidityCode } = req.body;
 

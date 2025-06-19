@@ -9,7 +9,7 @@ import { solidityGenerator } from "./generator/solidity";
 import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
 import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";
-import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
+// import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
 
 interface BlocklyEditorProps {
     setCode: (code: string) => void;

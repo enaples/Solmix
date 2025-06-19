@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import dummyRoute from './routes/dummyRoute';
 import parseRoute from './routes/parseRoute';
+import vulnerabilityAnalysisRoute from './routes/vulnerabilityAnalysisRoute';
 import { PORT } from './config/env';
 
 const app: Express = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/dummy', dummyRoute);
+app.use('/vulnerability-analysis', vulnerabilityAnalysisRoute);
 app.use('/parse-solidity', parseRoute);
 
 app.use((req, res, next) => {

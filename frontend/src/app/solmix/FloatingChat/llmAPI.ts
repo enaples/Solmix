@@ -1,6 +1,5 @@
 'use server'
 
-
 import OpenAI from "openai";
 
 // import {PoeClient} from "poe-node-api";
@@ -9,8 +8,8 @@ import OpenAI from "openai";
 // import { PoeApi } from "poe-api-js";
 // https://github.com/yuangwei/poe-api-js
 
-function RemoveSolidityDeclaration(x) {
-    let lines = x.split('\n');
+function RemoveSolidityDeclaration(x: string): string {
+    const lines = x.split('\n');
 
     if (lines.length > 1) {
         lines.shift(); // Remove first line
@@ -21,10 +20,10 @@ function RemoveSolidityDeclaration(x) {
 
 export async function sendLLMessage(message: string, current_solidity_code: string) {
     // https://platform.openai.com/docs/overview
-    let openai_key = process.env.OPENAI_KEY
+    const openai_key = process.env.OPENAI_KEY
     const client = new OpenAI({ apiKey: openai_key });
 
-    let prompt = `User request:\n${message}
+    const prompt = `User request:\n${message}
     \n\nYou are a smart contract and solidity expert, process the user request editing the following smart contract in solidity:
     \n${current_solidity_code}
     \n\nReturn only the Solidity code.`;

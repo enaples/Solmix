@@ -18,7 +18,7 @@
     "flowbite-react": "^0.11.7",
     "heroicons": "^2.2.0",
     "next": "^15.3.2",
-    "openai": "^5.3.0",
+    "openai": "^5.5.1",
     "poe-node-api": "^0.0.8-rc2",
     "prismjs": "^1.30.0",
     "react": "^19.0.0",
