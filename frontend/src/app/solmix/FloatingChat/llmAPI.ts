@@ -55,7 +55,6 @@ export async function explainSmartContract(current_solidity_code: string) {
     let answer = response.output_text;
 
     // remove first and last row (contains solidity declaration)
-    answer = RemoveSolidityDeclaration(answer)
-    console.log(answer);
+    answer = RemoveSolidityDeclaration(answer);
     return answer;
 }
