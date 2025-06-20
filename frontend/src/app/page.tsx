@@ -147,7 +147,7 @@ export default function Home() {
                         <p className="mb-3 font-normal text-gray-700 text-global-color-text">
                             Perfect for ...
                         </p>
-                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto pointer-events-none bg-gray-200">
                             Continue
                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
                                  xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@ export default function Home() {
                         <p className="mb-3 font-normal text-gray-700 text-global-color-text">
                             Perfect for ...
                         </p>
-                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto pointer-events-none bg-gray-200">
                             Continue
                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
                                  xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +195,7 @@ export default function Home() {
                         <p className="mb-3 font-normal text-gray-700 text-global-color-text">
                             Perfect for ...
                         </p>
-                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto">
+                        <Link key={Link.name} href='solmix' className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] hover:bg-secondary-color font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto pointer-events-none bg-gray-200">
                             Continue
                             <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
                                  xmlns="http://www.w3.org/2000/svg"

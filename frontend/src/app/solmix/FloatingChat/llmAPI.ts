@@ -26,7 +26,7 @@ export async function sendLLMessage(message: string, current_solidity_code: stri
     const prompt = `User request:\n${message}
     \n\nYou are a smart contract and solidity expert, process the user request editing the following smart contract in solidity:
     \n${current_solidity_code}
-    \n\nReturn only the Solidity code.`;
+    \n\nReturn only the Solidity code.`;  // todo: regex per estrarre il codice dalla pipeline
 
     const response = await client.responses.create({
         model: "gpt-4o-mini",
