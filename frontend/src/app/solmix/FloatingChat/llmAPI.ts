@@ -38,3 +38,24 @@ export async function sendLLMessage(message: string, current_solidity_code: stri
     answer = RemoveSolidityDeclaration(answer)
     return answer;
 }
+
+export async function explainSmartContract(current_solidity_code: string) {
+    // https://platform.openai.com/docs/overview
+    const openai_key = process.env.OPENAI_KEY
+    const client = new OpenAI({ apiKey: openai_key });
+
+    const prompt = `You are a smart contract and solidity expert, add comments to the following smart contract in solidity in order to make it readable to not-skilled users:
+    \n${current_solidity_code}
+    \n\nReturn only the Solidity code.`;  // todo: regex per estrarre il codice dalla pipeline
+
+    const response = await client.responses.create({
+        model: "gpt-4o-mini",
+        input: prompt,
+    });
+    let answer = response.output_text;
+
+    // remove first and last row (contains solidity declaration)
+    answer = RemoveSolidityDeclaration(answer)
+    console.log(answer);
+    return answer;
+}

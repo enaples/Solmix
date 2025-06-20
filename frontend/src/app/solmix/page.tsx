@@ -12,15 +12,6 @@ import {sendLLMessage} from "@/app/solmix/FloatingChat/llmAPI";
 import { Detector } from "./components/CardList/types";
 import Link from "next/link";
 
-// interface AnalysisData {
-//     results: {
-//         detectors: Detector[];
-//     };
-// }
-
-
-// todo: precompilare template, estetica tab
-
 export default function SolmixHome() {
     const [code, setCode] = useState<string>("no code yet");
     const detectors: Detector[] = [];

@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
 
 interface CodeViewerProps {
     code: string;
@@ -107,20 +108,14 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     }, [code, fileName]);
 
     // Download code as file
-    const handleExplanation = useCallback(() => {
+    const handleExplanation = useCallback(async () => {
         // todo: edit code section annotating the code using a llm
-        //if (!code || code.trim() === "") return;
-//
-        //const blob = new Blob([code], { type: "text/plain" });
-        //const url = URL.createObjectURL(blob);
-        //const a = document.createElement("a");
-        //a.href = url;
-        //a.download = fileName;
-        //document.body.appendChild(a);
-        //a.click();
-        //document.body.removeChild(a);
-        //URL.revokeObjectURL(url);
-    }, [code, fileName]);
+        if (!code || code.trim() === "") return;
+
+        let codeExplanation = explainSmartContract(code);
+        let newcode = await codeExplanation;
+        handleCodeEdit(newcode);
+    }, [code]);
 
     // Handle code editing
     const handleCodeEdit = useCallback(
