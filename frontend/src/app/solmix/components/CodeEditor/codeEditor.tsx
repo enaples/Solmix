@@ -12,6 +12,7 @@ interface CodeViewerProps {
     showLineNumbers?: boolean;
     showCopyButton?: boolean;
     showDownloadButton?: boolean;
+    showExplainCodeButton?: boolean;
     showHeader?: boolean;
     placeholder?: string;
     readOnly?: boolean;
@@ -29,6 +30,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showLineNumbers = true,
     showCopyButton = true,
     showDownloadButton = true,
+    showExplainCodeButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
     readOnly = true,
@@ -102,6 +104,22 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }, [code, fileName]);
+
+    // Download code as file
+    const handleExplanation = useCallback(() => {
+        // todo: edit code section annotating the code using a llm
+        //if (!code || code.trim() === "") return;
+//
+        //const blob = new Blob([code], { type: "text/plain" });
+        //const url = URL.createObjectURL(blob);
+        //const a = document.createElement("a");
+        //a.href = url;
+        //a.download = fileName;
+        //document.body.appendChild(a);
+        //a.click();
+        //document.body.removeChild(a);
+        //URL.revokeObjectURL(url);
     }, [code, fileName]);
 
     // Handle code editing
@@ -190,6 +208,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
                                 title="Download as file"
                             >
                                 Download
+                            </button>
+                        )}
+
+                        {showExplainCodeButton && (
+                            <button
+                                onClick={handleExplanation}
+                                disabled={stats.isEmpty}
+                                className="px-3 py-1 text-xs bg-orange-400 text-white rounded hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                title="Download as file"
+                            >
+                                Explain code
                             </button>
                         )}
                     </div>

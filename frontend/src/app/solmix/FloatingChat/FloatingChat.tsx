@@ -103,7 +103,7 @@ export default function FloatingChat({
     };
 
     return (
-        <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+        <div className="fixed bottom-7 right-7 z-50 flex flex-col items-end">
             {isOpen && (
                 <ChatWindow
                     messages={messages}
@@ -116,7 +116,7 @@ export default function FloatingChat({
 
             <button
                 onClick={toggleChat}
-                className="mt-4 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="mt-4 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-xl transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2"
                 style={{
                     backgroundColor: primaryColor,
                     '--tw-ring-color': primaryColor,

@@ -44,7 +44,7 @@ export default function ChatWindow({
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg w-full max-w-sm overflow-hidden transition-all duration-300 transform flex flex-col">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-7xl overflow-hidden transition-all duration-300 transform flex flex-col">
             {/* Chat Header */}
             <div
                 className="text-white px-4 py-3 flex justify-between items-center"
@@ -73,14 +73,14 @@ export default function ChatWindow({
             </div>
 
             {/* Chat Input */}
-            <div className="border-t border-gray-200 dark:border-gray-700 p-3 flex items-center space-x-2">
+            <div className="border-t border-gray-200 p-3 flex items-center space-x-2">
                 <input
                     type="text"
                     placeholder="Type a message..."
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-base focus:outline-none focus:ring-2 focus:border-transparent bg-global-color-text text-gray-500 placeholder-gray-500 dark:placeholder-gray-400"
+                    className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-base focus:outline-none focus:ring-2 focus:border-transparent bg-global-color-text text-gray-500 placeholder-gray-500 dark:placeholder-gray-400"
                     style={{
                         '--tw-ring-color': primaryColor,
                     } as React.CSSProperties}
