@@ -10,10 +10,16 @@ import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
 import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
+import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
+
+
+
 
 interface BlocklyEditorProps {
     setCode: (code: string) => void;
 }
+
+
 
 export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
     const blocklyDivRef = useRef<HTMLDivElement>(null);
@@ -47,6 +53,12 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
             solidityTypesFlyoutCallback
         );
 
+        registerMappingFlyout(workspace);
+        registerModifierFlyout(workspace);
+        registerEventFlyout(workspace);
+        registerStructFlyout(workspace);
+        registerArrayFlyout(workspace);
+
         workspaceRef.current = workspace;
 
         const onWorkspaceChange = () => {
@@ -59,6 +71,23 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
         };
 
         workspace.addChangeListener(onWorkspaceChange);
+
+        /*const createFlyoutMapping = function (){
+        let xmlList = [];
+            // Aggiungi i blocchi alla toolbox senza ridefinirli
+        
+        xmlList.push({ kind: 'block', type: "mapping" });
+        xmlList.push({ kind: 'block', type: "getter_mappings" });
+        //xmlList.push({ kind: 'block', type: "event" });
+        //xmlList.push({ kind: 'block', type: "variables_get_s" });
+            
+        return xmlList;
+        }
+
+        workspace.registerToolboxCategoryCallback(
+        'NEW_MAPPING',
+        createFlyoutMapping,
+        );*/
 
         return () => {
             if (workspaceRef.current) {
