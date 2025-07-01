@@ -116,7 +116,7 @@ solidityGenerator.forBlock["structure"] = function (block, generator) {
 
 // # Code generator for contract
 solidityGenerator.forBlock["contract"] = function (block, generator) {
-    const variables = generator.statementToCode(block, "constIABLES") || "";
+    const variables = generator.statementToCode(block, "VARIABLES") || "";
     const structures = generator.statementToCode(block, "STRUCTS");
     const mappings = generator.statementToCode(block, "MAPPINGS");
     const events = generator.statementToCode(block, "EVENTS");
@@ -203,7 +203,7 @@ solidityGenerator.forBlock["event"] = function (block, generator) {
 };
 
 // # Code generator for function input
-solidityGenerator.forBlock["function_input"] = function (block) {
+solidityGenerator.forBlock["func_inputs"] = function (block) {
     const name = block.getFieldValue("NAME");
     const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
 
@@ -266,7 +266,7 @@ solidityGenerator.forBlock["state"] = function (block) {
 };
 
 // # Code generator for contract structures
-solidityGenerator.forBlock["structure"] = function (block) {
+solidityGenerator.forBlock["contract_structures"] = function (block) {
     const name = block.getFieldValue("NAME");
     const firstFieldBlock = block.getInputTargetBlock("STATES");
 

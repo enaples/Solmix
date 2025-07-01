@@ -1328,6 +1328,7 @@ Blockly.defineBlocksWithJsonArray([
             {
                 type: "field_input",
                 name: "PRAGMA",
+                text: "^0.8.27"
             },
         ],
         message1: "Import %1",
@@ -1461,6 +1462,62 @@ Blockly.defineBlocksWithJsonArray([
     },
 
     // ## struct block
+    {
+        type: 'contract_structures',
+        message0: 'Struct %1 %2 %3',
+        args0: [
+            {
+            type: "field_input",
+            name: "NAME",
+            check: "String",
+            text: "/* insert a name*/",
+            },
+            {
+                type: "input_dummy"
+                },
+            {
+            type: 'input_statement',
+            name : 'STATES',
+            //check: "struct_variables"
+            }  
+        ],
+        previousStatement:[true, 'contract_structures'], 
+        nextStatement:[true, 'contract_structures'],
+        colour: 150,
+        tooltip: 'Define a Solidity Struct type.',
+        helpUrl: '',
+    },
+    {
+        type: 'struct_variables',
+        message0: '%1 %2',
+        args0: [
+        {
+        type: 'field_dropdown',
+        name: 'TYPE',
+        options: [
+            [ "bool", "TYPE_BOOL" ],
+            [ "int",  "TYPE_INT" ],
+            [ "uint", "TYPE_UINT" ],
+            [ "uint256", "TYPE_UINT256" ],
+            [ "uint8", "TYPE_UINT8" ],
+            [ "string", "TYPE_STRING"],
+            [ "address", "TYPE_ADDRESS" ],
+            [ "bytes32", "TYPE_BYTES32" ],
+            [ "bytes", "TYPE_BYTES" ],
+        ]
+        }, 
+        {
+        type: 'field_input',
+        name: 'NAME',
+        text: 'b'
+        }
+        ],
+        previousStatement: [true, ['struct_variables','structVariables_black'] ], 
+        nextStatement: [true, ['struct_variables','structVariables_black']], // 'struct_variables' ),
+        colour: "#FF8000",
+        tooltip: 'Struct attribute.',
+        helpUrl: '',
+    },
     {
         type: "define_struct_variable_with_assignment",
         message0: "Let struct variable: %1 %2 equal to %3",
@@ -2248,6 +2305,71 @@ Blockly.defineBlocksWithJsonArray([
         tooltip: "Solidity Code not supported by a defined block.",
         helpUrl: "",
     },
+
+    // ## black block for func inputs
+    {
+        type : 'func_inputs_black',
+        message0: 'Black Block: %1 %2',
+        args0: [
+        {
+            type: 'field_input',
+            name: 'TYPE',
+            //text: 's'
+        },
+        {
+            type: 'field_input',
+            name: 'NAME',
+            //text: 's'
+        }
+        ],
+        previousStatement: [true, "input"] ,
+        nextStatement: [true,"input"] ,
+        colour: 60, 
+        tooltip: 'Black Block for input parameters.',
+        helpUrl: '',
+    },
+
+    // ## black block for struct variables
+    {
+        type : 'structVariables_black',
+        message0: 'Black Block: %1 %2',
+        args0: [
+        {
+            type: 'field_input',
+            name: 'TYPE',
+            //text: 's'
+        },
+        {
+            type: 'field_input',
+            name: 'NAME',
+            //text: 's'
+        }
+        ],
+        previousStatement: [true, 'struct_variables'], 
+        nextStatement: [true, 'struct_variables'],
+        colour: 60, 
+        tooltip: 'Black Block for struct variables.',
+        helpUrl: '',
+    },
+
+    // ## black block for variables
+    {
+        type : 'variables_black_block',
+        message0: 'Black Block: %1',
+        args0: [
+        {
+            type: 'field_input',
+            name: 'VAR',
+            //text: 's'
+        }
+        ],
+        output: [true, "String_Output"], 
+        //nextStatement: (true, 'String_Output' ),
+        colour: 60, 
+        tooltip: 'Black Block for variables definition.',
+        helpUrl: '',
+    }
+
 ]);
 
 // # Solidity function blocks
