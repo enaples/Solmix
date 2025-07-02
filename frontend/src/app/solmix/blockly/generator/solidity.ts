@@ -1,5 +1,7 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
+import {getSolidityEvent} from "../blocks/dynamicEventBloks";
+//import {addEvent} from "../blocks/dynamicEventBloks";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
 
@@ -89,6 +91,19 @@ Object.keys(variableTypes).forEach((type: string) => {
         return [varName, Order.ATOMIC];
     };
 });
+
+solidityGenerator.forBlock["emit_event"] = function (block){
+  //block: Blockly.Block,
+  //generator: Blockly.Generator
+//): string {
+  const variableName = block.getFieldValue("VAR");
+  const event = getSolidityEvent(variableName);
+  const params = block.getFieldValue("PARAMS");
+  const code = event
+    ? `emit ${event.name}(${params});\n`
+    : "// emit event (undefined)\n";
+  return code;
+};
 
 // # import block code generator
 solidityGenerator.forBlock["import"] = function (block) {
@@ -198,6 +213,7 @@ solidityGenerator.forBlock["mapping"] = function (block) {
 solidityGenerator.forBlock["event"] = function (block, generator) {
     const params = generator.statementToCode(block, "PARAMS");
     const name = block.getFieldValue("NAME");
+    //addEvent(name); --> funziona, aggiorna l'array, ma ho poi introdotto l'aggiornamento con il listener perchè in questo modo andava a inserire nel Ddown ogni singola nuovca lettera;
     const code = "event " + name + "(" + params + ");\n";
     return code;
 };

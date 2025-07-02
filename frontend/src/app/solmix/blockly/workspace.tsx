@@ -6,12 +6,13 @@ import blocklyTheme from "./blocklyTheme";
 import "./blocks/blocks";
 import "./blocks/variable_dynamic_blocks";
 import { solidityGenerator } from "./generator/solidity";
+import { solidityGeneratorEvent } from "./blocks/dynamicEventBloks";
 import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
 import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
 import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
-
+import "./blocks/dynamicEventBloks";
 
 
 

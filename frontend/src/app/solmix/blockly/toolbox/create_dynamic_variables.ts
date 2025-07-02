@@ -51,7 +51,7 @@ export function createFlyoutEvent(
     xmlList.push({ kind: 'block', type: "func_inputs" });
 
     // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
-    //xmlList.push({ kind: 'block', type: "emit_event" });
+    xmlList.push({ kind: 'block', type: "emit_event" });
 
     return xmlList; 
 }
