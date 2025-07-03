@@ -8,6 +8,7 @@ export const solidityGeneratorEvent = new Blockly.Generator("Solidity");
 /**
  * Aggiunge un nuovo evento Solidity.
  */
+/*
 export function addEvent(name: string): void {
   if (!solidityEvents.some((item) => item.name === name)) {
     solidityEvents.push({ name });
@@ -17,10 +18,12 @@ export function addEvent(name: string): void {
     console.log("⚠️ Event already exists:", name);
   }
 }
+  */
 
 /**
  * Rimuove un evento dal dropdown.
  */
+/*
 export function removeEvent(name: string): void {
   const index = solidityEvents.findIndex((item) => item.name === name);
   if (index !== -1) {
@@ -29,17 +32,22 @@ export function removeEvent(name: string): void {
     console.log("🗑️ Event removed:", name);
   }
 }
+  */
 
 /**
  * Ritorna i dettagli di un evento per nome.
  */
+/*
 export function getSolidityEvent(name: string): { name: string } | undefined {
   return solidityEvents.find((variable) => variable.name === name);
 }
+  */
 
 /**
  * Aggiorna il dropdown di tutti i blocchi emit_event nel workspace.
  */
+
+/*
 function updateEventsDropdown(): void {
   const workspace = Blockly.getMainWorkspace();
   const EventNames = solidityEvents.map((v) => v.name);
@@ -59,21 +67,10 @@ function updateEventsDropdown(): void {
             // Imposta il valore selezionato
             newField.setValue(EventNames.includes(current) ? current : "");
         }
-      /*const menu = solidityEvents.length
-        ? solidityEvents.map((v) => [v.name, v.name] as [string, string])
-        : [["", ""]];
-      const field = block.getField("VAR");
-      if (field) {
-        // Aggiorna l'elenco delle opzioni
-        (field as Blockly.FieldDropdown).menuGenerator_ = menu;
-        // Aggiorna il valore selezionato se non più valido
-        const current = field.getValue();
-        field.setValue(eventNames.includes(current) ? current : "");
-      }
-        */
     }
   });
 }
+*/
 /*workspace.getAllBlocks().forEach(block => {
       if (block.type === 'variables_get_events') {
           const menu = solidityEvents.length ? solidityEvents.map(v => [v.name, v.name]) : [["", ""]];
@@ -87,7 +84,7 @@ function updateEventsDropdown(): void {
  */
 Blockly.Blocks["emit_event"] = {
   init(this: Blockly.Block): void {
-    this.appendDummyInput("DUMMY")
+    this.appendDummyInput("DUMMY") //SENZA "DUMMY" IL DROPDOWN NON SI AGGIORNA
       .appendField("emit")
       .appendField(
         new Blockly.FieldDropdown((): [string, string][] => {

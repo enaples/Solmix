@@ -1,6 +1,6 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
-import {getSolidityEvent} from "../blocks/dynamicEventBloks";
+import {getSolidityEvent} from "../dropdown/dropdown";
 //import {addEvent} from "../blocks/dynamicEventBloks";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
