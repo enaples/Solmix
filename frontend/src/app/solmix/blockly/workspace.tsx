@@ -13,6 +13,7 @@ import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
 import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
 import "./blocks/dynamicEventBloks";
+import {onBlockChange} from "../blockly/listeners/blockChangeListener";
 
 
 
@@ -72,6 +73,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
         };
 
         workspace.addChangeListener(onWorkspaceChange);
+        workspace.addChangeListener(onBlockChange);
 
         /*const createFlyoutMapping = function (){
         let xmlList = [];
