@@ -118,8 +118,6 @@ export function registerArrayFlyout(workspace: WorkspaceSvg): void {
 }
 
 
-
-
 export default function solidityTypesFlyoutCallback(
     workspace: WorkspaceSvg
 ): Element[] {
