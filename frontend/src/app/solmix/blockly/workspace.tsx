@@ -17,6 +17,7 @@ import "./blocks/dynamicMappingsBlocks";
 import "./blocks/dynamicModifiersBlocks";
 import "./blocks/dynamicStructsBlocks";
 import "./blocks/dynamicStructArraysBlocks";
+import "./blocks/dynamicArraysBlocks";
 import {onBlockChange} from "../blockly/listeners/blockChangeListener";
 
 

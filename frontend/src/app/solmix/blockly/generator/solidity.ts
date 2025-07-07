@@ -1,8 +1,8 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
-import {getSolidityEvent, getSolidityMapping} from "../dropdown/dropdown";
-import {solidityStructs, getSolidityStruct, structRegistry} from "../dropdown/dropdown";
-import { javascriptGenerator } from "blockly/javascript";
+import {getSolidityEvent, getSolidityMapping, getSolidityArray, getSolidityModifier} from "../dropdown/dropdown";
+import {getSolidityStruct, structRegistry} from "../dropdown/dropdown";
+//import { javascriptGenerator } from "blockly/javascript";
 
 //import {addEvent} from "../blocks/dynamicEventBloks";
 
@@ -211,7 +211,7 @@ solidityGenerator.forBlock["struct_push"] = function (
   return code;
 };
 
-javascriptGenerator.forBlock["new_struct"] = function (
+solidityGenerator.forBlock["new_struct"] = function (
   block: Blockly.Block
 ): [string, number] {
   const variableName = block.getFieldValue("VAR");
@@ -271,6 +271,98 @@ javascriptGenerator.forBlock["new_struct"] = function (
 
   return [code, Order.ASSIGNMENT];
 };
+
+solidityGenerator.forBlock["array_pop"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const code = `${myVar.name}.pop();\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_push"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const pushParam = block.getFieldValue("PARAMS1") || "0";
+
+  const code = `${myVar.name}.push(${pushParam});\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_push_S_A_B"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const pushParam = block.getFieldValue("PARAMS1") || "";
+
+  const code = `${myVar.name}.push("${pushParam}");\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_delete"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const index = block.getFieldValue("PARAMS1") || "0";
+
+  const code = `delete ${myVar.name}[${index}];\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["variables_get_modifiers"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityModifier(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: modifier '${variableName}' non trovato.`);
+    return `/* Errore: modifier '${variableName}' non trovato */\n`;
+  }
+
+  const params = generator.statementToCode(block, "PARAMS");
+  const parentBlock = block.getParent();
+
+  if (parentBlock && (parentBlock.type === "method" || parentBlock.type === "variables_get_modifiers")) {
+    const code = `${myVar.name}(${params}) `;
+    return code;
+  }
+
+  return "";
+};
+
+
+
 
 
 
@@ -922,6 +1014,25 @@ solidityGenerator.forBlock["assign_values_to_variable_array"] = function (
         " ];\n"
     );
 };
+
+solidityGenerator.forBlock["array_values"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const index = block.getFieldValue("PARAMS1") || "0";
+  const param2 = block.getFieldValue("PARAMS2") || "0";
+
+  const code = `${myVar.name}[${index}] = ${param2};\n`;
+  return code;
+};
+
 
 // String variable definition with assignment generator
 solidityGenerator.forBlock["define_variable_with_assignment1"] = function (
