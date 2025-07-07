@@ -32,7 +32,7 @@ export function createFlyoutModifier(
   xmlList.push({ kind: 'block', type: "modifier1" });
   xmlList.push({ kind: 'block', type: "require_condition" });
   xmlList.push({ kind: 'block', type: "func_inputs" });
-  //xmlList.push({ kind: 'block', type: "variables_get_modifiers" });  ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
+  xmlList.push({ kind: 'block', type: "variables_get_modifiers" });  // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
   return xmlList;
 }
 
@@ -100,12 +100,12 @@ export function createFlyoutArray (
     xmlList.push({ kind: 'block', type: "define_arrayVariable" });
 
     // ## da aggiungere dopo che ho creato i blocchi dinamici, getters e setters
-    //xmlList.push({ kind: 'block', type: "assign_values_to_variable_array" });
-    //xmlList.push({ kind: 'block', type: "array_values" });
-    //xmlList.push({ kind: 'block', type: "array_pop" });
-    //xmlList.push({ kind: 'block', type: "array_push" });
-    //xmlList.push({ kind: 'block', type: "array_push_S_A_B" });
-    //xmlList.push({ kind: 'block', type: "array_delete" });
+    xmlList.push({ kind: 'block', type: "assign_values_to_variable_array" });
+    xmlList.push({ kind: 'block', type: "array_values" });
+    xmlList.push({ kind: 'block', type: "array_pop" });
+    xmlList.push({ kind: 'block', type: "array_push" });
+    xmlList.push({ kind: 'block', type: "array_push_S_A_B" });
+    xmlList.push({ kind: 'block', type: "array_delete" });
    
   return xmlList;
 }
