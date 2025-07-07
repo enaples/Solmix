@@ -9,7 +9,7 @@ export function mappingFlyoutCallback(
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
     xmlList.push({ kind: "block", type: "mapping" });
-    //xmlList.push({ kind: "block", type: "getter_mappings" }); ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
+    xmlList.push({ kind: "block", type: "getter_mappings" }); //## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
 
      return xmlList;
 }

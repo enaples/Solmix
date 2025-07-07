@@ -1,6 +1,6 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
-import {getSolidityEvent} from "../dropdown/dropdown";
+import {getSolidityEvent, getSolidityMapping} from "../dropdown/dropdown";
 //import {addEvent} from "../blocks/dynamicEventBloks";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
@@ -102,6 +102,25 @@ solidityGenerator.forBlock["emit_event"] = function (block){
   const code = event
     ? `emit ${event.name}(${params});\n`
     : "// emit event (undefined)\n";
+  return code;
+};
+
+
+solidityGenerator.forBlock["getter_mappings"] = function(
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityMapping(variableName);
+
+  if (!myVar) {
+    throw new Error(`Mapping '${variableName}' non trovato in solidityMappings.`);
+  }
+
+  const param1 = block.getFieldValue("PARAMS1") || "";
+  const param2 = block.getFieldValue("PARAMS2") || "";
+
+  const code = `${myVar.name}[${param1}] = ${param2};\n`;
+
   return code;
 };
 

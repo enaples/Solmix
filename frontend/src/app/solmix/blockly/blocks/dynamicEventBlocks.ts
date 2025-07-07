@@ -1,14 +1,14 @@
 import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
-
+import {solidityEvents, updateEventsDropdown, solidityModifiers, solidityArrays, solidityStructs, solidityStructArrays} from "../dropdown/dropdown";
 // Questo array tiene traccia degli eventi Solidity
-const solidityEvents: { name: string }[] = [];
+//const solidityEvents: { name: string }[] = [];
 export const solidityGeneratorEvent = new Blockly.Generator("Solidity");
 
 /**
  * Aggiunge un nuovo evento Solidity.
  */
-/*
+
 export function addEvent(name: string): void {
   if (!solidityEvents.some((item) => item.name === name)) {
     solidityEvents.push({ name });
@@ -18,12 +18,11 @@ export function addEvent(name: string): void {
     console.log("⚠️ Event already exists:", name);
   }
 }
-  */
 
 /**
  * Rimuove un evento dal dropdown.
  */
-/*
+
 export function removeEvent(name: string): void {
   const index = solidityEvents.findIndex((item) => item.name === name);
   if (index !== -1) {
@@ -32,59 +31,13 @@ export function removeEvent(name: string): void {
     console.log("🗑️ Event removed:", name);
   }
 }
-  */
-
-/**
- * Ritorna i dettagli di un evento per nome.
- */
-/*
-export function getSolidityEvent(name: string): { name: string } | undefined {
-  return solidityEvents.find((variable) => variable.name === name);
-}
-  */
-
-/**
- * Aggiorna il dropdown di tutti i blocchi emit_event nel workspace.
- */
-
-/*
-function updateEventsDropdown(): void {
-  const workspace = Blockly.getMainWorkspace();
-  const EventNames = solidityEvents.map((v) => v.name);
-  workspace.getAllBlocks(false).forEach((block) => {
-    //if (block.type === "emit_event") {
-    if (block.type === 'variables_get_events') {
-        //const menu = solidityEvents.length ? solidityEvents.map(v => [v.name, v.name]) : [["", ""]];
-        const menu: [string, string][] = solidityEvents.length ? solidityEvents.map((v) => [v.name, v.name] as [string, string]) : [["", ""]];
-        const field = block.getField("VAR");
-        if (field && field instanceof Blockly.FieldDropdown){
-            // RICREA il dropdown con il nuovo menu
-            const current = field.getValue() ?? "";
-            const newField = new Blockly.FieldDropdown(menu);
-            block.getInput("DUMMY")?.removeField("VAR");
-            block.getInput("DUMMY")?.appendField(newField, "VAR");
-
-            // Imposta il valore selezionato
-            newField.setValue(EventNames.includes(current) ? current : "");
-        }
-    }
-  });
-}
-*/
-/*workspace.getAllBlocks().forEach(block => {
-      if (block.type === 'variables_get_events') {
-          const menu = solidityEvents.length ? solidityEvents.map(v => [v.name, v.name]) : [["", ""]];
-          block.getField("VAR").menuGenerator_ = menu;
-          block.getField("VAR").setValue(EventsNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");
-      }
-  });*/
 
 /**
  * Definizione del blocco emit_event.
  */
 Blockly.Blocks["emit_event"] = {
   init(this: Blockly.Block): void {
-    this.appendDummyInput("DUMMY") //SENZA "DUMMY" IL DROPDOWN NON SI AGGIORNA
+    this.appendDummyInput() //SENZA "DUMMY" IL DROPDOWN NON SI AGGIORNA
       .appendField("emit")
       .appendField(
         new Blockly.FieldDropdown((): [string, string][] => {

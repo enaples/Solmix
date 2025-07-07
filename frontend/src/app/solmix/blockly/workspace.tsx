@@ -6,15 +6,18 @@ import blocklyTheme from "./blocklyTheme";
 import "./blocks/blocks";
 import "./blocks/variable_dynamic_blocks";
 import { solidityGenerator } from "./generator/solidity";
-import { solidityGeneratorEvent } from "./blocks/dynamicEventBloks";
+import { solidityGeneratorEvent } from "./blocks/dynamicEventBlocks";
 import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
 import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
 import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
-import "./blocks/dynamicEventBloks";
+import "./blocks/dynamicEventBlocks";
+import "./blocks/dynamicMappingsBlocks";
+import "./blocks/dynamicModifiersBlocks";
+import "./blocks/dynamicStructsBlocks";
+import "./blocks/dynamicStructArraysBlocks";
 import {onBlockChange} from "../blockly/listeners/blockChangeListener";
-
 
 
 interface BlocklyEditorProps {
@@ -74,6 +77,9 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
 
         workspace.addChangeListener(onWorkspaceChange);
         workspace.addChangeListener(onBlockChange);
+        
+        
+
 
         /*const createFlyoutMapping = function (){
         let xmlList = [];
