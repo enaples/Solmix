@@ -12,7 +12,8 @@ export let solidityStructArrays: { name: string }[] = [];
 
 // Registry dei struct
 //export const structRegistry: Record<string, unknown> = {};
-export const structRegistry: Record<string, { name: string }[]> = {};
+//export const structRegistry: Record<string, { name: string }[]> = {};
+export const structRegistry: Record<string, { name: string; type: string }[]> = {};
 
 
 type SolidityDropdownType =

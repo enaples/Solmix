@@ -73,16 +73,14 @@ export function createFlyoutStruct (
 
     // ## da aggiungere dopo che ho creato i blocchi dinamici, getters e setters
 
-    // xmlList.push({ kind: 'block', type: "new_struct_value" });
-    //xmlList.push({ kind: 'block', type: "structs_array" });
-    //xmlList.push({ kind: 'block', type: "struct_push" });
-    //xmlList.push({ kind: 'block', type: "new_struct" });
+    xmlList.push({ kind: 'block', type: "new_struct_value" });
+    xmlList.push({ kind: 'block', type: "structs_array" });
+    xmlList.push({ kind: 'block', type: "struct_push" });
+    xmlList.push({ kind: 'block', type: "new_struct" });
 
 
     //questo blocco era già commentato nel js file
     //xmlList.push({ kind: 'block', type: "assign_values_to_struct" });
-    
-  
     
     return xmlList;
 }
