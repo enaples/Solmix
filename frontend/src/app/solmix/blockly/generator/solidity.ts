@@ -1,6 +1,9 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
 import {getSolidityEvent, getSolidityMapping} from "../dropdown/dropdown";
+import {solidityStructs, getSolidityStruct, structRegistry} from "../dropdown/dropdown";
+import { javascriptGenerator } from "blockly/javascript";
+
 //import {addEvent} from "../blocks/dynamicEventBloks";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
@@ -123,6 +126,155 @@ solidityGenerator.forBlock["getter_mappings"] = function(
 
   return code;
 };
+
+solidityGenerator.forBlock["new_struct_value"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar || !myVar.name || !structRegistry[myVar.name]) {
+    console.warn(
+      "❌ Struct non trovato o non definito:",
+      variableName,
+      myVar
+    );
+    return `/* Errore: struct ${variableName} non trovato */\n`;
+  }
+
+  const attribute = block.getFieldValue("ATTRIBUTE");
+  const value = block.getFieldValue("VALUE");
+
+  const attributes = structRegistry[myVar.name];
+  const selectedAttr = attributes.find((attr) => attr.name === attribute);
+
+  if (!selectedAttr) {
+    console.warn(
+      "❌ Attributo non trovato nello struct:",
+      attribute,
+      "in",
+      attributes
+    );
+    return `/* Errore: attributo ${attribute} non trovato nello struct ${myVar.name} */\n`;
+  }
+
+  const needsQuotes =
+    selectedAttr.type === "string" || selectedAttr.type === "address";
+
+  const code = `${myVar.name}.${attribute} = ${needsQuotes ? `"${value}"` : value};\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["structs_array"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const variableNameArray = block.getFieldValue("NAME");
+  const type3 = block.getFieldValue("TYPE3");
+
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar) {
+    console.warn(`❌ Struct '${variableName}' non trovato.`);
+    return `/* Errore: struct '${variableName}' non trovato */\n`;
+  }
+
+  const typesMap: Record<string, string> = {
+    TYPE_PUBLIC: "public",
+    TYPE_PRIVATE: "private",
+    TYPE_INTERNAL: "internal",
+    TYPE_EXTERNAL: "external"
+  };
+
+  const visibility = typesMap[type3] || "public";
+
+  const code = `${myVar.name}[] ${visibility} ${variableNameArray};\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["struct_push"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const arrayName = block.getFieldValue("VAR") || "";
+  const inputBlock = block.getInputTargetBlock("PARAMS1");
+
+  const pushParam =
+    generator.valueToCode(block, "PARAMS1", Order.ATOMIC) || "";
+
+  const isNewStruct = inputBlock && inputBlock.type === "new_struct";
+
+  const code = isNewStruct
+    ? `${arrayName}.push${pushParam};\n`
+    : `${arrayName}.push(${pushParam});\n`;
+
+  return code;
+};
+
+javascriptGenerator.forBlock["new_struct"] = function (
+  block: Blockly.Block
+): [string, number] {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar || !myVar.name || !structRegistry[myVar.name]) {
+    console.warn("❌ Errore: struct non trovata:", myVar);
+    return [`/* struct ${variableName} non trovata */`, Order.ATOMIC];
+  }
+
+  const attributes = structRegistry[myVar.name];
+  const values = block.data ? JSON.parse(block.data).values || {} : {};
+
+  // 🔹 Genera la stringa degli attributi per la sintassi { key: value }
+  const attributeString = attributes
+    .map((attr) => {
+      const value = values[attr.name];
+      const needsQuotes = attr.type === "string" || attr.type === "address";
+
+      if (value !== undefined && value !== null) {
+        return `${attr.name}: ${needsQuotes ? `"${value}"` : value}`;
+      } else {
+        return `${attr.name}: ${
+          needsQuotes ? `"/* ${attr.type} */"` : `/* ${attr.type} */`
+        }`;
+      }
+    })
+    .join(",\n ");
+
+  // 🔹 Genera la stringa dei valori per la sintassi (..., ...)
+  const attributeValue = attributes
+    .map((attr) => {
+      const value = values[attr.name];
+      const needsQuotes = attr.type === "string" || attr.type === "address";
+
+      if (value !== undefined && value !== null) {
+        return `${needsQuotes ? `"${value}"` : value}`;
+      } else {
+        return `${
+          needsQuotes
+            ? `"/* yourValue_${attr.type} */"`
+            : `/* yourValue_${attr.type} */`
+        }`;
+      }
+    })
+    .join(", ");
+
+  // 🔹 Verifica se il blocco è figlio di struct_push o assign_values_to_struct
+  const parent = block.getParent();
+  const inPush =
+    parent &&
+    (parent.type === "struct_push" || parent.type === "assign_values_to_struct");
+
+  const code = inPush
+    ? `${myVar.name}({\n ${attributeString}\n})`
+    : `${myVar.name}(${attributeValue})`;
+
+  return [code, Order.ASSIGNMENT];
+};
+
+
+
+
 
 // # import block code generator
 solidityGenerator.forBlock["import"] = function (block) {
