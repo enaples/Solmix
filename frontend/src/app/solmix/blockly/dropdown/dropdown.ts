@@ -3,12 +3,12 @@ import * as Blockly from "blockly";
 // ## Dichiarazione di tutti i tipi di arrays
 // Array di oggetti con il campo name
 //export let 
-let solidityModifiers: { name: string }[] = [];
-let solidityEvents: { name: string }[] = [];
-let solidityMappings: { name: string }[] = [];
-let solidityArrays: { name: string }[] = [];
-let solidityStructs: { name: string }[] = [];
-let solidityStructArrays: { name: string }[] = [];
+export let solidityModifiers: { name: string }[] = [];
+export let solidityEvents: { name: string }[] = [];
+export let solidityMappings: { name: string }[] = [];
+export let solidityArrays: { name: string }[] = [];
+export let solidityStructs: { name: string }[] = [];
+export let solidityStructArrays: { name: string }[] = [];
 
 // Registry dei struct
 //export const structRegistry: Record<string, unknown> = {};
@@ -174,26 +174,18 @@ export function updateEventsDropdown(): void {
   workspace.getAllBlocks(false).forEach((block: Blockly.Block) => {
     if (block.type === "emit_event") { //variables_get_events
       const menu: [string, string][] =
-        solidityEvents.length >= 0
+        solidityEvents.length
           ? solidityEvents.map((v) => [v.name, v.name])
           : [["", ""]];
-    
-        //block.getField("VAR").menuGenerator_ = menu;
-        //block.getField("VAR").setValue(eventNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");
-      //}
-
-      const input = block.getInput("DUMMY");
-      //block.getField("VAR");
-      if (input) {
-        // Rimuove e ricrea il dropdown per aggiornare il menu
-        //input.removeField("VAR");
-        const newDropdown = new Blockly.FieldDropdown(menu);
-        input.appendField(newDropdown, "VAR");
-        //input.setValue(input);
-
-        // Imposta il valore selezionato se valido
-        const current = newDropdown.getValue() ?? "";
-        newDropdown.setValue(eventNames.includes(current) ? current : "");
+      
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(eventNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
       }
     }
   });
@@ -204,6 +196,7 @@ export function getSolidityEvent(
 ): { name: string } | undefined {
   return solidityEvents.find((variable) => variable.name === name);
 }
+
 
 // Mapping
 export function updateMappingsDropdown(): void {
@@ -216,7 +209,18 @@ export function updateMappingsDropdown(): void {
         solidityMappings.length > 0
           ? solidityMappings.map((v) => [v.name, v.name])
           : [["", ""]];
+      
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(mappingNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
+      }
 
+      /*
       const input = block.getInput("DUMMY");
       if (input) {
         // Rimuove il vecchio campo
@@ -229,6 +233,8 @@ export function updateMappingsDropdown(): void {
         const current = newDropdown.getValue() ?? "";
         newDropdown.setValue(mappingNames.includes(current) ? current : "");
       }
+      */
+
     }
   });
 }
@@ -251,16 +257,15 @@ export function updateArraysDropdown(): void {
           ? solidityArrays.map((v) => [v.name, v.name])
           : [["", ""]];
 
-      const input = block.getInput("DUMMY");
-      if (input) {
-        // Rimuove il vecchio campo
-        input.removeField("VAR");
-        // Crea un nuovo dropdown aggiornato
-        const newDropdown = new Blockly.FieldDropdown(menu);
-        input.appendField(newDropdown, "VAR");
-
-        const current = newDropdown.getValue() ?? "";
-        newDropdown.setValue(arrayNames.includes(current) ? current : "");
+      
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(arrayNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
       }
     }
   });
@@ -288,15 +293,14 @@ export function updateStructsDropdown(): void {
           ? solidityStructs.map((v) => [v.name, v.name])
           : [["", ""]];
 
-      const input = block.getInput("DUMMY");
-      if (input) {
-        // Rimuovi e ricrea il dropdown
-        input.removeField("VAR");
-        const newDropdown = new Blockly.FieldDropdown(menu);
-        input.appendField(newDropdown, "VAR");
-
-        const current = newDropdown.getValue() ?? "";
-        newDropdown.setValue(structNames.includes(current) ? current : "");
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(structNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
       }
     }
   });
@@ -320,14 +324,14 @@ export function updateStructArraysDropdown(): void {
           ? solidityStructArrays.map((v) => [v.name, v.name])
           : [["", ""]];
 
-      const input = block.getInput("DUMMY");
-      if (input) {
-        input.removeField("VAR");
-        const newDropdown = new Blockly.FieldDropdown(menu);
-        input.appendField(newDropdown, "VAR");
-
-        const current = newDropdown.getValue() ?? "";
-        newDropdown.setValue(structArrayNames.includes(current) ? current : "");
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(structArrayNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
       }
     }
   });
@@ -351,16 +355,14 @@ export function updateModifiersDropdown(): void {
           ? solidityModifiers.map((v) => [v.name, v.name])
           : [["", ""]];
 
-      const input = block.getInput("DUMMY");
-      if (input) {
-        // Rimuove il vecchio campo
-        input.removeField("VAR");
-        // Crea un nuovo dropdown aggiornato
-        const newDropdown = new Blockly.FieldDropdown(menu);
-        input.appendField(newDropdown, "VAR");
-
-        const current = newDropdown.getValue() ?? "";
-        newDropdown.setValue(modifierNames.includes(current) ? current : "");
+      const dropdown = block.getField("VAR");
+      if (dropdown && "menuGenerator_" in dropdown) {
+        (dropdown as any).menuGenerator_ = menu;
+        //const current = dropdown.getValue() ?? "";
+        
+        dropdown.setValue(modifierNames.includes(block.getFieldValue("VAR")) ? block.getFieldValue("VAR") : "");//(eventNames.includes(current) ? current : "");
+        //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
+      
       }
     }
   });

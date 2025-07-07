@@ -143,7 +143,7 @@ interface BlockChangeEvent extends Blockly.Events.Abstract {
 }
 
 export function onBlockChange(event: Blockly.Events.Abstract): void {
-  if (event.type !== Blockly.Events.BLOCK_CHANGE) {
+  if (event.type !== Blockly.Events.BLOCK_CHANGE ) {
     return;
   }
 
@@ -195,6 +195,8 @@ export function onBlockChange(event: Blockly.Events.Abstract): void {
     console.log(`🔄 Attributi dello struct '${name}' aggiornati nel registry.`);
   }
 }
+
+
 
 
 /*
