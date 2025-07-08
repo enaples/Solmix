@@ -32,7 +32,8 @@ export function createFlyoutModifier(
   xmlList.push({ kind: 'block', type: "modifier1" });
   xmlList.push({ kind: 'block', type: "require_condition" });
   xmlList.push({ kind: 'block', type: "func_inputs" });
-  xmlList.push({ kind: 'block', type: "variables_get_modifiers" });  // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
+  xmlList.push({ kind: 'block', type: "variables_get_modifiers" });
+  xmlList.push({ kind: 'block', type: "input" })  // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
   return xmlList;
 }
 
@@ -231,3 +232,81 @@ export function solidityTypeFlyoutCategoryBlocks(
     }
     return xmlList;
 }
+
+// ## STRING VARIABLES
+
+export function createFlyoutString(workspace: WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+  // Bottone per creare una nuova variabile
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback',
+  } as Blockly.utils.toolbox.ButtonInfo);
+
+  // Blocchi da inserire nella categoria
+  const blockTypes = [
+    "variables_get_string",
+    "variables_set_string",
+    "variables_get_string_constants",
+    "variables_get_string_immutables",
+    "variables_get_s"
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+}
+
+export function registerStringFlyout(workspace: WorkspaceSvg): void {
+  workspace.registerToolboxCategoryCallback(
+    'NEW_STRING_VARIABLE',
+    createFlyoutString
+  );
+}
+
+// ## UINT VARIABLES
+export function createFlyoutUint(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+  // Bottone per creare una nuova variabile
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
+  });
+
+  const blockTypes = [
+    'address_this_balance',
+    'variables_get_uint',
+    'variables_set_uint',
+    'variables_get_uint_constants',
+    'variables_get_uint_immutables',
+    'variables_get_u',
+    'variables_get_uint256',
+    'variables_set_uint256',
+    'variables_get_uint256_constants',
+    'variables_get_uint256_immutables',
+    'variables_get_u256',
+    'variables_get_uint8',
+    'variables_set_uint8',
+    'variables_get_uint8_constants',
+    'variables_get_uint8_immutables',
+    'variables_get_u8',
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+}
+
+export function registerUintFlyout(workspace: Blockly.WorkspaceSvg): void {
+  workspace.registerToolboxCategoryCallback('NEW_UINT_VARIABLE', createFlyoutUint);
+}
+
+
