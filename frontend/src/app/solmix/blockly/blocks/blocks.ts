@@ -2734,7 +2734,7 @@ Blockly.defineBlocksWithJsonArray([
         helpUrl: "",
     },
 
-    // ## require condition merhod
+    // ## require condition method
     {
         type: "require_condition_method",
         message0: "Condition %1",

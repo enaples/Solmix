@@ -15,6 +15,52 @@ export let solidityStructArrays: { name: string }[] = [];
 //export const structRegistry: Record<string, { name: string }[]> = {};
 export const structRegistry: Record<string, { name: string; type: string }[]> = {};
 
+type SolidityAccess = 'public' | 'private' | 'internal' | 'external';
+
+interface SolidityVariable {
+  name: string;
+  type: string; // E.g., 'string', 'uint', etc.
+  access: SolidityAccess;
+  constant?: boolean;
+  immutable?: boolean;
+}
+
+export let solidityStringVariables: SolidityVariable[] = [];
+export let solidityStringConstantsVariables: SolidityVariable[] = [];
+export let solidityStringImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityUintVariables: SolidityVariable[] = [];
+export let solidityUintConstantsVariables: SolidityVariable[] = [];
+export let solidityUintImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityUint256Variables: SolidityVariable[] = [];
+export let solidityUint256ConstantsVariables: SolidityVariable[] = [];
+export let solidityUint256ImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityUint8Variables: SolidityVariable[] = [];
+export let solidityUint8ConstantsVariables: SolidityVariable[] = [];
+export let solidityUint8ImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityIntVariables: SolidityVariable[] = [];
+export let solidityIntConstantsVariables: SolidityVariable[] = [];
+export let solidityIntImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityAddressVariables: SolidityVariable[] = [];
+export let solidityAddressConstantsVariables: SolidityVariable[] = [];
+export let solidityAddressImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityBoolVariables: SolidityVariable[] = [];
+export let solidityBoolConstantsVariables: SolidityVariable[] = [];
+export let solidityBoolImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityBytesVariables: SolidityVariable[] = [];
+export let solidityBytesConstantsVariables: SolidityVariable[] = [];
+export let solidityBytesImmutablesVariables: SolidityVariable[] = [];
+
+export let solidityBytes32Variables: SolidityVariable[] = [];
+export let solidityBytes32ConstantsVariables: SolidityVariable[] = [];
+export let solidityBytes32ImmutablesVariables: SolidityVariable[] = [];
+
 
 type SolidityDropdownType =
   | "array"
@@ -167,6 +213,59 @@ export function alreadyInDropdown(name: string): boolean {
 
 
 // ## UpdateDropdown
+// String
+export function getSolidityStringVariable(name: string): SolidityVariable | undefined {
+  return solidityStringVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityStringConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityStringConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityStringImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityStringImmutablesVariables.find(variable => variable.name === name);
+}
+
+// Uint
+export function getSolidityUintVariable(name: string): SolidityVariable | undefined {
+  return solidityUintVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUintConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityUintConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUintImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityUintImmutablesVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint256Variable(name: string): SolidityVariable | undefined {
+  return solidityUint256Variables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint256ConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityUint256ConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint256ImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityUint256ImmutablesVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint8Variable(name: string): SolidityVariable | undefined {
+  return solidityUint8Variables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint8ConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityUint8ConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityUint8ImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityUint8ImmutablesVariables.find(variable => variable.name === name);
+}
+
+
+
+
 //Event 
 export function updateEventsDropdown(): void {
   const workspace = Blockly.getMainWorkspace();
