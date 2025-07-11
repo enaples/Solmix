@@ -309,4 +309,69 @@ export function registerUintFlyout(workspace: Blockly.WorkspaceSvg): void {
   workspace.registerToolboxCategoryCallback('NEW_UINT_VARIABLE', createFlyoutUint);
 }
 
+// ## INT VARIABLES
+export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
+   // Bottone per creare una nuova variabile
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
+  });
+
+  const blockTypes = [
+    'variables_get_int',
+    'variables_set_int',
+    'variables_get_int_constants',
+    'variables_get_int_immutables',
+    'variables_get_i',
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+  }
+
+  export function registerIntFlyout(workspace: Blockly.WorkspaceSvg): void {
+    workspace.registerToolboxCategoryCallback(
+      'NEW_INT_VARIABLE',
+      createFlyoutInt,
+    );
+  }
+
+  // ## ADDRESS VARIABLES
+  export function createFlyoutAddress(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
+  });
+
+  const blockTypes = [
+    'address_zero',
+    'address_this',
+    'variables_get_address',
+    'variables_set_address',
+    'variables_get_address_constants',
+    'variables_get_address_immutables',
+    'variables_get_a',
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+  }
+
+  export function registerAddressFlyout(workspace: Blockly.WorkspaceSvg): void {
+  workspace.registerToolboxCategoryCallback(
+    'NEW_ADDRESS_VARIABLE',
+    createFlyoutAddress,
+  );
+}
