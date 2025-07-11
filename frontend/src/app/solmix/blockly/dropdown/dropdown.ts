@@ -23,6 +23,7 @@ interface SolidityVariable {
   access: SolidityAccess;
   constant?: boolean;
   immutable?: boolean;
+  payable?: 'yes' | 'no'; //vedi se 'no' o 'doesn't matter'
 }
 
 export let solidityStringVariables: SolidityVariable[] = [];
@@ -262,6 +263,33 @@ export function getSolidityUint8ConstantsVariable(name: string): SolidityVariabl
 export function getSolidityUint8ImmutablesVariable(name: string): SolidityVariable | undefined {
   return solidityUint8ImmutablesVariables.find(variable => variable.name === name);
 }
+
+// Int
+export function getSolidityIntVariable(name: string): SolidityVariable | undefined {
+  return solidityIntVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityIntConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityIntConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityIntImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityIntImmutablesVariables.find(variable => variable.name === name);
+}
+
+// Address
+export function getSolidityAddressVariable(name: string): SolidityVariable | undefined {
+  return solidityAddressVariables.find((variable) => variable.name === name);
+}
+
+export function getSolidityAddressConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityAddressConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityAddressImmutablesVariable(name: string): SolidityVariable | undefined{
+  return solidityAddressImmutablesVariables.find(variable => variable.name === name);
+}
+
 
 
 

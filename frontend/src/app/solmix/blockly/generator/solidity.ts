@@ -2,6 +2,8 @@ import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
 import {getSolidityEvent, getSolidityMapping, getSolidityArray, getSolidityModifier} from "../dropdown/dropdown";
 import {getSolidityStringVariable, getSolidityStringConstantsVariable, getSolidityStringImmutablesVariable } from "../dropdown/dropdown";
+import {getSolidityIntVariable, getSolidityIntConstantsVariable, getSolidityIntImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityAddressVariable, getSolidityAddressConstantsVariable, getSolidityAddressImmutablesVariable} from "../dropdown/dropdown";
 import {getSolidityUintVariable, getSolidityUintConstantsVariable, getSolidityUintImmutablesVariable, getSolidityUint256Variable, getSolidityUint256ConstantsVariable, getSolidityUint256ImmutablesVariable, getSolidityUint8Variable, getSolidityUint8ConstantsVariable, getSolidityUint8ImmutablesVariable} from "../dropdown/dropdown";
 import {getSolidityStruct, structRegistry} from "../dropdown/dropdown";
 //import { javascriptGenerator } from "blockly/javascript";
@@ -1944,6 +1946,263 @@ solidityGenerator.forBlock['variables_get_u8'] = function(block) {
   const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
   return code;
 };
+
+// ## INT VARIABLES
+// ## variables_get_int
+solidityGenerator.forBlock['variables_get_int'] = function (block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    console.warn(`Variabile int '${variable_name}' non trovata.`);
+    return ['', Order.ATOMIC];
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (parentBlock.type === 'variables_set_int' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_int
+solidityGenerator.forBlock['variables_set_int'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_int_constants
+
+solidityGenerator.forBlock['variables_get_int_constants'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    code = variable_name; // fallback di sicurezza
+    return [code, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (
+      parentBlock.type === 'variables_set_int' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+solidityGenerator.forBlock['variables_get_int_immutables'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in solidityIntImmutablesVariables.`);
+    return ["undefined", Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment'
+    ) {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (
+      parentBlock.type === 'variables_set_int' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback per evitare errori TypeScript: anche se tutti i casi sono coperti, serve un return.
+  return ["", Order.ATOMIC];
+};
+
+// ## variables_get_i
+solidityGenerator.forBlock['variables_get_i'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntVariable(variable_name);
+
+  if (!myVar) {
+    throw new Error(`Variable '${variable_name}' not found in solidityIntVariables.`);
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+
+  return code;
+};
+
+// ADDRESS VARIABLES
+// ## variables_get_address
+solidityGenerator.forBlock['variables_get_address'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressVariable(variable_name);
+
+  if (!myVar) {
+    throw new Error(`Address variable '${variable_name}' not found.`);
+  }
+
+  const parentBlock = block.getParent();
+  let code;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = myVar.payable === 'yes'
+        ? `${myVar.type} payable ${myVar.access} ${myVar.name}`
+        : `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      return [myVar.name, Order.ATOMIC];
+    }
+  }
+
+  // Se non ha parent, genera getter
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_address
+solidityGenerator.forBlock['variables_set_address'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+  const myVar = getSolidityAddressVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  let code;
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in registry.`);
+    code = `/* undefined address variable: ${variable_name} */\n`;
+    return code;
+  }
+
+  if (!parentBlock) {
+    const payablePrefix = myVar.payable === 'yes' ? 'payable ' : '';
+    code =
+      `function set_${variable_name}(${payablePrefix}${myVar.type} _value) public {\n` +
+      `  ${variable_name} = _value;\n` +
+      `}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_address_constants
+solidityGenerator.forBlock['variables_get_address_constants'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code;
+
+  if (!myVar) {
+    console.warn(`Variabile costante address '${variable_name}' non trovata.`);
+    return [`/* undefined address constant: ${variable_name} */`, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback: per evitare errori se nessuna condizione è soddisfatta
+  return [`/* incomplete logic for: ${variable_name} */`, Order.ATOMIC];
+};
+
+// ## variables_get_address_immutables
+solidityGenerator.forBlock['variables_get_address_immutables'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressImmutablesVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variable ${variable_name} not found in address immutables.`);
+    return ['undefined', Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.FUNCTION_CALL];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback nel caso in cui nessuna condizione venga soddisfatta (evita TS error: missing return)
+  return ['undefined', Order.ATOMIC];
+};
+
+// ## variables_get_a
+solidityGenerator.forBlock['variables_get_a'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variabile address "${variable_name}" non trovata.`);
+    return ''; // oppure return '// Errore: variabile non trovata\n';
+  }
+
+  const payablePrefix = myVar.payable === 'yes' ? 'payable ' : '';
+  const code = `function get_${myVar.name}() public view returns (${payablePrefix}address) {\n  return ${myVar.name};\n}`;
+
+  return code;
+};
+
+
 
 
 
