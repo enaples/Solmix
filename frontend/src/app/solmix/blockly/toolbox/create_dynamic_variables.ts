@@ -375,3 +375,66 @@ export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.
     createFlyoutAddress,
   );
 }
+
+// ## BOOL VARIABLES
+export function createFlyoutBool(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+    // Bottone per creare una nuova variabile
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
+  });
+
+  const blockTypes = [
+    'variables_get_bool',
+    'variables_set_bool',
+    'variables_get_bool_constants',
+    'variables_get_bool_immutables',
+    'variables_get_b',
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+}
+
+export function registerBoolFlyout(workspace: Blockly.WorkspaceSvg): void {
+  workspace.registerToolboxCategoryCallback(
+    'NEW_BOOL_VARIABLE',
+    createFlyoutBool,
+  );
+}
+
+// ## BYTES VARIABLES
+export function createFlyoutBytes(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+  const blockTypes = [
+    'variables_get_bytes',
+    'variables_set_bytes',
+    'variables_get_bytes_constants',
+    'variables_get_bytes_immutables',
+    'variables_get_by',
+    'variables_get_bytes32',
+    'variables_set_bytes32',
+    'variables_get_bytes32_constants',
+    'variables_get_bytes32_immutables',
+    'variables_get_by32',
+  ];
+
+  blockTypes.forEach(type => {
+    xmlList.push({ kind: 'block', type });
+  });
+
+  return xmlList;
+}
+  export function registerByteslFlyout(workspace: Blockly.WorkspaceSvg): void {
+  workspace.registerToolboxCategoryCallback(
+    'NEW_BYTES_VARIABLE',
+    createFlyoutBytes,
+  );
+}

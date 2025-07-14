@@ -12,7 +12,7 @@ import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
 import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
-import { registerStringFlyout, registerUintFlyout, registerIntFlyout, registerAddressFlyout} from "./toolbox/create_dynamic_variables";
+import { registerStringFlyout, registerUintFlyout, registerIntFlyout, registerAddressFlyout, registerBoolFlyout, registerByteslFlyout} from "./toolbox/create_dynamic_variables";
 import "./blocks/dynamicEventBlocks";
 import "./blocks/dynamicMappingsBlocks";
 import "./blocks/dynamicModifiersBlocks";
@@ -23,6 +23,8 @@ import "./blocks/variables_dynamic_string";
 import "./blocks/variables_dynamic_uint";
 import "./blocks/variables_dynamic_int";
 import "./blocks/variables_dynamic_address";
+import "./blocks/variables_dynamic_bool";
+import "./blocks/variables_dynamic_bytes";
 import {onBlockChange} from "../blockly/listeners/blockChangeListener";
 
 
@@ -73,6 +75,8 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
         registerUintFlyout(workspace);
         registerIntFlyout(workspace);
         registerAddressFlyout(workspace);
+        registerBoolFlyout(workspace);
+        registerByteslFlyout(workspace);
 
         workspaceRef.current = workspace;
 

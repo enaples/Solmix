@@ -290,6 +290,53 @@ export function getSolidityAddressImmutablesVariable(name: string): SolidityVari
   return solidityAddressImmutablesVariables.find(variable => variable.name === name);
 }
 
+// Boolean
+export function getSolidityBoolVariable(name: string): SolidityVariable | undefined {
+  return solidityBoolVariables.find((variable) => variable.name === name);
+}
+
+export function getSolidityBoolConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityBoolConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityBoolImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityBoolImmutablesVariables.find(
+    (variable: SolidityVariable) => variable.name === name
+  );
+}
+
+// Bytes - Bytes32
+export function getSolidityBytesVariable(name: string): SolidityVariable | undefined {
+  return solidityBytesVariables.find((variable: SolidityVariable) => variable.name === name);
+}
+
+export function getSolidityBytesConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityBytesConstantsVariables.find((variable: SolidityVariable) => variable.name === name);
+}
+
+export function getSolidityBytesImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityBytesImmutablesVariables.find(
+    (variable: SolidityVariable) => variable.name === name
+  );
+}
+
+export function getSolidityBytes32Variable(name: string): SolidityVariable | undefined {
+  return solidityBytes32Variables.find(variable => variable.name === name);
+}
+
+export function getSolidityBytes32ConstantsVariable(name: string): SolidityVariable | undefined {
+  return solidityBytes32ConstantsVariables.find(variable => variable.name === name);
+}
+
+export function getSolidityBytes32ImmutablesVariable(name: string): SolidityVariable | undefined {
+  return solidityBytes32ImmutablesVariables.find(variable => variable.name === name);
+}
+
+
+
+
+
+
 
 
 
