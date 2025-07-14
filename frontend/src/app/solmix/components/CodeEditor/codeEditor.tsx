@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
+import {commentSmartContract, explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
 
 interface CodeViewerProps {
     code: string;
@@ -14,6 +14,7 @@ interface CodeViewerProps {
     showCopyButton?: boolean;
     showDownloadButton?: boolean;
     showExplainCodeButton?: boolean;
+    showExplainSCButton?: boolean;
     showHeader?: boolean;
     placeholder?: string;
     readOnly?: boolean;
@@ -25,19 +26,21 @@ interface CodeViewerProps {
 const CodeViewer: React.FC<CodeViewerProps> = ({
     code,
     language = "solidity",
-    title = "Generated Code",
+    title = "",
     className = "",
     style = {},
     showLineNumbers = true,
     showCopyButton = true,
     showDownloadButton = true,
     showExplainCodeButton = true,
+    showExplainSCButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
     readOnly = true,
     maxHeight = "600px",
     onCodeChange,
     fileName = "contract.sol",
+    fileNameExplanation = "smartcontract_description.txt",
 }) => {
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -107,15 +110,32 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         URL.revokeObjectURL(url);
     }, [code, fileName]);
 
-    // Download code as file
-    const handleExplanation = useCallback(async () => {
-        // todo: edit code section annotating the code using a llm
+    // explain code in editor
+    const handleCodeComments = useCallback(async () => {
         if (!code || code.trim() === "") return;
 
-        let codeExplanation = explainSmartContract(code);
+        let codeExplanation = commentSmartContract(code);
         let newcode = await codeExplanation;
         handleCodeEdit(newcode);
     }, [code]);
+
+    // Download smart contract description
+    const handleSCExplanation = useCallback(async () => {
+        if (!code || code.trim() === "") return;
+
+        let codeExplanation = await explainSmartContract(code);
+
+        const blob = new Blob([codeExplanation], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileNameExplanation;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+    }, [code, fileNameExplanation]);
 
     // Handle code editing
     const handleCodeEdit = useCallback(
@@ -208,12 +228,23 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
 
                         {showExplainCodeButton && (
                             <button
-                                onClick={handleExplanation}
+                                onClick={handleCodeComments}
                                 disabled={stats.isEmpty}
                                 className="px-3 py-1 text-xs bg-orange-400 text-white rounded hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 title="Download as file"
                             >
-                                Explain code
+                                Comment
+                            </button>
+                        )}
+
+                        {showExplainCodeButton && (
+                            <button
+                                onClick={handleSCExplanation}
+                                disabled={stats.isEmpty}
+                                className="px-3 py-1 text-xs bg-blue-400 text-white rounded hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                title="Download as file"
+                            >
+                                Explain
                             </button>
                         )}
                     </div>
