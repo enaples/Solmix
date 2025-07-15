@@ -2,6 +2,8 @@ import type { FlyoutButton, Workspace } from "blockly";
 import { WorkspaceSvg, Variables, VariableModel } from "blockly";
 import { variableTypes } from "../blocks/variable_types";
 import * as Blockly from "blockly";
+import { addSolidityVariable } from "../addSolidityType/addSolidityType";
+import { SolidityAccess } from "../dropdown/dropdown";
 
 export function mappingFlyoutCallback(
   workspace: WorkspaceSvg
@@ -437,4 +439,33 @@ export function createFlyoutBytes(workspace: Blockly.WorkspaceSvg): Blockly.util
     'NEW_BYTES_VARIABLE',
     createFlyoutBytes,
   );
+}
+
+
+export function createGetterSetterBlocks(
+  variableName: string,
+  variableType: string,
+  variableAccess: SolidityAccess,
+  payable_: 'yes' | "doesn't matter",
+  //payable_: string,
+  varConstant: string,
+  varImmutable: string,
+  workspace: Blockly.WorkspaceSvg
+): void {
+  const supportedTypes = [
+    'string', 'uint', 'uint256', 'uint8', 'int',
+    'bool', 'address', 'bytes', 'bytes32',
+  ];
+
+  if (!supportedTypes.includes(variableType)) {
+    console.warn(`Tipo ${variableType} non supportato.`);
+    return;
+  }
+
+  // Aggiungi la variabile alle strutture interne e genera i blocchi
+  addSolidityVariable(variableName, variableType, variableAccess, payable_, varConstant, varImmutable);
+
+  // Aggiungi la variabile al workspace
+  workspace.createVariable(variableName, variableType);
+  console.log("workspace.createvariable eseguita");
 }

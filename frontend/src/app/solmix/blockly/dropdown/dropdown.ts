@@ -15,15 +15,15 @@ export let solidityStructArrays: { name: string }[] = [];
 //export const structRegistry: Record<string, { name: string }[]> = {};
 export const structRegistry: Record<string, { name: string; type: string }[]> = {};
 
-type SolidityAccess = 'public' | 'private' | 'internal' | 'external';
+export type SolidityAccess = 'public' | 'private' | 'internal' | 'external';
 
-interface SolidityVariable {
+export interface SolidityVariable {
   name: string;
   type: string; // E.g., 'string', 'uint', etc.
   access: SolidityAccess;
   constant?: boolean;
   immutable?: boolean;
-  payable?: 'yes' | 'no'; //vedi se 'no' o 'doesn't matter'
+  payable?: 'yes' | "doesn't matter"; //vedi se 'no' o 'doesn't matter'
 }
 
 export let solidityStringVariables: SolidityVariable[] = [];
