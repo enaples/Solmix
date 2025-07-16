@@ -219,7 +219,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
                     </select>
 
                     <label>Immutable:</label>
-                    <select id="payable" className="w-full border p-1 mb-4">
+                    <select id="immutable" className="w-full border p-1 mb-4">
                         <option value="doesn't matter">not</option>
                         <option value="yes">yes</option>
                     </select>

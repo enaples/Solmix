@@ -119,13 +119,17 @@ export function addSolidityVariable(
   }
 
   const variable: SolidityVariable = { name, type, access, payable, constant: varConstant === 'yes',
-    immutable: varImmutable === 'yes', };
+    immutable: varImmutable === 'yes' };
 
   // Costanti
   if (varConstant === "yes") {
+    console.log("🔄 CONSTANTS STRING UPDATE:", solidityStringImmutablesVariables);
+
     if (!registry.constants.some(v => v.name === name)) {
       registry.constants.push(variable);
       registry.updateConstants();
+      console.log("🔄 CONSTANTS STRING UPDATE:", solidityStringImmutablesVariables);
+
     } else {
       console.log("⚠️ Constant Variable already exists:", name);
     }
@@ -133,9 +137,13 @@ export function addSolidityVariable(
 
   // Immutabili
   if (varImmutable === "yes") {
+    console.log("🔄 IMMUTABLES STRING UPDATE:", solidityStringImmutablesVariables);
+
     if (!registry.immutables.some(v => v.name === name)) {
       registry.immutables.push(variable);
       registry.updateImmutables();
+      console.log("🔄 IMMUTABLES STRING UPDATE:", solidityStringImmutablesVariables);
+
     } else {
       console.log("⚠️ Immutable Variable already exists:", name);
     }

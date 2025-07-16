@@ -401,6 +401,48 @@ solidityGenerator.forBlock["structure"] = function (block, generator) {
     return code;
 };
 
+function generateStatements(block: Blockly.Block, inputName: string, generator: any): string {
+  let code = "";
+  let currentBlock = block.getInputTargetBlock(inputName);
+
+  while (currentBlock) {
+    code += generator.blockToCode(currentBlock);
+    currentBlock = currentBlock.getNextBlock();
+  }
+
+  return code;
+}
+
+solidityGenerator.forBlock["contract"] = function (block, generator) {
+  const variables = generateStatements(block, "VARIABLES", generator);
+  const structures = generateStatements(block, "STRUCTS", generator);
+  const mappings = generateStatements(block, "MAPPINGS", generator);
+  const events = generateStatements(block, "EVENTS", generator);
+  const arrays = generateStatements(block, "ARRAYS", generator);
+  const constructor = generateStatements(block, "CONSTRUCTOR", generator);
+  const modifiers = generateStatements(block, "MODIFIERS", generator);
+  const methods = generateStatements(block, "METHODS", generator);
+  const is_ = block.getFieldValue("IS");
+
+  const code =
+    `contract ${block.getFieldValue("NAME")}` +
+    (is_ ? ` is ${is_}` : "") +
+    ` {\n` +
+    variables +
+    structures +
+    mappings +
+    events +
+    arrays +
+    constructor +
+    modifiers +
+    methods +
+    `}\n`;
+
+  return code;
+};
+
+
+/*
 // # Code generator for contract
 solidityGenerator.forBlock["contract"] = function (block, generator) {
     const variables = generator.statementToCode(block, "VARIABLES") || "";
@@ -415,25 +457,42 @@ solidityGenerator.forBlock["contract"] = function (block, generator) {
     //const ctor = generator.statementToCode(block, 'CTOR');
 
     const methods = generator.statementToCode(block, "METHODS");
-    const code = //'pragma solidity ^0.8.2;\n\n'
-        //+ imports + ' \n'
-        "contract " +
-        block.getFieldValue("NAME") +
-        " is " +
-        is_ +
-        " {\n" + //credo che posso usare il 'getFieldValue' come proprietà del blocco
-        variables + //states
-        structures +
-        mappings +
-        events +
-        arrays +
-        constructor +
-        modifiers +
-        methods +
-        "}\n";
+    
+   var code;
+  if (is_ !== "") {
+  code = //'pragma solidity ^0.8.2;\n\n'
+    //+ imports + ' \n'
+    'contract ' + block.getFieldValue('NAME') + ' is ' + is_ +' {\n' //credo che posso usare il 'getFieldValue' come proprietà del blocco
+    + variables //states
+    + structures
+    + mappings
+    + events
+    + arrays
+    + constructor
+    + modifiers
+    + methods
+    + '}\n';
+  } else {
+    code = 'contract ' + block.getFieldValue('NAME') + ' {\n' //credo che posso usare il 'getFieldValue' come proprietà del blocco
+    + variables //states
+    + structures
+    + mappings
+    + events
+    + arrays
+    + constructor
+    + modifiers
+    + methods
+    + '}\n';
 
-    return code;
+  }
+
+   // + "  function () { throw; }\n"
+    //+ ctor
+    
+
+  return code;
 };
+*/
 
 // # Code generator for array
 solidityGenerator.forBlock["array"] = function (block) {
@@ -1419,7 +1478,7 @@ solidityGenerator.forBlock['variables_get_string'] = function(block): [string, n
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_string' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -1472,7 +1531,7 @@ solidityGenerator.forBlock['variables_get_string_constants'] = function (
     switch (parentBlock.type) {
       case 'define_variable_with_assignment1':
         code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-        return [code, Order.FUNCTION_CALL];
+        return [code, Order.ATOMIC];
 
       case 'variables_set_string':
       case 'require_condition':
@@ -1497,7 +1556,7 @@ solidityGenerator.forBlock['variables_get_string_immutables'] = function (block:
     if (parentBlock) {
       if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
         code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-        return [code, Order.FUNCTION_CALL]; // Presupponendo che tu abbia definito Order.FUNCTION_CALL
+        return [code, Order.ATOMIC]; // Presupponendo che tu abbia definito Order.FUNCTION_CALL
       } else if (parentBlock.type === 'variables_set_string' || parentBlock.type === 'require_condition') {
         code = myVar.name;
         return [code, Order.ATOMIC];
@@ -1546,7 +1605,7 @@ solidityGenerator.forBlock['variables_get_uint'] = function (block, generator) {
       parentBlock.type === 'define_variable_with_assignment'
     ) {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint' ||
       parentBlock.type === 'require_condition'
@@ -1605,7 +1664,7 @@ solidityGenerator.forBlock['variables_get_uint_constants'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint' ||
       parentBlock.type === 'require_condition'
@@ -1640,7 +1699,7 @@ solidityGenerator.forBlock['variables_get_uint_immutables'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint' ||
       parentBlock.type === 'require_condition'
@@ -1696,7 +1755,7 @@ solidityGenerator.forBlock['variables_get_uint256'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_uint256' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -1751,7 +1810,7 @@ solidityGenerator.forBlock['variables_get_uint256_constants'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint256' ||
       parentBlock.type === 'require_condition'
@@ -1785,7 +1844,7 @@ solidityGenerator.forBlock['variables_get_uint256_immutables'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint256' ||
       parentBlock.type === 'require_condition'
@@ -1838,7 +1897,7 @@ solidityGenerator.forBlock['variables_get_uint8'] = function (
       parentBlock.type === 'define_variable_with_assignment'
     ) {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_uint8' ||
       parentBlock.type === 'require_condition'
@@ -1886,7 +1945,7 @@ solidityGenerator.forBlock['variables_get_uint8_constants'] = function (
     if (parentBlock) {
       if (parentBlock.type === 'define_variable_with_assignment') {
         code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-        return [code, Order.FUNCTION_CALL];
+        return [code, Order.ATOMIC];
       } else if (
         parentBlock.type === 'variables_set_uint8' ||
         parentBlock.type === 'require_condition'
@@ -1919,7 +1978,7 @@ solidityGenerator.forBlock['variables_get_uint8_immutables'] = function (
         parentBlock.type === 'define_variable_with_assignment'
       ) {
         const code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-        return [code, Order.FUNCTION_CALL];
+        return [code, Order.ATOMIC];
       } else if (
         parentBlock.type === 'variables_set_uint8' ||
         parentBlock.type === 'require_condition'
@@ -1968,7 +2027,7 @@ solidityGenerator.forBlock['variables_get_int'] = function (block) {
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_int' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -2012,7 +2071,7 @@ solidityGenerator.forBlock['variables_get_int_constants'] = function (block, gen
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_int' ||
       parentBlock.type === 'require_condition'
@@ -2043,7 +2102,7 @@ solidityGenerator.forBlock['variables_get_int_immutables'] = function (block, ge
       parentBlock.type === 'define_variable_with_assignment'
     ) {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_int' ||
       parentBlock.type === 'require_condition'
@@ -2092,7 +2151,7 @@ solidityGenerator.forBlock['variables_get_address'] = function (block, generator
       code = myVar.payable === 'yes'
         ? `${myVar.type} payable ${myVar.access} ${myVar.name}`
         : `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
       return [myVar.name, Order.ATOMIC];
     }
@@ -2146,7 +2205,7 @@ solidityGenerator.forBlock['variables_get_address_constants'] = function(block) 
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -2176,7 +2235,7 @@ solidityGenerator.forBlock['variables_get_address_immutables'] = function(block)
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -2223,7 +2282,7 @@ solidityGenerator.forBlock['variables_get_bool'] = function (block: Blockly.Bloc
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_bool' || parentBlock.type === 'require_condition') {
       return [myVar.name, Order.ATOMIC];
     }
@@ -2268,7 +2327,7 @@ solidityGenerator.forBlock['variables_get_bool_constants'] = function (block: Bl
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_bool' ||
       parentBlock.type === 'require_condition'
@@ -2302,7 +2361,7 @@ solidityGenerator.forBlock['variables_get_bool_immutables'] = function (
       parentBlock.type === 'define_variable_with_assignment'
     ) {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_bool' ||
       parentBlock.type === 'require_condition'
@@ -2350,7 +2409,7 @@ solidityGenerator.forBlock['variables_get_bytes'] = function (block: Blockly.Blo
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_bytes' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
@@ -2403,7 +2462,7 @@ solidityGenerator.forBlock['variables_get_bytes_constants'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_bytes' ||
       parentBlock.type === 'require_condition'
@@ -2436,7 +2495,7 @@ solidityGenerator.forBlock['variables_get_bytes_immutables'] = function (
       case 'define_variable':
       case 'define_variable_with_assignment1':
         code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-        return [code, Order.FUNCTION_CALL];
+        return [code, Order.ATOMIC];
       case 'variables_set_bytes':
       case 'require_condition':
         code = myVar.name;
@@ -2480,7 +2539,7 @@ solidityGenerator.forBlock['variables_get_bytes32'] = function(block: Blockly.Bl
       parentBlock.type === 'define_variable_with_assignment1'
     ) {
       code = `${myVar.type} ${myVar.access} ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_bytes32' ||
       parentBlock.type === 'require_condition'
@@ -2534,7 +2593,7 @@ solidityGenerator.forBlock['variables_get_bytes32_constants'] = function (
   if (parentBlock) {
     if (parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (
       parentBlock.type === 'variables_set_bytes32' ||
       parentBlock.type === 'require_condition'
@@ -2564,7 +2623,7 @@ solidityGenerator.forBlock['variables_get_bytes32_immutables'] = function (block
   if (parentBlock) {
     if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
       code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
-      return [code, Order.FUNCTION_CALL];
+      return [code, Order.ATOMIC];
     } else if (parentBlock.type === 'variables_set_bytes32' || parentBlock.type === 'require_condition') {
       code = myVar.name;
       return [code, Order.ATOMIC];
