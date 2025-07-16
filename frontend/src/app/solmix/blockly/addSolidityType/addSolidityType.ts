@@ -38,38 +38,6 @@ const registryMap: Record<string, RegistrySet> = {
     updateConstants: updateVariableDropdownStringConstants,
     updateImmutables: updateVariableDropdownStringImmutables,
   },
-  /*uint: {
-    base: solidityUintVariables,
-    constants: solidityUintConstantsVariables,
-    immutables: solidityUintImmutablesVariables,
-    updateBase: updateVariableDropdownUint,
-    updateConstants: updateVariableDropdownUintConstants,
-    updateImmutables: updateVariableDropdownUintImmutables,
-  },
-  uint256: {
-    base: solidityUint256Variables,
-    constants: solidityUint256ConstantsVariables,
-    immutables: solidityUint256ImmutablesVariables,
-    updateBase: updateVariableDropdownUint256,
-    updateConstants: updateVariableDropdownUint256Constants,
-    updateImmutables: updateVariableDropdownUint256Immutables,
-  },
-  uint8: {
-    base: solidityUint8Variables,
-    constants: solidityUint8ConstantsVariables,
-    immutables: solidityUint8ImmutablesVariables,
-    updateBase: updateVariableDropdownUint8,
-    updateConstants: updateVariableDropdownUint8Constants,
-    updateImmutables: updateVariableDropdownUint8Immutables,
-  },
-  int: {
-    base: solidityIntVariables,
-    constants: solidityIntConstantsVariables,
-    immutables: solidityIntImmutablesVariables,
-    updateBase: updateVariableDropdownInt,
-    updateConstants: updateVariableDropdownIntConstants,
-    updateImmutables: updateVariableDropdownIntImmutables,
-  },
   address: {
     base: solidityAddressVariables,
     constants: solidityAddressConstantsVariables,
@@ -78,6 +46,42 @@ const registryMap: Record<string, RegistrySet> = {
     updateConstants: updateVariableDropdownAddressConstants,
     updateImmutables: updateVariableDropdownAddressImmutables,
   },
+  uint: {
+    base: solidityUintVariables,
+    constants: solidityUintConstantsVariables,
+    immutables: solidityUintImmutablesVariables,
+    updateBase: updateVariableDropdownUint,
+    updateConstants: updateVariableDropdownUintConstants,
+    updateImmutables: updateVariableDropdownUintImmutables,
+  },
+  
+  uint256: {
+    base: solidityUint256Variables,
+    constants: solidityUint256ConstantsVariables,
+    immutables: solidityUint256ImmutablesVariables,
+    updateBase: updateVariableDropdownUint256,
+    updateConstants: updateVariableDropdownUint256Constants,
+    updateImmutables: updateVariableDropdownUint256Immutables,
+  },
+  
+  uint8: {
+    base: solidityUint8Variables,
+    constants: solidityUint8ConstantsVariables,
+    immutables: solidityUint8ImmutablesVariables,
+    updateBase: updateVariableDropdownUint8,
+    updateConstants: updateVariableDropdownUint8Constants,
+    updateImmutables: updateVariableDropdownUint8Immutables,
+  },
+  
+  int: {
+    base: solidityIntVariables,
+    constants: solidityIntConstantsVariables,
+    immutables: solidityIntImmutablesVariables,
+    updateBase: updateVariableDropdownInt,
+    updateConstants: updateVariableDropdownIntConstants,
+    updateImmutables: updateVariableDropdownIntImmutables,
+  },
+  
   bool: {
     base: solidityBoolVariables,
     constants: solidityBoolConstantsVariables,
@@ -86,6 +90,7 @@ const registryMap: Record<string, RegistrySet> = {
     updateConstants: updateVariableDropdownBoolConstants,
     updateImmutables: updateVariableDropdownBoolImmutables,
   },
+  
   bytes: {
     base: solidityBytesVariables,
     constants: solidityBytesConstantsVariables,
@@ -101,7 +106,7 @@ const registryMap: Record<string, RegistrySet> = {
     updateBase: updateVariableDropdownBytes32,
     updateConstants: updateVariableDropdownBytes32Constants,
     updateImmutables: updateVariableDropdownBytes32Immutables,
-  },*/
+  },
 };
 
 export function addSolidityVariable(
@@ -205,4 +210,202 @@ export function updateVariableDropdownStringImmutables() {
   );
 }
 
+// Funzioni specifiche per il tipo address
+export function updateVariableDropdownAddress() {
+  updateVariableDropdownByType(
+    ['variables_get_address', 'variables_set_address'],
+    solidityAddressVariables,
+    ['variables_get_address', 'variables_set_address']
+  );
+}
 
+export function updateVariableDropdownAddressConstants() {
+  updateVariableDropdownByType(
+    ['variables_get_address_constants'],
+    solidityAddressConstantsVariables,
+    ['variables_get_address_constants']
+  );
+}
+
+export function updateVariableDropdownAddressImmutables() {
+  updateVariableDropdownByType(
+    ['variables_get_address_immutables'],
+    solidityAddressImmutablesVariables,
+    ['variables_get_address_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo uint
+export function updateVariableDropdownUint() {
+  updateVariableDropdownByType(
+    ['variables_get_uint', 'variables_set_uint'],
+    solidityUintVariables,
+    ['variables_get_uint', 'variables_set_uint']
+  );
+}
+
+export function updateVariableDropdownUintConstants() {
+  updateVariableDropdownByType(
+    ['variables_get_uint_constants'],
+    solidityUintConstantsVariables,
+    ['variables_get_uint_constants']
+  );
+}
+
+export function updateVariableDropdownUintImmutables() {
+  updateVariableDropdownByType(
+    ['variables_get_uint_immutables'],
+    solidityUintImmutablesVariables,
+    ['variables_get_uint_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo uint256
+export function updateVariableDropdownUint256() {
+  updateVariableDropdownByType(
+    ['variables_get_uint256', 'variables_set_uint256'],
+    solidityUint256Variables,
+    ['variables_get_uint256', 'variables_set_uint256']
+  );
+}
+
+export function updateVariableDropdownUint256Constants() {
+  updateVariableDropdownByType(
+    ['variables_get_uint256_constants'],
+    solidityUint256ConstantsVariables,
+    ['variables_get_uint256_constants']
+  );
+}
+
+export function updateVariableDropdownUint256Immutables() {
+  updateVariableDropdownByType(
+    ['variables_get_uint256_immutables'],
+    solidityUint256ImmutablesVariables,
+    ['variables_get_uint256_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo uint8
+export function updateVariableDropdownUint8() {
+  updateVariableDropdownByType(
+    ['variables_get_uint8', 'variables_set_uint8'],
+    solidityUint8Variables,
+    ['variables_get_uint8', 'variables_set_uint8']
+  );
+}
+
+export function updateVariableDropdownUint8Constants() {
+  updateVariableDropdownByType(
+    ['variables_get_uint8_constants'],
+    solidityUint8ConstantsVariables,
+    ['variables_get_uint8_constants']
+  );
+}
+
+export function updateVariableDropdownUint8Immutables() {
+  updateVariableDropdownByType(
+    ['variables_get_uint8_immutables'],
+    solidityUint8ImmutablesVariables,
+    ['variables_get_uint8_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo Int
+export function updateVariableDropdownInt() {
+  updateVariableDropdownByType(
+    ['variables_get_int', 'variables_set_int'],
+    solidityIntVariables,
+    ['variables_get_int', 'variables_set_int']
+  );
+}
+
+export function updateVariableDropdownIntConstants() {
+  updateVariableDropdownByType(
+    ['variables_get_int_constants'],
+    solidityIntConstantsVariables,
+    ['variables_get_int_constants']
+  );
+}
+
+export function updateVariableDropdownIntImmutables() {
+  updateVariableDropdownByType(
+    ['variables_get_int_immutables'],
+    solidityIntImmutablesVariables,
+    ['variables_get_int_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo Bool
+export function updateVariableDropdownBool() {
+  updateVariableDropdownByType(
+    ['variables_get_bool', 'variables_set_bool'],
+    solidityBoolVariables,
+    ['variables_get_bool', 'variables_set_bool']
+  );
+}
+
+export function updateVariableDropdownBoolConstants() {
+  updateVariableDropdownByType(
+    ['variables_get_bool_constants'],
+    solidityBoolConstantsVariables,
+    ['variables_get_bool_constants']
+  );
+}
+
+export function updateVariableDropdownBoolImmutables() {
+  updateVariableDropdownByType(
+    ['variables_get_bool_immutables'],
+    solidityBoolImmutablesVariables,
+    ['variables_get_bool_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo Bytes
+export function updateVariableDropdownBytes() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes', 'variables_set_bytes'],
+    solidityBytesVariables,
+    ['variables_get_bytes', 'variables_set_bytes']
+  );
+}
+
+export function updateVariableDropdownBytesConstants() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes_constants'],
+    solidityBytesConstantsVariables,
+    ['variables_get_bytes_constants']
+  );
+}
+
+export function updateVariableDropdownBytesImmutables() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes_immutables'],
+    solidityBytesImmutablesVariables,
+    ['variables_get_bytes_immutables']
+  );
+}
+
+// Funzioni specifiche per il tipo Bytes32
+export function updateVariableDropdownBytes32() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes32', 'variables_set_bytes32'],
+    solidityBytes32Variables,
+    ['variables_get_bytes32', 'variables_set_bytes32']
+  );
+}
+
+export function updateVariableDropdownBytes32Constants() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes32_constants'],
+    solidityBytes32ConstantsVariables,
+    ['variables_get_bytes32_constants']
+  );
+}
+
+export function updateVariableDropdownBytes32Immutables() {
+  updateVariableDropdownByType(
+    ['variables_get_bytes32_immutables'],
+    solidityBytes32ImmutablesVariables,
+    ['variables_get_bytes32_immutables']
+  );
+}
