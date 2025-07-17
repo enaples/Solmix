@@ -415,6 +415,13 @@ export function registerBoolFlyout(workspace: Blockly.WorkspaceSvg): void {
 export function createFlyoutBytes(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
+   // Bottone per creare una nuova variabile
+  xmlList.push({
+    kind: 'button',
+    text: 'Create Variable',
+    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
+  });
+
   const blockTypes = [
     'variables_get_bytes',
     'variables_set_bytes',

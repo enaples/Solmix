@@ -126,6 +126,7 @@ export function removeFromDropdown(
     case "contract_structures":
       solidityStructs = solidityStructs.filter((item) => item.name !== name);
       updateStructsDropdown();
+      //updateStructAttributeDropdowns(name);
       console.log("🗑️ Vecchio struct rimosso:", name);
       break;
 
@@ -175,8 +176,17 @@ export function addToDropdown(
     case "contract_structures":
       solidityStructs.push({ name });
       updateStructsDropdown();
+      //updateStructAttributeDropdowns(name);
       console.log("✅ Nuovo Struct aggiunto:", name);
       break;
+
+    /*case "new_struct_value":
+      solidityStructs.push({ name });
+      updateStructsDropdown();
+      updateStructAttributeDropdowns(name);
+      console.log("✅ Nuovo Struct aggiunto:", name);
+      break;*/
+    
     case "structs_array":
       solidityStructArrays.push({ name });
       updateStructArraysDropdown();
@@ -468,6 +478,7 @@ export function updateStructsDropdown(): void {
           ? solidityStructs.map((v) => [v.name, v.name])
           : [["", ""]];
 
+
       const dropdown = block.getField("VAR");
       if (dropdown && "menuGenerator_" in dropdown) {
         (dropdown as any).menuGenerator_ = menu;
@@ -477,6 +488,7 @@ export function updateStructsDropdown(): void {
         //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
       
       }
+
     }
   });
 }
@@ -508,6 +520,7 @@ export function updateStructArraysDropdown(): void {
         //dropdown.setValue(eventNames.includes(dropdown) ? dropdown : "");
       
       }
+      
     }
   });
 }
