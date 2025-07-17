@@ -25,7 +25,7 @@ import "./blocks/variables_dynamic_int";
 import "./blocks/variables_dynamic_address";
 import "./blocks/variables_dynamic_bool";
 import "./blocks/variables_dynamic_bytes";
-import {onBlockChange} from "../blockly/listeners/blockChangeListener";
+import {onBlockChange, onStructRegistryUpdate} from "../blockly/listeners/blockChangeListener";
 import { createGetterSetterBlocks } from '../blockly/toolbox/create_dynamic_variables';
 import { SolidityAccess } from "../blockly/dropdown/dropdown";
 
@@ -166,6 +166,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
 
         workspace.addChangeListener(onWorkspaceChange);
         workspace.addChangeListener(onBlockChange);
+         workspace.addChangeListener(onStructRegistryUpdate);
         
 
         return () => {

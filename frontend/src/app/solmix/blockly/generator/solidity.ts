@@ -507,7 +507,7 @@ solidityGenerator.forBlock["array"] = function (block) {
     ) as keyof typeof ACCESS_MODIFIERS;
     const code =
         SOLIDITY_TYPES[solidityType] +
-        " " +
+        "[] " +
         ACCESS_MODIFIERS[visibility] +
         " " +
         name +
@@ -957,7 +957,7 @@ solidityGenerator.forBlock["method"] = function (
     const params = generator.statementToCode(block, "PARAMS").trim();
     const values = generator.statementToCode(block, "RETURN_VALUES").trim();
     const modifiers =
-        generator.valueToCode(block, "MODIFIERS", Order.ASSIGNMENT) || "";
+        generator.statementToCode(block, "MODIFIERS").trim() || "";
     const branch = generator.statementToCode(block, "STACK");
     const require = generator.statementToCode(block, "REQUIRE").trim() || "";
 
