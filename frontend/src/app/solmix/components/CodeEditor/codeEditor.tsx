@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
@@ -42,6 +42,8 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editableCode, setEditableCode] = useState(code);
+    //const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
 
     // Memoized code processing
     const processedCode = useMemo(() => {
@@ -139,6 +141,16 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         setIsEditing(!isEditing);
     }, [isEditing, readOnly, editableCode, code, onCodeChange]);
 
+    const goServer = () => {
+        //const codeToSend = textareaRef.current?.value || "";
+    
+        window.alert("ci siamo!");
+        console.log("🧪 editableCode aggiornato:", editableCode);
+        console.log("Codice Solidity generato:", editableCode);
+        console.log("Invio codice solidity al server...");
+        //sendSolidityToServer(editableCode); //codeDiv.value); 
+    }
+
     return (
         <div
             className={`flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm ${className}`}
@@ -222,15 +234,18 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
 
             {/* Code display area */}
             <div className="flex-1 overflow-auto" style={{ maxHeight }}>
+                {/* aggiungo '<div>' per inserire il button di update in caso isEditing sia true */}
                 {isEditing ? (
-                    // Editable textarea
-                    <textarea
-                        value={editableCode}
-                        onChange={(e) => handleCodeEdit(e.target.value)}
-                        className="w-full h-full p-4 font-mono text-sm bg-gray-900 text-gray-100 border-none outline-none resize-none"
-                        style={{ minHeight: "300px" }}
-                        spellCheck={false}
-                    />
+                    
+                        // Editable textarea
+                        <textarea 
+                            value={editableCode}
+                            onChange={(e) => handleCodeEdit(e.target.value)}
+                            className="w-full h-full p-4 font-mono text-sm bg-gray-900 text-gray-100 border-none outline-none resize-none"
+                            style={{ minHeight: "300px" }}
+                            spellCheck={false}
+                        /> 
+                    
                 ) : (
                     // Read-only display
                     // Read-only display with syntax highlighting
@@ -256,8 +271,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
                             {processedCode}
                         </SyntaxHighlighter>
                     </div>
+
                 )}
             </div>
+
+            {/* Button visibile solo in modalità editing */}
+                        <button onClick={goServer}>
+                            Update blocks
+                        </button>
+
+            
+
 
             {/* Footer with stats */}
             {showHeader && (

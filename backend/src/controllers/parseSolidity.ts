@@ -1,6 +1,48 @@
 import { parse } from "solidity-antlr4";
 import { Request, Response } from "express";
 
+/*
+import express, { Request, Response } from "express";
+import cors from "cors";
+import { parse } from "solidity-antlr4";
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+interface ParseRequestBody {
+  solidityCode: string;
+}
+
+app.post("/parse-solidity", (req: Request<{}, {}, ParseRequestBody>, res: Response) => {
+  console.log("Richiesta ricevuta:", req.body);
+
+  const { solidityCode } = req.body;
+
+  if (typeof solidityCode !== "string" || solidityCode.trim() === "") {
+    return res.status(400).json({ error: "Codice Solidity mancante" });
+  }
+
+  try {
+    const ast = parse(solidityCode);
+    res.json(ast);
+  } catch (error) {
+    console.error("Errore nel parsing Solidity:", error);
+    res.status(400).json({ error: "Errore nel parsing Solidity" });
+  }
+});
+
+const PORT = 4000;
+app.listen(PORT, () => {
+    //console.log("👋 Il server sta per avviarsi...");
+
+  console.log(`✅ Server in ascolto su http://localhost:${PORT}`);
+});
+
+*/
+
 
 
 export const parseSolidity = async (req: Request, res: Response) => {
@@ -33,6 +75,31 @@ export const parseSolidity = async (req: Request, res: Response) => {
       return;
     }
 
+    /*
+    Interface ParseRequestBody {
+  solidityCode: string;
+}
+
+app.post("/parse-solidity", (req: Request<{}, {}, ParseRequestBody>, res: Response) => {
+  console.log("Richiesta ricevuta:", req.body);
+
+  const { solidityCode } = req.body;
+
+  if (typeof solidityCode !== "string" || solidityCode.trim() === "") {
+    return res.status(400).json({ error: "Codice Solidity mancante" });
+  }*/
+
+  try {
+    const ast = parse(solidityCode);
+    res.json(ast);
+  } catch (error) {
+    console.error("Errore nel parsing Solidity:", error);
+    res.status(400).json({ error: "Errore nel parsing Solidity" });
+  }
+//});
+    
+
+    /*
     // Basic Solidity syntax validation
     const trimmedCode = solidityCode.trim();
     if (!trimmedCode.includes('pragma solidity') && !trimmedCode.includes('contract') && !trimmedCode.includes('library') && !trimmedCode.includes('interface')) {
@@ -78,6 +145,7 @@ export const parseSolidity = async (req: Request, res: Response) => {
       ast,
       message: 'Solidity contract parsed successfully'
     });
+    */
 
   } catch (error) {
     console.error('Unexpected error parsing Solidity contract:', error);
@@ -87,5 +155,6 @@ export const parseSolidity = async (req: Request, res: Response) => {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown parsing error occurred'
     });
+    
   }
 }
