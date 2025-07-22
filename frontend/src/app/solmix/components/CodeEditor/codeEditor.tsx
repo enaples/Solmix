@@ -145,8 +145,8 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         //const codeToSend = textareaRef.current?.value || "";
     
         window.alert("ci siamo!");
-        console.log("🧪 editableCode aggiornato:", editableCode);
-        console.log("Codice Solidity generato:", editableCode);
+        console.log("🧪 editableCode aggiornato:", code); //codeToSend);
+        console.log("Codice Solidity generato:", code); //codeToSend);
         console.log("Invio codice solidity al server...");
         //sendSolidityToServer(editableCode); //codeDiv.value); 
     }
