@@ -33,6 +33,8 @@ export async function sendSolidityToServer(solidityCode: string): Promise<void> 
 
 
 export function updateUIWithParsedData(parsedData: any): void {
+  console.log(JSON.stringify(parsedData, null, 2));
+  
   const ws = Blockly.getMainWorkspace();
   if (!ws) {
     console.error("❌ Workspace non disponibile.");
