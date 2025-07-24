@@ -150,43 +150,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         //sendSolidityToServer(code); //codeDiv.value); 
     }
 
-    /*
-    let globalSourceCode = "";
-
-    const setSourceCode = (code: string) => {
-    globalSourceCode = code;
-    }
-
-    /*
-    const sendSolidityToServer = async (solidityCode : string) => {
-    try {
-        const response = await fetch('http://localhost:4000/parse-solidity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ solidityCode })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Errore server: ${response.status}`);
-        }
-        
-        const ast = await response.json();
-        console.log("AST Solidity ricevuto dal Server: ", ast);
-        
-        // Chiama la funzione per registrare il codice solidity e recuperarlo in caso di CUSTOM BLOCK NON DEFINITO
-        setSourceCode(solidityCode);
-
-        // Chiama la funzione per aggiornare l'interfaccia con il parsing
-        //updateUIWithParsedData(ast);
-
-    } catch (error) {
-        console.error("Errore nell'invio del codice Solidity:", error);
-    }
-    }
-    */
-
+    
     return (
         <div
             className={`flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm ${className}`}
