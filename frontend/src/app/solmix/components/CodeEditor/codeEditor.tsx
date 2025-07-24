@@ -3,6 +3,8 @@ import React, { useState, useCallback, useMemo, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
+//import { sendSolidityToServer } from "../../blockly/Server/server";
+import { sendSolidityToServer } from "@/app/solmix/blockly/Server/apiClient";
 
 interface CodeViewerProps {
     code: string;
@@ -142,14 +144,48 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     }, [isEditing, readOnly, editableCode, code, onCodeChange]);
 
     const goServer = () => {
-        //const codeToSend = textareaRef.current?.value || "";
-    
-        window.alert("ci siamo!");
-        console.log("🧪 editableCode aggiornato:", code); //codeToSend);
         console.log("Codice Solidity generato:", code); //codeToSend);
         console.log("Invio codice solidity al server...");
-        //sendSolidityToServer(editableCode); //codeDiv.value); 
+        sendSolidityToServer(code);
+        //sendSolidityToServer(code); //codeDiv.value); 
     }
+
+    /*
+    let globalSourceCode = "";
+
+    const setSourceCode = (code: string) => {
+    globalSourceCode = code;
+    }
+
+    /*
+    const sendSolidityToServer = async (solidityCode : string) => {
+    try {
+        const response = await fetch('http://localhost:4000/parse-solidity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ solidityCode })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore server: ${response.status}`);
+        }
+        
+        const ast = await response.json();
+        console.log("AST Solidity ricevuto dal Server: ", ast);
+        
+        // Chiama la funzione per registrare il codice solidity e recuperarlo in caso di CUSTOM BLOCK NON DEFINITO
+        setSourceCode(solidityCode);
+
+        // Chiama la funzione per aggiornare l'interfaccia con il parsing
+        //updateUIWithParsedData(ast);
+
+    } catch (error) {
+        console.error("Errore nell'invio del codice Solidity:", error);
+    }
+    }
+    */
 
     return (
         <div
@@ -276,7 +312,9 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
             </div>
 
             {/* Button visibile solo in modalità editing */}
-                        <button onClick={goServer}>
+                        <button onClick={goServer} 
+                        className="px-3 py-1 text-xs bg-orange-400 text-white rounded hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
                             Update blocks
                         </button>
 
