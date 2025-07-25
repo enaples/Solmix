@@ -1,5 +1,6 @@
 import * as Blockly from "blockly";
 import { createBlocksFromAST, positionBlocks } from "./astToBlocks";
+import type { WorkspaceSvg } from 'blockly';
 
 let globalSourceCode = "";
 
@@ -35,13 +36,14 @@ export async function sendSolidityToServer(solidityCode: string): Promise<void> 
 export function updateUIWithParsedData(parsedData: any): void {
   console.log(JSON.stringify(parsedData, null, 2));
   
-  const ws = Blockly.getMainWorkspace();
+  //const ws = Blockly.getMainWorkspace();
+  const ws: WorkspaceSvg = Blockly.getMainWorkspace() as WorkspaceSvg;
   if (!ws) {
     console.error("❌ Workspace non disponibile.");
     return;
   }
 
-  const blocklyJson = createBlocksFromAST(parsedData);
+  const blocklyJson = createBlocksFromAST(parsedData, ws);
   console.log("🔧 JSON Blockly generato:", blocklyJson);
   console.log(JSON.stringify(blocklyJson, null, 2));
   Blockly.serialization.workspaces.load(blocklyJson, ws);
