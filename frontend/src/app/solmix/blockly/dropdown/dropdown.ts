@@ -342,9 +342,31 @@ export function getSolidityBytes32ImmutablesVariable(name: string): SolidityVari
   return solidityBytes32ImmutablesVariables.find(variable => variable.name === name);
 }
 
+export function findVariable(ast: any, variableName: string): boolean {
+  for (const node of ast.nodes) {
+    if (node.type === "ContractDefinition") {
+      for (const subNode of node.nodes) {
+        if (subNode.type === "VariableDeclaration" && subNode.name?.name === variableName) {
+          return true;
+        }
+      }
+    }
+  }
+  return false; // Non trovato
+}
 
-
-
+export function findVariableType(ast: any, variableName: string): string | null {
+  for (const node of ast.nodes) {
+    if (node.type === "ContractDefinition") {
+      for (const subNode of node.nodes) {
+        if (subNode.type === "VariableDeclaration" && subNode.name?.name === variableName) {
+          return subNode.typeName?.name || null;
+        }
+      }
+    }
+  }
+  return null; // Variabile non trovata
+}
 
 
 
@@ -380,6 +402,16 @@ export function getSolidityEvent(
   name: string
 ): { name: string } | undefined {
   return solidityEvents.find((variable) => variable.name === name);
+}
+
+export function addEvent(name: string): void {
+  if (!solidityEvents.some((item) => item.name === name)) {
+    solidityEvents.push({ name });
+    updateEventsDropdown();
+    console.log("✅ New Event added:", name);
+  } else {
+    console.log("⚠️ Event already exists:", name);
+  }
 }
 
 
@@ -430,6 +462,17 @@ export function getSolidityMapping(
   return solidityMappings.find((variable) => variable.name === name);
 }
 
+export function addMapping(name: string): void {
+  if (!solidityMappings.some(item => item.name === name)) {
+    solidityMappings.push({ name });
+    updateMappingsDropdown(); // Aggiorna il dropdown
+    console.log("✅ New Mapping added:", name);
+  } else {
+    console.log("⚠️ Mapping already exists:", name);
+  }
+}
+
+
 // Arrays
 export function updateArraysDropdown(): void {
   const workspace = Blockly.getMainWorkspace();
@@ -461,6 +504,18 @@ export function getSolidityArray(
 ): { name: string } | undefined {
   return solidityArrays.find((variable) => variable.name === name);
 }
+
+export function addArray(name: string): void {
+  if (!solidityArrays.some(item => item.name === name)) {
+    solidityArrays.push({ name });
+    updateArraysDropdown(); // Aggiorna il dropdown
+    console.log("✅ New Array added:", name);
+  } else {
+    console.log("⚠️ Array already exists:", name);
+  }
+}
+
+
 
 // Struct
 export function updateStructsDropdown(): void {
@@ -499,6 +554,22 @@ export function getSolidityStruct(
   return solidityStructs.find((variable) => variable.name === name);
 }
 
+export function addStruct(name: string): void {
+  if (!solidityStructs.some(item => item.name === name)) {
+    solidityStructs.push({ name });
+    updateStructsDropdown();
+    console.log("✅ New Struct added:", name);
+  } else {
+    console.log("⚠️ Struct already exists:", name);
+  }
+}
+
+export function saveStruct(name: string, attributes: any[]): void {
+  structRegistry[name] = attributes;
+}
+
+
+
 // Struct Array
 export function updateStructArraysDropdown(): void {
   const workspace = Blockly.getMainWorkspace();
@@ -531,6 +602,18 @@ export function getSolidityStructArray(
   return solidityStructArrays.find((variable) => variable.name === name);
 }
 
+export function addStructArray(name: string): void {
+  if (!solidityStructArrays.some(item => item.name === name)) {
+    solidityStructArrays.push({ name });
+    updateStructArraysDropdown(); // Aggiorna il dropdown
+    console.log("✅ New StructArray added:", name);
+  } else {
+    console.log("⚠️ StructArray already exists:", name);
+  }
+}
+
+
+
 // Modifier
 export function updateModifiersDropdown(): void {
   const workspace = Blockly.getMainWorkspace();
@@ -561,6 +644,18 @@ export function getSolidityModifier(
 ): { name: string } | undefined {
   return solidityModifiers.find((variable) => variable.name === name);
 }
+
+export function addModifier(name: string): void {
+  if (!solidityModifiers.some(item => item.name === name)) {
+    solidityModifiers.push({ name });
+    updateModifiersDropdown();
+    console.log("✅ New Modifier added:", name);
+  } else {
+    console.log("⚠️ Modifier already exists:", name);
+  }
+}
+
+
 
 //Struct Attributes Dropdown
 export function updateStructAttributeDropdowns(structName: string): void {

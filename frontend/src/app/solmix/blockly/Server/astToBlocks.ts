@@ -2,7 +2,7 @@ import { SourceUnit, ImportDirective, ContractDefinition } from "solidity-antlr4
 import * as Blockly from "blockly";
 import { structRegistry } from "../dropdown/dropdown";
 import { createGetterSetterBlocks } from "../toolbox/create_dynamic_variables";
-import { SolidityAccess } from "../dropdown/dropdown";
+import { SolidityAccess, addEvent, addMapping, addArray, addModifier, addStruct, saveStruct, addStructArray, findVariable, findVariableType} from "../dropdown/dropdown";
 import type { WorkspaceSvg } from 'blockly';
 
 //const workspace: WorkspaceSvg = Blockly.getMainWorkspace() as WorkspaceSvg;
@@ -285,7 +285,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
           node.expression.expression.name === node.typeName.name
         ) {
           const structName: string = node.typeName.name;
-          //addStruct(structName);
+          addStruct(structName);
           const varName: string = node.name.name;
           const args = node.expression.arguments;
           console.log("📦 args ricevuti nella FunctionCall:", args);
@@ -385,7 +385,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
             parent: parentBlockId
           };
           variableBlock.data = JSON.stringify({ parentId: variableBlock.parent });
-          //addMapping(node.name.name);
+          addMapping(node.name.name);
           blocklyJson.blocks.blocks.push(variableBlock);
         } else if (node.typeName.type === "TypeName") {
           let variableBlock: any;
@@ -419,7 +419,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
             : "external";
 
           if (returnTypeArray[node.typeName.name] === undefined) {
-            //addStructArray(varName); --> da inserire
+            addStructArray(varName); 
             const StructArrayBlockId = generateUniqueId();
             variableBlock = {
               type: "structs_array",
@@ -445,7 +445,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
               }
 
               const arrayName = node.name.name;
-              //addArray(arrayName); --> da inserire
+              addArray(arrayName); 
               const visibility = node.public
                 ? "TYPE_PUBLIC"
                 : node.private
@@ -475,7 +475,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                 parent: parentBlockId
               };
             } else {
-              //addArray(node.name.name); --> da inserire
+              addArray(node.name.name); 
               const ArrayBlockId = generateUniqueId();
               variableBlock = {
                 type: "array",
@@ -650,8 +650,636 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
         break;
       }
 
+      case "StructDefinition": {
+        var structBlockId = generateUniqueId();
+        addStruct(node.name.name); 
 
+        var structBlock = {
+          type: "contract_structures",
+          fields: { NAME: node.name.name },
+          id: structBlockId,
+          parent: parentBlockId || undefined,
+          statements: [],
+          data: JSON.stringify({ parentId: parentBlockId })
+        };
+
+        console.log("StructDefinition - ID: " + structBlock.id + ", Parent: " + parentBlockId);
+        blocklyJson.blocks.blocks.push(structBlock);
+
+        var attributes : any = [];
+        node.members.forEach(function(member: any) {
+          attributes.push({
+            name: member.name.name,
+            type: member.typeName.name
+          });
+          traverse(member, structBlock.id); // per generare i blocchi visivi, se necessario
+        });
+
+        structRegistry[node.name.name] = attributes;
+        saveStruct(node.name.name, attributes); 
+        console.log(attributes);
+        break;
+
+      }
+
+      case "StructMember": {
+        const memberBlockId: string = generateUniqueId();
+        console.log(`StructMember - ID: ${memberBlockId}, Parent: ${parentBlockId}`);
+
+        const returnTypeStruct: { [key: string]: string } = {
+          bool: "TYPE_BOOL",
+          int: "TYPE_INT",
+          uint: "TYPE_UINT",
+          uint256: "TYPE_UINT256",
+          uint8: "TYPE_UINT8",
+          string: "TYPE_STRING",
+          address: "TYPE_ADDRESS",
+          bytes: "TYPE_BYTES",
+          bytes32: "TYPE_BYTES32",
+        };
+
+        let typeStr: string = "";
+        let name: string = node.name.name;
+
+        if (
+          node.typeName.name === "int" ||
+          node.typeName.name === "uint" ||
+          node.typeName.name === "bool" ||
+          node.typeName.name === "uint256" ||
+          node.typeName.name === "uint8" ||
+          node.typeName.name === "string" ||
+          node.typeName.name === "address" ||
+          node.typeName.name === "bytes32"
+        ) {
+          console.log("casi definiti");
+          typeStr = returnTypeStruct[node.typeName.name];
+
+          const memberBlock: BlocklyBlock = {
+            type: "struct_variables",
+            fields: {
+              TYPE: typeStr,
+              NAME: name
+            },
+            id: memberBlockId,
+            parent: parentBlockId || undefined,
+            data: JSON.stringify({ parentId: parentBlockId })
+          };
+          //memberBlock.data = JSON.stringify({ parentId: memberBlock.parent });
+          blocklyJson.blocks.blocks.push(memberBlock);
+          console.log(`🎯 Creazione blocco: ID=${memberBlock.id}, Tipo=${memberBlock.type}, Parent=${memberBlock.parent}`);
+        } else {
+          console.log("caso NON contemplato in returnType");
+          typeStr = node.typeName.name;
+
+          const memberBlock_black: BlocklyBlock = {
+            type: "structVariables_black",
+            fields: {
+              TYPE: typeStr,
+              NAME: name
+            },
+            id: memberBlockId,
+            parent: parentBlockId || undefined,
+            data: JSON.stringify({ parentId: parentBlockId })
+          };
+          //memberBlock_black.data = JSON.stringify({ parentId: memberBlock_black.parent });
+          blocklyJson.blocks.blocks.push(memberBlock_black);
+        }
+        break;
+
+      }
+
+      case "EventDefinition": {
+        const returnTypeEvent: { [key: string]: string } = {
+          bool: "TYPE_BOOL",
+          int: "TYPE_INT",
+          uint: "TYPE_UINT",
+          uint256: "TYPE_UINT256",
+          uint8: "TYPE_UINT8",
+          string: "TYPE_STRING",
+          address: "TYPE_ADDRESS",
+          bytes: "TYPE_BYTES",
+          bytes32: "TYPE_BYTES32",
+        };
+
+        const eventBlockId: string = generateUniqueId();
+
+        const eventBlock: BlocklyBlock = {
+          type: "event",
+          fields: { NAME: node.name.name },
+          //statements: [],
+          id: eventBlockId,
+          parent: parentBlockId || undefined,
+          data: JSON.stringify({ parentId: parentBlockId })
+        };
+
+        addEvent(node.name.name); 
+        blocklyJson.blocks.blocks.push(eventBlock);
+
+        if (node.parameters) {
+          node.parameters.forEach((param: any) => {
+            const paramBlockId: string = generateUniqueId();
+            let typeStr: string = "";
+            const paramName: string = param.name ? param.name.name : "param";
+
+            if (
+              param.typeName.name === "int" ||
+              param.typeName.name === "bool" ||
+              param.typeName.name === "uint" ||
+              param.typeName.name === "uint256" ||
+              param.typeName.name === "uint8" ||
+              param.typeName.name === "string" ||
+              param.typeName.name === "address" ||
+              param.typeName.name === "bytes32"
+            ) {
+              console.log("casi definiti");
+              typeStr = returnTypeEvent[param.typeName.name];
+
+              let completeName = paramName;
+              if (param.dataLocation?.name) {
+                completeName = `${param.dataLocation.name} ${paramName}`;
+              }
+
+              const paramBlock: BlocklyBlock = {
+                type: "func_inputs",
+                fields: {
+                  TYPE: typeStr,
+                  NAME: completeName
+                },
+                id: paramBlockId,
+                parent: eventBlockId,
+                data: JSON.stringify({ parentId: eventBlockId })
+              };
+
+              blocklyJson.blocks.blocks.push(paramBlock);
+
+            } else {
+              console.log("caso NON contemplato in returnType");
+              typeStr = param.typeName.name;
+              if (param.dataLocation?.name) {
+                typeStr += ` ${param.dataLocation.name}`;
+              }
+
+              const paramBlockBlack: BlocklyBlock = {
+                type: "func_inputs_black",
+                fields: {
+                  TYPE: typeStr,
+                  NAME: paramName
+                },
+                id: paramBlockId,
+                parent: eventBlockId,
+                data: JSON.stringify({ parentId: eventBlockId })
+              };
+
+              blocklyJson.blocks.blocks.push(paramBlockBlack);
+            }
+          });
+        }
+        break;
+
+      }
+
+      case "ModifierDefinition": {
+        const returnTypeModifier: Record<string, string> = {
+          "bool": "TYPE_BOOL",
+          "int": "TYPE_INT",
+          "uint": "TYPE_UINT",
+          "uint256": "TYPE_UINT256",
+          "uint8": "TYPE_UINT8",
+          "string": "TYPE_STRING",
+          "address": "TYPE_ADDRESS",
+          "bytes": "TYPE_BYTES",
+          "bytes32": "TYPE_BYTES32",
+        };
+
+        const firstStatement = (node.body?.statements?.[0]) || {};
+        const args = (firstStatement.expression?.arguments) || [];
+
+        const modifierBlockId: string = generateUniqueId();
+        const modifierBlock: BlocklyBlock = {
+          type: "modifier1",
+          fields: {
+            NAME: node.name?.name || "",
+            MESSAGE: args[1]?.value || ""
+          },
+          //statements: [],
+          id: modifierBlockId,
+          parent: parentBlockId || undefined,
+          data: JSON.stringify({ parentId: parentBlockId })
+        };
+        //modifierBlock.data = JSON.stringify({ parentId: modifierBlock.parent });
+        addModifier(node.name.name);
+        blocklyJson.blocks.blocks.push(modifierBlock);
+
+        if (node.parameters) {
+          node.parameters.forEach((param: any) => {
+            const paramBlockId: string = generateUniqueId();
+            let typeStr = "";
+            let name = param.name?.name || "param";
+
+            if (
+              ["int", "bool", "uint", "uint256", "uint8", "string", "address", "bytes32"].includes(param.typeName?.name)
+            ) {
+              console.log("casi definiti");
+              typeStr = returnTypeModifier[param.typeName.name];
+
+              let datalocation = param.dataLocation?.name || "";
+              let completeName = datalocation ? `${datalocation} ${name}` : name;
+
+              const paramBlock: BlocklyBlock = {
+                type: "func_inputs",
+                fields: {
+                  TYPE: typeStr,
+                  NAME: completeName
+                },
+                id: paramBlockId,
+                parent: modifierBlock.id
+              };
+              paramBlock.data = JSON.stringify({ parentId: paramBlock.parent });
+              blocklyJson.blocks.blocks.push(paramBlock);
+
+            } else {
+              console.log("caso NON contemplato in returnType");
+              typeStr = param.typeName?.name || "unknown";
+              if (param.dataLocation) {
+                typeStr += ` ${param.dataLocation.name}`;
+              }
+
+              const paramBlockBlack: BlocklyBlock = {
+                type: "func_inputs_black",
+                fields: {
+                  TYPE: typeStr,
+                  NAME: name
+                },
+                id: paramBlockId,
+                parent: modifierBlock.id
+              };
+              paramBlockBlack.data = JSON.stringify({ parentId: paramBlockBlack.parent });
+              blocklyJson.blocks.blocks.push(paramBlockBlack);
+            }
+          });
+        }
+        // continua qui
+        const operatorMapping: Record<string, string> = {
+          "!": "NOT",
+          "!=": "NOT_EQUAL",
+          "==": "EQUAL",
+          ">=": "BIGGER OR EQUAL TO",
+          "<=": "LOWER OR EQUAL TO",
+          ">": "BIGGER THAN",
+          "<": "LOWER THAN"
+        };
+        console.log("operatorMapping definito");
+
+        if (
+          firstStatement.expression?.type === "FunctionCall" &&
+          firstStatement.expression.expression?.name === "require"
+        ) {
+          const requireNode = firstStatement.expression;
+          console.log("AST requireNode:", requireNode);
+
+          let conditionType = "";
+          let right: any = "";
+
+          if (requireNode.arguments?.length > 0) {
+            const requireArg = requireNode.arguments[0];
+            let conditionExpression = requireArg?.expressions?.length
+              ? requireArg.expressions[0]
+              : requireArg;
+
+            if (!conditionExpression) {
+              console.error("❌ Errore: impossibile trovare l'espressione logica nel require()");
+            } else {
+              console.log("✅ conditionExpression trovata:", conditionExpression);
+            }
+
+            if (conditionExpression && conditionExpression.operator) {
+              const solidityOperator: string = conditionExpression.operator;
+              console.log("Operatore trovato nel require:", solidityOperator);
+
+              conditionType = operatorMapping[solidityOperator] || "EQUAL";
+
+              let inputBlockRight: BlocklyBlock | null = null;
+              let requireConditionBlock: BlocklyBlock;
+
+              if (solidityOperator === "!") {
+                right = conditionExpression.right;
+                console.log("Right:", right);
+
+                const requireConditionBlockId = generateUniqueId();
+                requireConditionBlock = {
+                  type: "require_condition",
+                  fields: {
+                    OPERATOR: conditionType
+                  },
+                  id: requireConditionBlockId,
+                  parent: modifierBlock.id
+                };
+                requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                if (right) {
+                  const inputBlockRightId = generateUniqueId();
+
+                  if (findVariable(ast, right.name) === true) {
+                    const type = findVariableType(ast, right.name);
+                    console.log("name:", type);
+
+                    if (type){
+                    const baseType = type.toLowerCase();
+                    
+                    const blockTypeMap: Record<string, string> = {
+                      string: "variables_get_string",
+                      uint: "variables_get_uint",
+                      uint256: "variables_get_uint256",
+                      uint8: "variables_get_uint8",
+                      int: "variables_get_int",
+                      bool: "variables_get_bool",
+                      address: "variables_get_address",
+                      bytes: "variables_get_bytes",
+                      bytes32: "variables_get_bytes32"
+                    };
+
+                    const blockType = blockTypeMap[baseType];
+                    if (blockType) {
+                      inputBlockRight = {
+                        type: blockType,
+                        fields: { VAR: right.name },
+                        id: inputBlockRightId,
+                        parent: requireConditionBlock.id
+                      };
+                    }
+                    console.log("inputBlockRight for rightOperand equal to a variable created!");
+                  }
+                  } else {
+                    let rightOperand = "";
+
+                    if (right.baseExpression && right.indexExpression) {
+                      const base = right.baseExpression.name;
+                      const index = right.indexExpression.name;
+                      rightOperand = `${base}[${index}]`;
+                    } else if (right.name) {
+                      rightOperand = right.name;
+                    }
+
+                    inputBlockRight = {
+                      type: "input",
+                      fields: {
+                        input_name: rightOperand
+                      },
+                      id: inputBlockRightId,
+                      parent: requireConditionBlock.id
+                    };
+                  }
+
+                  if (inputBlockRight) {
+                    inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                    blocklyJson.blocks.blocks.push(inputBlockRight);
+                    console.log("inputBlockRight for UnaryOperation created!");
+                  }
+                }
+              
+              } else if (
+                solidityOperator === "==" || solidityOperator === "!=" ||
+                solidityOperator === ">=" || solidityOperator === "<=" ||
+                solidityOperator === ">" || solidityOperator === "<"
+              ) {
+                conditionType = operatorMapping[solidityOperator] || "EQUAL";
+                console.log("Mapping operatore Blockly:", conditionType);
+
+                const left = conditionExpression.left;
+                const right = conditionExpression.right;
+                console.log("Left:", left);
+                console.log("Right:", right);
+
+                const requireConditionBlockId = generateUniqueId();
+                const requireConditionBlock: BlocklyBlock = {
+                  type: "require_condition",
+                  fields: { OPERATOR: conditionType },
+                  id: requireConditionBlockId,
+                  parent: modifierBlock.id
+                };
+                requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                if (right) {
+                  const inputBlockRightId = generateUniqueId();
+                  let inputBlockRight: BlocklyBlock;
+
+                  if (findVariable(ast, right.name)) {
+                    const type = findVariableType(ast, right.name);
+                    console.log("Tipo:", type);
+
+                    const typeMap: Record<string, string> = {
+                      string: "variables_get_string",
+                      uint: "variables_get_uint",
+                      uint256: "variables_get_uint256",
+                      uint8: "variables_get_uint8",
+                      int: "variables_get_int",
+                      bool: "variables_get_bool",
+                      address: "variables_get_address",
+                      bytes: "variables_get_bytes",
+                      bytes32: "variables_get_bytes32"
+                    };
+
+                    if (type && type in typeMap) {
+                    const blockType = typeMap[type];
+                    
+                    if (blockType) {
+                      inputBlockRight = {
+                        type: blockType,
+                        fields: { VAR: right.name },
+                        id: inputBlockRightId,
+                        parent: requireConditionBlock.id
+                      };
+                      console.log("inputBlockRight for variable created!");
+                    
+                    } else {
+                      throw new Error(`❌ Tipo non supportato: ${type}`);
+                    }
+                    
+                  
+                  
+                  } else {
+                    let rightOperand: string = "";
+
+                    if (
+                      right.type === "MemberAccess" &&
+                      right.expression.type === "Identifier"
+                    ) {
+                      if (right.expression.name === "msg") {
+                        if (right.memberName === "sender") rightOperand = "msg.sender";
+                        else if (right.memberName === "value") rightOperand = "msg.value";
+                      }
+                    } else if (
+                      right.type === "FunctionCall" &&
+                      right.expression.type === "ElementaryTypeName" &&
+                      right.expression.name === "address"
+                    ) {
+                      if (
+                        right.arguments &&
+                        right.arguments[0].type === "NumberLiteral" &&
+                        right.arguments[0].value === "0"
+                      ) {
+                        rightOperand = "address(0)";
+                      } else if (
+                        right.arguments &&
+                        right.arguments[0].type === "Identifier" &&
+                        right.arguments[0].name === "this"
+                      ) {
+                        rightOperand = "address(this)";
+                      }
+                    } else if (
+                      right.type === "MemberAccess" &&
+                      right.expression.type === "FunctionCall" &&
+                      right.expression.expression.type === "ElementaryTypeName" &&
+                      right.expression.expression.name === "address" &&
+                      right.expression.arguments &&
+                      right.expression.arguments[0].type === "Identifier" &&
+                      right.expression.arguments[0].name === "this" &&
+                      right.memberName === "balance"
+                    ) {
+                      rightOperand = "address(this).balance";
+                    } else {
+                      rightOperand = typeof right === "object"
+                        ? (right.name ?? right.value ?? "")
+                        : String(right);
+                    }
+
+                    inputBlockRight = {
+                      type: "input_right",
+                      fields: { input_name: rightOperand },
+                      id: inputBlockRightId,
+                      parent: requireConditionBlock.id
+                    };
+                  }
+                
+
+                  inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                  blocklyJson.blocks.blocks.push(inputBlockRight);
+                  console.log("✅ inputBlockRight creato");
+                
+                
+                }
+
+                let inputBlockLeft: BlocklyBlock;
+                const inputBlockLeftId = generateUniqueId();
+
+                if (
+                  left.type === "MemberAccess" &&
+                  left.expression.type === "Identifier" &&
+                  left.expression.name === "msg"
+                ) {
+                  let leftOperand = "";
+
+                  if (left.memberName === "sender") {
+                    leftOperand = "msg.sender";
+                  } else if (left.memberName === "value") {
+                    leftOperand = "msg.value";
+                  }
+
+                  inputBlockLeft = {
+                    type: "input",
+                    fields: {
+                      input_name: leftOperand
+                    },
+                    id: inputBlockLeftId,
+                    parent: requireConditionBlock.id
+                  };
+
+                } else if (
+                  left.type === "FunctionCall" &&
+                  left.expression.type === "ElementaryTypeName" &&
+                  left.expression.name === "address"
+                ) {
+                  let leftOperand = "";
+
+                  if (
+                    left.arguments?.[0]?.type === "NumberLiteral" &&
+                    left.arguments[0].value === "0"
+                  ) {
+                    leftOperand = "address(0)";
+                  } else if (
+                    left.arguments?.[0]?.type === "Identifier" &&
+                    left.arguments[0].name === "this"
+                  ) {
+                    leftOperand = "address(this)";
+                  }
+
+                  inputBlockLeft = {
+                    type: "input",
+                    fields: {
+                      input_name: leftOperand
+                    },
+                    id: inputBlockLeftId,
+                    parent: requireConditionBlock.id
+                  };
+
+                } else if (
+                  left.type === "MemberAccess" &&
+                  left.expression.type === "FunctionCall" &&
+                  left.expression.expression.type === "ElementaryTypeName" &&
+                  left.expression.expression.name === "address" &&
+                  left.expression.arguments?.[0]?.type === "Identifier" &&
+                  left.expression.arguments[0].name === "this" &&
+                  left.memberName === "balance"
+                ) {
+                  const leftOperand = "address(this).balance";
+
+                  inputBlockLeft = {
+                    type: "input",
+                    fields: {
+                      input_name: leftOperand
+                    },
+                    id: inputBlockLeftId,
+                    parent: requireConditionBlock.id
+                  };
+
+                } else {
+                  // Trattamento come variabile Solidity
+                  const type = findVariableType(ast, left.name);
+                  console.log("Tipo variabile:", type);
+
+                  const typeToBlockMap: Record<string, string> = {
+                    string: "variables_get_string",
+                    uint: "variables_get_uint",
+                    uint256: "variables_get_uint256",
+                    uint8: "variables_get_uint8",
+                    int: "variables_get_int",
+                    bool: "variables_get_bool",
+                    bytes: "variables_get_bytes",
+                    bytes32: "variables_get_bytes32",
+                    address: "variables_get_address"
+                  };
+                  
+                  if (type && type in typeToBlockMap) {
+                  const blockType = typeToBlockMap[type];
+
+                  inputBlockLeft = {
+                    type: blockType,
+                    fields: {
+                      VAR: left.name
+                    },
+                    id: inputBlockLeftId,
+                    parent: requireConditionBlock.id
+                  };
+                } else {
+                  throw new Error(`❌ Tipo non gestito o nullo per la variabile: ${type}`);
+                }
+              }
+              
+
+                // Salvataggio e aggiunta al JSON Blockly
+                inputBlockLeft.data = JSON.stringify({ parentId: inputBlockLeft.parent });
+                blocklyJson.blocks.blocks.push(inputBlockLeft);
+                console.log("✅ inputBlockLeft creato per BinaryOperation");
+              }
+              break;
+            }
+          }
+        }
+      }
     }
+  }
   }
 
   traverse(ast);

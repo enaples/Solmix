@@ -36,7 +36,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showExplainCodeButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
-    readOnly = true,
+    readOnly = false, //true,
     maxHeight = "600px",
     onCodeChange,
     fileName = "contract.sol",
