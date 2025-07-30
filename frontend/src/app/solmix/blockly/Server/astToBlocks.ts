@@ -1394,18 +1394,2069 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                   blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
                   blocklyJson.blocks.blocks.push(blackBlock);
                 }
+              } else if(statement.type === "IfStatement" ){ 
+                let elseBlock: BlocklyBlock | undefined;
+                let if_elseIf_else_Block: BlocklyBlock | undefined;
+                let if_else_Block: BlocklyBlock | undefined;
+
+                const operatorMapping: Record<string, string> = {
+                  "!": "NOT",
+                  "!=": "NOT_EQUAL",
+                  "==": "EQUAL",
+                  ">=": "BIGGER OR EQUAL TO",
+                  "<=": "LOWER OR EQUAL TO",
+                  ">": "BIGGER THAN",
+                  "<": "LOWER THAN"
+                };
+
+                let conditionType = "";
+                let left = "";
+                let right = "";
+
+                // 1) --> dichiaro if block:
+                let ifBlock: BlocklyBlock | undefined;
+                const ifBlockId: string = generateUniqueId();
+
+                if (statement.elseStatement) {
+                  // 1) --> dichiaro else block:
+                  const elseBlockId: string = generateUniqueId();
+
+                  // 2) Funzione ricorsiva per contare gli elseStatement di tipo 'IfStatement'
+                  resetArrays();
+                  const count = countElseIfStatements(statement);
+                  console.log(count);
+                  console.log(elseStatementnodes);
+                  console.log(savedElseBlockStatements);
+                  console.log(savedElseBlockStatements1);
+
+                  if (count > 0) {
+                    const if_elseif_else_BlockId: string = generateUniqueId();
+
+                    if_elseIf_else_Block = {
+                      type: "if_elseif_else_container",
+                      id: if_elseif_else_BlockId,
+                      parent: functionBlock.id,
+                      fields: {}
+                    };
+                    if_elseIf_else_Block.data = JSON.stringify({ parentId: if_elseIf_else_Block.parent });
+                    blocklyJson.blocks.blocks.push(if_elseIf_else_Block);
+                    console.log("if_elseIf_else block added to json");
+
+                    ifBlock = {
+                      type: "if",
+                      id: ifBlockId,
+                      parent: if_elseIf_else_Block.id,
+                      fields: {}
+                    };
+                    console.log("IF block with the if_elseif_else ID");
+
+                    elseBlock = {
+                      type: "else",
+                      id: elseBlockId,
+                      parent: if_elseIf_else_Block.id,
+                      fields: {}
+                    };
+                    elseBlock.data = JSON.stringify({ parentId: elseBlock.parent });
+                    blocklyJson.blocks.blocks.push(elseBlock);
+                    console.log("Else block added to the json");
+
+                    const sortedElseStatements = elseStatementnodes.slice().sort((a, b) => b.range[0] - a.range[0]);
+                    sortedElseStatements.forEach((statement, i) => {
+                      const elseifBlockId: string = generateUniqueId();
+                      const elseifBlock: BlocklyBlock = {
+                        type: "else_if",
+                        id: elseifBlockId,
+                        parent: if_elseIf_else_Block!.id,
+                        fields: {}
+                      };
+
+                      elseifBlock.data = JSON.stringify({ parentId: elseifBlock.parent });
+                      blocklyJson.blocks.blocks.push(elseifBlock);
+                      console.log("elseIf block added to json " + i);
+
+                      if (
+                        statement.elseStatement?.condition &&
+                        "operator" in statement.elseStatement.condition
+                      ) {
+                        const solidityOperator = statement.elseStatement.condition.operator;
+                        console.log("Operatore trovato nel require:", solidityOperator);
+
+                        const conditionType = operatorMapping[solidityOperator] || "EQUAL";
+
+                        let inputBlockRight: BlocklyBlock | undefined;
+                        let requireConditionBlock: BlocklyBlock;
+
+                        if (solidityOperator === "!") {
+                          const right = statement.elseStatement.condition.right;
+                          console.log("Mapping operatore Blockly:", conditionType);
+                          console.log("Right:", right);
+
+                          const requireConditionBlockId = generateUniqueId();
+                          requireConditionBlock = {
+                            type: "require_condition",
+                            fields: { OPERATOR: conditionType },
+                            id: requireConditionBlockId,
+                            parent: elseifBlock.id
+                          };
+                          requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                          blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                          const type = findVariableType(ast, right?.name);
+                          console.log("name:", type);
+
+                          const inputBlockRightId = generateUniqueId();
+                          if (type) {
+                            const typeToBlock: Record<string, string> = {
+                              string: "variables_get_string",
+                              uint: "variables_get_uint",
+                              uint256: "variables_get_uint256",
+                              uint8: "variables_get_uint8",
+                              int: "variables_get_int",
+                              bool: "variables_get_bool",
+                              bytes: "variables_get_bytes",
+                              bytes32: "variables_get_bytes32",
+                              address: "variables_get_address"
+                            };
+
+                            const blockType = typeToBlock[type];
+                            if (blockType) {
+                              inputBlockRight = {
+                                type: blockType,
+                                fields: { VAR: right.name },
+                                id: inputBlockRightId,
+                                parent: requireConditionBlock.id
+                              };
+                              inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                              blocklyJson.blocks.blocks.push(inputBlockRight);
+                              console.log("inputBlockRight for UnaryOperation created!");
+                            }
+                          }
+
+                        } else if (["==", "!=", ">=", "<=", ">", "<"].includes(solidityOperator)) {
+                          const left = statement.elseStatement.condition.left;
+                          const right = statement.elseStatement.condition.right;
+                          console.log("Mapping operatore Blockly:", conditionType);
+                          console.log("Left:", left);
+                          console.log("Right:", right);
+
+                          const requireConditionBlockId = generateUniqueId();
+                          requireConditionBlock = {
+                            type: "require_condition",
+                            fields: { OPERATOR: conditionType },
+                            id: requireConditionBlockId,
+                            parent: elseifBlock.id
+                          };
+                          requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                          blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                          if (right){
+                            const inputBlockRightId = generateUniqueId();
+  
+                             //&& "name" in right && 
+                            if (findVariable(ast, right.name)) {
+                              //const inputBlockRightId = generateUniqueId();
+                              const type = findVariableType(ast, right.name);
+                              console.log("name:", type);
+
+                              const typeToBlock: Record<string, string> = {
+                                string: "variables_get_string",
+                                uint: "variables_get_uint",
+                                uint256: "variables_get_uint256",
+                                uint8: "variables_get_uint8",
+                                int: "variables_get_int",
+                                bool: "variables_get_bool",
+                                bytes: "variables_get_bytes",
+                                bytes32: "variables_get_bytes32",
+                                address: "variables_get_address"
+                              };
+
+                              if (type && typeToBlock[type]) {
+
+                                const blockType = typeToBlock[type];
+                                if (blockType) {
+                                  inputBlockRight = {
+                                    type: blockType,
+                                    fields: { VAR: right.name },
+                                    id: inputBlockRightId,
+                                    parent: requireConditionBlock.id
+                                  };
+                                  inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                                  blocklyJson.blocks.blocks.push(inputBlockRight);
+                                  console.log("inputBlockRight for rightOperand equal to a variable created!");
+                                }
+                              }
+
+                            } else {
+                              let rightOperand: string;
+
+                              // Gestione MemberAccess: msg.sender, msg.value, account.length, ecc.
+                              if (
+                                right.type === "MemberAccess" &&
+                                "memberName" in right &&
+                                right.memberName &&
+                                "expression" in right &&
+                                typeof right.expression === "object" &&
+                                "name" in right.expression
+                              ) {
+                                rightOperand = `${(right.expression as any).name}.${right.memberName}`;
+                              }
+
+                              // address(0)
+                              else if (
+                                right.type === "FunctionCall" &&
+                                right.expression?.type === "ElementaryTypeName" &&
+                                right.expression.name === "address" &&
+                                right.arguments?.[0]?.type === "NumberLiteral" &&
+                                right.arguments[0].value === "0"
+                              ) {
+                                rightOperand = "address(0)";
+                              }
+
+                              // address(this)
+                              else if (
+                                right.type === "FunctionCall" &&
+                                right.expression?.type === "ElementaryTypeName" &&
+                                right.expression.name === "address" &&
+                                right.arguments?.[0]?.type === "Identifier" &&
+                                right.arguments[0].name === "this"
+                              ) {
+                                rightOperand = "address(this)";
+                              }
+
+                              // address(this).balance
+                              else if (
+                                right.type === "MemberAccess" &&
+                                right.expression?.type === "FunctionCall" &&
+                                right.expression.expression?.type === "ElementaryTypeName" &&
+                                right.expression.expression.name === "address" &&
+                                right.expression.arguments?.[0]?.type === "Identifier" &&
+                                right.expression.arguments[0].name === "this" &&
+                                right.memberName === "balance"
+                              ) {
+                                rightOperand = "address(this).balance";
+                              }
+
+                              // fallback generico: numero, stringa, variabile
+                              else {
+                                if (typeof right === "object") {
+                                  rightOperand = (right as any).name ?? (right as any).value ?? "undefined";
+                                } else {
+                                  rightOperand = String(right);
+                                }
+                              }
+
+                              // Costruzione del blocco input_right
+                              inputBlockRight = {
+                                type: "input_right",
+                                fields: {
+                                  input_name: rightOperand
+                                },
+                                id: inputBlockRightId,
+                                parent: requireConditionBlock.id
+                              };
+
+                              inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                              blocklyJson.blocks.blocks.push(inputBlockRight);
+                            }
+                          }
+                          let inputBlockLeftId: string = generateUniqueId();
+                          let inputBlockLeft: BlocklyBlock | undefined;
+
+                          const type: string | null = findVariableType(ast, left.name);
+
+                          if (type !== null) {
+                            console.log("name:", type);
+
+                            if (type === "string") {
+                              inputBlockLeft = {
+                                type: "variables_get_string",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "uint") {
+                              inputBlockLeft = {
+                                type: "variables_get_uint",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "uint256") {
+                              inputBlockLeft = {
+                                type: "variables_get_uint256",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "uint8") {
+                              inputBlockLeft = {
+                                type: "variables_get_uint8",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "int") {
+                              inputBlockLeft = {
+                                type: "variables_get_int",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "bool") {
+                              inputBlockLeft = {
+                                type: "variables_get_bool",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "bytes") {
+                              inputBlockLeft = {
+                                type: "variables_get_bytes",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "bytes32") {
+                              inputBlockLeft = {
+                                type: "variables_get_bytes32",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            } else if (type === "address") {
+                              inputBlockLeft = {
+                                type: "variables_get_address",
+                                fields: {
+                                  VAR: left.name,
+                                },
+                                id: inputBlockLeftId,
+                                parent: requireConditionBlock.id,
+                              };
+                            }
+
+                            if (inputBlockLeft) {
+                              inputBlockLeft.data = JSON.stringify({ parentId: inputBlockLeft.parent });
+                              blocklyJson.blocks.blocks.push(inputBlockLeft);
+                              console.log("inputBlockLeft for leftOperand equal to a variable created!");
+                            }
+                          } else {
+                            let leftOperand: string = "";
+
+                            if (
+                              left.type === "MemberAccess" &&
+                              left.memberName &&
+                              left.expression &&
+                              typeof left.expression.name === "string"
+                            ) {
+                              leftOperand = `${left.expression.name}.${left.memberName}`;
+
+                            } else if (
+                              left.type === "FunctionCall" &&
+                              left.expression?.type === "ElementaryTypeName" &&
+                              left.expression.name === "address" &&
+                              left.arguments &&
+                              left.arguments[0]?.type === "NumberLiteral" &&
+                              left.arguments[0]?.value === "0"
+                            ) {
+                              leftOperand = "address(0)";
+
+                            } else if (
+                              left.type === "FunctionCall" &&
+                              left.expression?.type === "ElementaryTypeName" &&
+                              left.expression.name === "address" &&
+                              left.arguments &&
+                              left.arguments[0]?.type === "Identifier" &&
+                              left.arguments[0]?.name === "this"
+                            ) {
+                              leftOperand = "address(this)";
+
+                            } else if (
+                              left.type === "MemberAccess" &&
+                              left.expression?.type === "FunctionCall" &&
+                              left.expression.expression?.type === "ElementaryTypeName" &&
+                              left.expression.expression?.name === "address" &&
+                              left.expression.arguments &&
+                              left.expression.arguments[0]?.type === "Identifier" &&
+                              left.expression.arguments[0]?.name === "this" &&
+                              left.memberName === "balance"
+                            ) {
+                              leftOperand = "address(this).balance";
+
+                            } else if ("name" in left && typeof left.name === "string") {
+                              leftOperand = left.name;
+
+                            } else {
+                              console.warn("⚠️ leftOperand non riconosciuto:", left);
+                              leftOperand = "undefined";
+                            }
+
+                            const inputBlockLeft: BlocklyBlock = {
+                              type: "input",
+                              fields: {
+                                input_name: leftOperand
+                              },
+                              id: inputBlockLeftId,
+                              parent: requireConditionBlock.id,
+                            };
+
+                            inputBlockLeft.data = JSON.stringify({ parentId: inputBlockLeft.parent });
+                            blocklyJson.blocks.blocks.push(inputBlockLeft);
+                            console.log("✅ inputBlockLeft for Binary Operation created!");
+                          }
+
+                        }
+                      } 
+                      
+                      if (statement.elseStatement?.ifStatement?.statements) {
+                        const statements = statement.elseStatement.ifStatement.statements;
+
+                        statements.forEach((statement: any) => {
+                          if (
+                            statement.type === "ExpressionStatement" &&
+                            statement.expression.type === "Assignment"
+                          ) {
+                            console.log("Prima condizione letta");
+
+                            const assignment = statement.expression;
+                            const varName = assignment.left.name;
+                            const returnValue = assignment.right.name;
+
+                            if (variableTypes[varName]) {
+                              const varType = variableTypes[varName];
+                              const setBlockId = generateUniqueId();
+                              let setblock: BlocklyBlock | undefined;
+
+                              const baseSetBlock = {
+                                fields: { VAR: varName },
+                                id: setBlockId,
+                                parent: elseifBlock.id,
+                              };
+
+                              switch (varType) {
+                                case "string":
+                                  setblock = { type: "variables_set_string", ...baseSetBlock };
+                                  break;
+                                case "uint":
+                                  setblock = { type: "variables_set_uint", ...baseSetBlock };
+                                  break;
+                                case "uint256":
+                                  setblock = { type: "variables_set_uint256", ...baseSetBlock };
+                                  break;
+                                case "uint8":
+                                  setblock = { type: "variables_set_uint8", ...baseSetBlock };
+                                  break;
+                                case "int":
+                                  setblock = { type: "variables_set_int", ...baseSetBlock };
+                                  break;
+                                case "address":
+                                  setblock = { type: "variables_set_address", ...baseSetBlock };
+                                  break;
+                                case "bool":
+                                  setblock = { type: "variables_set_bool", ...baseSetBlock };
+                                  break;
+                                case "bytes":
+                                  setblock = { type: "variables_set_bytes", ...baseSetBlock };
+                                  break;
+                                case "bytes32":
+                                  setblock = { type: "variables_set_bytes32", ...baseSetBlock };
+                                  break;
+                              }
+
+                              if (setblock){
+                                setblock.data = JSON.stringify({ parentId: setblock.parent });
+                                blocklyJson.blocks.blocks.push(setblock);
+                              }
+                              
+                              const inputBlockId = generateUniqueId();
+                              let returnvalueBlock: BlocklyBlock | undefined;
+
+                              if (statement.expression.operator === "+=") {
+                                const incvalue = assignment.right.value ?? assignment.right.name;
+                                returnvalueBlock = {
+                                  type: "input_somma",
+                                  fields: {
+                                    input_name: assignment.left.name,
+                                    input_increment: incvalue,
+                                  },
+                                  id: inputBlockId,
+                                  parent: setBlockId,
+                                };
+                              } else if (statement.expression.operator === "-=") {
+                                const decvalue = assignment.right.value ?? assignment.right.name;
+                                returnvalueBlock = {
+                                  type: "input_diff",
+                                  fields: {
+                                    input_name: assignment.left.name,
+                                    input_decrement: decvalue,
+                                  },
+                                  id: inputBlockId,
+                                  parent: setBlockId,
+                                };
+                              } else if (statement.expression.operator === "=") {
+                                if (assignment.right.type === "BinaryOperation") {
+                                  const inputvalue = assignment.right.right.value ?? assignment.right.right.name;
+                                  const inputname = assignment.right.left.name;
+                                  const innerInputBlockId = generateUniqueId();
+
+                                  if (assignment.right.operator === "+") {
+                                    returnvalueBlock = {
+                                      type: "input_somma",
+                                      fields: {
+                                        input_name: inputname,
+                                        input_increment: inputvalue,
+                                      },
+                                      id: innerInputBlockId,
+                                      parent: setBlockId,
+                                    };
+                                  } else if (assignment.right.operator === "-") {
+                                    returnvalueBlock = {
+                                      type: "input_diff",
+                                      fields: {
+                                        input_name: inputname,
+                                        input_decrement: inputvalue,
+                                      },
+                                      id: innerInputBlockId,
+                                      parent: setBlockId,
+                                    };
+                                  }
+                                } else if (assignment.right.type === "Identifier") {
+                                  returnvalueBlock = {
+                                    type: "input",
+                                    fields: {
+                                      input_name: returnValue,
+                                    },
+                                    id: inputBlockId,
+                                    parent: setBlockId,
+                                  };
+                                }
+                              }
+                              if (returnvalueBlock){
+                                returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                                blocklyJson.blocks.blocks.push(returnvalueBlock);
+                              }
+                              
+                            }
+                          } else if (
+                            statement.type === "ExpressionStatement" &&
+                            statement.expression.type === "UnaryOperation"
+                          ) {
+                            console.log("Seconda condizione letta");
+
+                            const assignment = statement.expression;
+                            const varName = assignment.left.name;
+
+                            if (variableTypes[varName]) {
+                              const varType = variableTypes[varName];
+                              const setBlockId = generateUniqueId();
+                              let setblock: BlocklyBlock | undefined;
+
+                              const baseSetBlock = {
+                                fields: { VAR: varName },
+                                id: setBlockId,
+                                parent: elseifBlock.id,
+                              };
+
+                              switch (varType) {
+                                case "string":
+                                  setblock = { type: "variables_set_string", ...baseSetBlock };
+                                  break;
+                                case "uint":
+                                  setblock = { type: "variables_set_uint", ...baseSetBlock };
+                                  break;
+                                case "uint256":
+                                  setblock = { type: "variables_set_uint256", ...baseSetBlock };
+                                  break;
+                                case "uint8":
+                                  setblock = { type: "variables_set_uint8", ...baseSetBlock };
+                                  break;
+                                case "int":
+                                  setblock = { type: "variables_set_int", ...baseSetBlock };
+                                  break;
+                                case "address":
+                                  setblock = { type: "variables_set_address", ...baseSetBlock };
+                                  break;
+                                case "bool":
+                                  setblock = { type: "variables_set_bool", ...baseSetBlock };
+                                  break;
+                                case "bytes":
+                                  setblock = { type: "variables_set_bytes", ...baseSetBlock };
+                                  break;
+                                case "bytes32":
+                                  setblock = { type: "variables_set_bytes32", ...baseSetBlock };
+                                  break;
+                              }
+                              if(setblock){
+                                setblock.data = JSON.stringify({ parentId: setblock.parent });
+                                blocklyJson.blocks.blocks.push(setblock);
+                              }
+                              
+                              const inputvalue = "1";
+                              const inputBlockId = generateUniqueId();
+                              let returnvalueBlock: BlocklyBlock | undefined;
+
+                              if (assignment.operator === "++") {
+                                returnvalueBlock = {
+                                  type: "input_somma",
+                                  fields: {
+                                    input_name: varName,
+                                    input_increment: inputvalue,
+                                  },
+                                  id: inputBlockId,
+                                  parent: setBlockId,
+                                };
+                              } else if (assignment.operator === "--") {
+                                returnvalueBlock = {
+                                  type: "input_diff",
+                                  fields: {
+                                    input_name: varName,
+                                    input_decrement: inputvalue,
+                                  },
+                                  id: inputBlockId,
+                                  parent: setBlockId,
+                                };
+                              }
+                              if(returnvalueBlock){
+                                returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                                blocklyJson.blocks.blocks.push(returnvalueBlock);
+                              }  
+                            }
+                          } else if (statement.type == "ReturnStatement"){
+                            let returnBlock: BlocklyBlock | undefined;
+
+                            const returnBlockId = generateUniqueId();
+
+                            if (!statement.expression) {
+                              console.log("Null expression!");
+
+                              returnBlock = {
+                                type: "return_block",
+                                fields: {
+                                  input_name: ""
+                                },
+                                id: returnBlockId,
+                                parent: elseifBlock.id
+                              };
+                            } else if (statement.expression.type === "Identifier") {
+                              console.log("Terza condizione letta");
+
+                              const assignment = statement.expression; //as IdentifierNode;
+                              const varName : string = assignment.name;
+
+                              returnBlock = {
+                                type: "return_block",
+                                fields: {
+                                  input_name: varName
+                                },
+                                id: returnBlockId,
+                                parent: elseifBlock.id
+                              };
+                            } else if (statement.expression.type === "FunctionCall") {
+                              const assignment = statement.expression; // as FunctionCallNode;
+
+                              const name: string = assignment.expression.expression.name;
+                              const membername: string = assignment.expression.memberName;
+                              const varName: string  = `${name}.${membername}`;
+
+                              returnBlock = {
+                                type: "return_block",
+                                fields: {
+                                  input_name: varName
+                                },
+                                id: returnBlockId,
+                                parent: elseifBlock.id
+                              };
+                            }
+                            if (returnBlock){
+                              returnBlock.data = JSON.stringify({ parentId: returnBlock.parent });
+                              blocklyJson.blocks.blocks.push(returnBlock);
+                            }
+                            
+                          } else {
+                            console.warn("Nodo non gestito:", statement.type);
+                            const blackBlock: BlocklyBlock = generateBlackBlock(statement, elseifBlock.id);
+                            blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
+                            blocklyJson.blocks.blocks.push(blackBlock);
+                          }
+                        });
+                      }
+                    });
+
+                    (savedElseBlockStatements1 as any[]).forEach((statement, i) => {
+                      (statement.elseStatement.statements as any[]).forEach((statement: any) => {
+                        console.log("elsecondition rilevata");
+
+                        if (statement.type === "ExpressionStatement" && statement.expression.type === "Assignment") {
+                          console.log("Prima condizione letta nell'else");
+
+                          const assignment = statement.expression;
+                          const varName = assignment.left.name;
+                          const returnValue = assignment.right.name || assignment.right.value;
+
+                          if (variableTypes[varName]) {
+                            const varType = variableTypes[varName];
+                            const setBlockId = generateUniqueId();
+                            let setblock: any;
+
+                            if (elseBlock){
+                            switch (varType) {
+                              case "string":
+                                setblock = { type: "variables_set_string", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "uint":
+                                setblock = { type: "variables_set_uint", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "uint256":
+                                setblock = { type: "variables_set_uint256", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "uint8":
+                                setblock = { type: "variables_set_uint8", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "int":
+                                setblock = { type: "variables_set_int", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "address":
+                                setblock = { type: "variables_set_address", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "bool":
+                                setblock = { type: "variables_set_bool", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "bytes":
+                                setblock = { type: "variables_set_bytes", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              case "bytes32":
+                                setblock = { type: "variables_set_bytes32", fields: { VAR: varName }, id: setBlockId, parent: elseBlock.id };
+                                break;
+                              }
+                            }
+
+                            setblock.data = JSON.stringify({ parentId: setblock.parent });
+                            blocklyJson.blocks.blocks.push(setblock);
+
+                            const inputBlockId = generateUniqueId();
+                            let returnvalueBlock: any;
+
+                            if (assignment.operator === "+=") {
+                              console.log("siamo dentro: +=");
+                              const incvalue = assignment.right.value || assignment.right.name;
+                              returnvalueBlock = {
+                                type: "input_somma",
+                                fields: { input_name: assignment.left.name, input_increment: incvalue },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else if (assignment.operator === "-=") {
+                              console.log("siamo dentro: -=");
+                              const decvalue = assignment.right.value || assignment.right.name;
+                              returnvalueBlock = {
+                                type: "input_diff",
+                                fields: { input_name: assignment.left.name, input_decrement: decvalue },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else if (assignment.operator === "=") {
+                              if (assignment.right.type === "BinaryOperation") {
+                                const inputvalue = assignment.right.right.value || assignment.right.right.name;
+                                const inputname = assignment.right.left.name;
+
+                                if (assignment.right.operator === "+") {
+                                  returnvalueBlock = {
+                                    type: "input_somma",
+                                    fields: { input_name: inputname, input_increment: inputvalue },
+                                    id: inputBlockId,
+                                    parent: setBlockId,
+                                  };
+                                } else if (assignment.right.operator === "-") {
+                                  returnvalueBlock = {
+                                    type: "input_diff",
+                                    fields: { input_name: inputname, input_decrement: inputvalue },
+                                    id: inputBlockId,
+                                    parent: setBlockId,
+                                  };
+                                }
+                              } else if (assignment.right.type === "Identifier" || assignment.right.type === "NumberLiteral") {
+                                console.log("Identifier");
+                                returnvalueBlock = {
+                                  type: "input",
+                                  fields: { input_name: returnValue },
+                                  id: inputBlockId,
+                                  parent: setBlockId,
+                                };
+                              }
+                            }
+
+                            returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnvalueBlock);
+                          }
+  
+                        } else if (
+                          statement.type === "ExpressionStatement" &&
+                          statement.expression.type === "UnaryOperation"
+                        ) {
+                          console.log("Seconda condizione letta nell'else");
+                          const assignment = statement.expression;
+                          const varName: string = assignment.left.name;
+
+                          if (variableTypes[varName]) {
+                            const varType: string = variableTypes[varName];
+                            const setBlockId: string = generateUniqueId();
+                            let setblock: BlocklyBlock | undefined;
+
+                            if (elseBlock){
+                            switch (varType) {
+                              case "string":
+                                setblock = {
+                                  type: "variables_set_string",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "uint":
+                                setblock = {
+                                  type: "variables_set_uint",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "uint256":
+                                setblock = {
+                                  type: "variables_set_uint256",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "uint8":
+                                setblock = {
+                                  type: "variables_set_uint8",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "int":
+                                setblock = {
+                                  type: "variables_set_int",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "address":
+                                setblock = {
+                                  type: "variables_set_address",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "bool":
+                                setblock = {
+                                  type: "variables_set_bool",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "bytes":
+                                setblock = {
+                                  type: "variables_set_bytes",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              case "bytes32":
+                                setblock = {
+                                  type: "variables_set_bytes32",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock.id,
+                                };
+                                break;
+                              default:
+                                return;
+                            }
+                            }
+                            if (setblock){
+                              setblock.data = JSON.stringify({ parentId: setblock.parent });
+                              blocklyJson.blocks.blocks.push(setblock);
+                            }
+                            
+
+                            const inputvalue = "1";
+                            const inputBlockId: string = generateUniqueId();
+                            let returnvalueBlock: {
+                              type: string;
+                              fields: Record<string, string>;
+                              id: string;
+                              parent: string;
+                              data?: string;
+                            };
+
+                            if (assignment.operator === "++") {
+                              returnvalueBlock = {
+                                type: "input_somma",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_increment: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else if (assignment.operator === "--") {
+                              returnvalueBlock = {
+                                type: "input_diff",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_decrement: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else {
+                              return;
+                            }
+
+                            returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnvalueBlock);
+                          }
+                        } else if (statement.type === "ReturnStatement") {
+                          let returnBlock: BlocklyBlock | undefined;
+
+                          if (!statement.expression) {
+                            console.log("Null expression!");
+                            const returnBlockId = generateUniqueId();
+                            if (elseBlock){
+                            returnBlock = {
+                              type: "return_block",
+                              fields: { input_name: "" },
+                              id: returnBlockId,
+                              parent: elseBlock.id,
+                            };
+                            }
+                          } else if (statement.expression.type === "Identifier") {
+                            const assignment = statement.expression;
+                            const varName: string = assignment.name;
+                            const returnBlockId = generateUniqueId();
+                            if (elseBlock){
+                            returnBlock = {
+                              type: "return_block",
+                              fields: { input_name: varName },
+                              id: returnBlockId,
+                              parent: elseBlock.id,
+                            };
+                            }
+                          } else if (statement.expression.type === "FunctionCall") {
+                            const assignment = statement.expression;
+                            const name = assignment.expression.expression.name;
+                            const membername = assignment.expression.memberName;
+                            const varName: string = name + "." + membername;
+                            const returnBlockId = generateUniqueId();
+                            if (elseBlock){
+                              returnBlock = {
+                              type: "return_block",
+                              fields: { input_name: varName },
+                              id: returnBlockId,
+                              parent: elseBlock.id,
+                            };
+                            }
+                          } else {
+                            return;
+                          }
+                          if(returnBlock){
+                            returnBlock.data = JSON.stringify({ parentId: returnBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnBlock);
+                          }
+                        } else {
+                          console.warn("Nodo non gestito:", statement.type);
+                          if(elseBlock){
+                            const blackBlock = generateBlackBlock(statement, elseBlock.id);
+                            blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
+                            blocklyJson.blocks.blocks.push(blackBlock);
+                          }
+                        }
+                      });
+                    });
+
+                  } else if (count < 1 && savedElseBlockStatements.length > 0) {
+                    // Count < 1 && siamo nell'elseStatement
+                    // PARENT: if_else_Block BLOCK
+
+                    const if_else_BlockId: string = generateUniqueId();
+
+                    const if_else_Block: BlocklyBlock = {
+                      type: "if_else_container",
+                      id: if_else_BlockId,
+                      parent: functionBlock.id,
+                      fields: {}
+                    };
+
+                    if_else_Block.data = JSON.stringify({ parentId: if_else_Block.parent });
+                    blocklyJson.blocks.blocks.push(if_else_Block);
+                    console.log("if_else block added to json");
+
+                    // INIZIALIZZAZIONE IF_BLOCK con parent dell' if_else id
+                    ifBlock = {
+                      type: "if",
+                      id: ifBlockId,
+                      parent: if_else_Block.id,
+                      fields: {}
+                    };
+                    console.log("IF block with the if_else ID");
+
+                    // INIZIALIZZAZIONE ELSE_BLOCK con parent dell' if_else id
+                    elseBlock = {
+                      type: "else",
+                      id: elseBlockId,
+                      parent: if_else_Block.id,
+                      fields: {}
+                    };
+                    console.log("ELSE block with the if_else ID");
+
+                    // AGGIUNGI ELSE BLOCK AL JSON
+                    elseBlock.data = JSON.stringify({ parentId: elseBlock.parent });
+                    blocklyJson.blocks.blocks.push(elseBlock);
+                    console.log("Else block added to the json");
+
+                    savedElseBlockStatements.forEach((statement, i) => {
+                      statement.statements.forEach((statement: any) => {
+                        console.log("elsecondition rilevata");
+
+                        if (statement.type === "ExpressionStatement" && statement.expression.type === "Assignment") {
+                          console.log("Prima condizione letta nell'else");
+                          const assignment = statement.expression;
+                          const varName: string = assignment.left.name;
+                          const returnValue: string = assignment.right.name;
+
+                          if (variableTypes[varName]) {
+                            const varType: string = variableTypes[varName];
+                            const setBlockId: string = generateUniqueId();
+                            let setblock: any;
+
+                            switch (varType) {
+                              case "string":
+                                setblock = {
+                                  type: "variables_set_string",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "uint":
+                                setblock = {
+                                  type: "variables_set_uint",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "uint256":
+                                setblock = {
+                                  type: "variables_set_uint256",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "uint8":
+                                setblock = {
+                                  type: "variables_set_uint8",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "int":
+                                setblock = {
+                                  type: "variables_set_int",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "address":
+                                setblock = {
+                                  type: "variables_set_address",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "bool":
+                                setblock = {
+                                  type: "variables_set_bool",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "bytes":
+                                setblock = {
+                                  type: "variables_set_bytes",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                              case "bytes32":
+                                setblock = {
+                                  type: "variables_set_bytes32",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id
+                                };
+                                break;
+                            }
+
+                            setblock.data = JSON.stringify({ parentId: setblock.parent });
+                            blocklyJson.blocks.blocks.push(setblock);
+
+                            let returnvalueBlock: any;
+                            const inputBlockId: string = generateUniqueId();
+
+                            if (statement.expression.operator === "+=") {
+                              const incvalue = assignment.right.value || assignment.right.name;
+                              returnvalueBlock = {
+                                type: "input_somma",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_increment: incvalue
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId
+                              };
+
+                            } else if (statement.expression.operator === "-=") {
+                              const decvalue = assignment.right.value || assignment.right.name;
+                              returnvalueBlock = {
+                                type: "input_diff",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_decrement: decvalue
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId
+                              };
+
+                            } else if (statement.expression.operator === "=") {
+                              if (assignment.right.type === "BinaryOperation") {
+                                const inputvalue = assignment.right.right.value || assignment.right.right.name;
+                                const inputname = assignment.right.left.name;
+
+                                if (assignment.right.operator === "+") {
+                                  returnvalueBlock = {
+                                    type: "input_somma",
+                                    fields: {
+                                      input_name: inputname,
+                                      input_increment: inputvalue
+                                    },
+                                    id: inputBlockId,
+                                    parent: setBlockId
+                                  };
+                                } else if (assignment.right.operator === "-") {
+                                  returnvalueBlock = {
+                                    type: "input_diff",
+                                    fields: {
+                                      input_name: inputname,
+                                      input_decrement: inputvalue
+                                    },
+                                    id: inputBlockId,
+                                    parent: setBlockId
+                                  };
+                                }
+                              } else if (assignment.right.type === "Identifier") {
+                                returnvalueBlock = {
+                                  type: "input",
+                                  fields: {
+                                    input_name: returnValue
+                                  },
+                                  id: inputBlockId,
+                                  parent: setBlockId
+                                };
+                              }
+                            }
+
+                            returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnvalueBlock);
+                          } 
+                        } else if (statement.type === "ExpressionStatement" && statement.expression.type === "UnaryOperation") {
+                          console.log("Seconda condizione letta nell'else");
+
+                          const assignment = statement.expression;
+                          const varName: string = assignment.left.name;
+
+                          if (variableTypes[varName]) {
+                            const varType: string = variableTypes[varName];
+                            const setBlockId: string = generateUniqueId();
+                            let setblock: any;
+
+                            switch (varType) {
+                              case "string":
+                                setblock = {
+                                  type: "variables_set_string",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "uint":
+                                setblock = {
+                                  type: "variables_set_uint",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "uint256":
+                                setblock = {
+                                  type: "variables_set_uint256",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "uint8":
+                                setblock = {
+                                  type: "variables_set_uint8",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "int":
+                                setblock = {
+                                  type: "variables_set_int",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "address":
+                                setblock = {
+                                  type: "variables_set_address",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "bool":
+                                setblock = {
+                                  type: "variables_set_bool",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "bytes":
+                                setblock = {
+                                  type: "variables_set_bytes",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                              case "bytes32":
+                                setblock = {
+                                  type: "variables_set_bytes32",
+                                  fields: { VAR: varName },
+                                  id: setBlockId,
+                                  parent: elseBlock?.id,
+                                };
+                                break;
+                            }
+
+                            setblock.data = JSON.stringify({ parentId: setblock.parent });
+                            blocklyJson.blocks.blocks.push(setblock);
+
+                            const inputvalue: string = "1";
+                            const inputBlockId: string = generateUniqueId();
+                            let returnvalueBlock: any;
+
+                            if (assignment.operator === "++") {
+                              returnvalueBlock = {
+                                type: "input_somma",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_increment: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else if (assignment.operator === "--") {
+                              returnvalueBlock = {
+                                type: "input_diff",
+                                fields: {
+                                  input_name: assignment.left.name,
+                                  input_decrement: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            }
+
+                            returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnvalueBlock);
+                          }
+                        } else if (statement.type == "ReturnStatement"){
+                          let returnBlock: BlocklyBlock | undefined;
+
+                          if (!statement.expression) {
+                            console.log("Null expression!");
+                            const returnBlockId: string = generateUniqueId();
+                            returnBlock = {
+                              type: "return_block",
+                              fields: {
+                                input_name: ""
+                              },
+                              id: returnBlockId,
+                              parent: elseBlock?.id, // Safe access in caso elseBlock sia undefined
+                              // section: "DO"
+                            };
+                          } else if (statement.expression.type === "Identifier") {
+                            console.log("Terza condizione letta");
+                            const assignment = statement.expression;
+                            const varName = assignment.name;
+                            const returnBlockId: string = generateUniqueId();
+                            returnBlock = {
+                              type: "return_block",
+                              fields: {
+                                input_name: varName
+                              },
+                              id: returnBlockId,
+                              parent: elseBlock?.id
+                            };
+
+                          } else if (statement.expression.type === "FunctionCall") {
+                            const assignment = statement.expression;
+                            const name = assignment.expression.expression.name;
+                            const membername = assignment.expression.memberName;
+                            const varName = `${name}.${membername}`;
+                            const returnBlockId: string = generateUniqueId();
+                            returnBlock = {
+                              type: "return_block",
+                              fields: {
+                                input_name: varName
+                              },
+                              id: returnBlockId,
+                              parent: elseBlock?.id
+                            };
+                          }
+
+                          // Impostazione proprietà extra e push nel JSON Blockly
+                          if (returnBlock) {
+                            returnBlock.data = JSON.stringify({ parentId: returnBlock.parent });
+                            blocklyJson.blocks.blocks.push(returnBlock);
+                          }
+                        } else {
+                            console.warn("Nodo non gestito:", statement.type);
+                            if (elseBlock){
+                              const blackBlock = generateBlackBlock(statement, elseBlock.id);
+                              blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
+                              blocklyJson.blocks.blocks.push(blackBlock);
+                            }     
+                        }
+                      });
+                    });
+                  }  
+                } else {
+                  // if block
+                  ifBlock = {
+                    type: "if", // oppure "controls_if"
+                    id: ifBlockId,
+                    parent: functionBlock.id,
+                    fields: {}
+                  }; //as any; // oppure crea un tipo specifico se desideri
+
+                  // AGGIUNGI IF BLOCK AL JSON
+                  ifBlock.data = JSON.stringify({ parentId: ifBlock.parent });
+                  blocklyJson.blocks.blocks.push(ifBlock);
+                  console.log("If block added to the json");
+                }
+
+                // condizioni per if block
+                if (statement.condition && statement.condition.operator) {
+                  const solidityOperator: string = statement.condition.operator;
+                  console.log("Operatore trovato nel require:", solidityOperator);
+                  const conditionType: string = operatorMapping[solidityOperator] || "EQUAL";
+
+                  let inputBlockLeft: BlocklyBlock | undefined;
+                  let inputBlockRight: BlocklyBlock | undefined;
+                  let requireConditionBlock: BlocklyBlock | undefined;
+
+                  // 1 Condition: UnaryOperator "!"
+                  if (solidityOperator === "!") {
+                    console.log("Mapping operatore Blockly:", conditionType);
+                    const right = statement.condition.right;
+                    console.log("Right:", right);
+
+                    const requireConditionBlockId = generateUniqueId();
+                    requireConditionBlock = {
+                      type: "require_condition",
+                      fields: {
+                        OPERATOR: conditionType
+                      },
+                      id: requireConditionBlockId,
+                      parent: ifBlock?.id
+                    };
+                    requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                    blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                    //const type: string = findVariableType(ast, right.name);
+                    const typeFound = findVariableType(ast, right.name);
+                    if (typeFound){
+                      const type: string = typeFound;
+                    
+                    console.log("name:", type);
+                    const inputBlockRightId = generateUniqueId();
+
+                    switch (type) {
+                      case "string":
+                        inputBlockRight = {
+                          type: "variables_get_string",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "uint":
+                        inputBlockRight = {
+                          type: "variables_get_uint",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "uint256":
+                        inputBlockRight = {
+                          type: "variables_get_uint256",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "uint8":
+                        inputBlockRight = {
+                          type: "variables_get_uint8",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "int":
+                        inputBlockRight = {
+                          type: "variables_get_int",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "bool":
+                        inputBlockRight = {
+                          type: "variables_get_bool",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "bytes":
+                        inputBlockRight = {
+                          type: "variables_get_bytes",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "bytes32":
+                        inputBlockRight = {
+                          type: "variables_get_bytes32",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                      case "address":
+                        inputBlockRight = {
+                          type: "variables_get_address",
+                          fields: { VAR: right.name },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                        break;
+                    }
+                  }
+                    if (inputBlockRight){
+                      inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                      blocklyJson.blocks.blocks.push(inputBlockRight);
+                      console.log("inputBlockRight for UnaryOperation created!");
+                    }
+                    
+
+                  // 2 Condition: BinaryOperator (==, !=, >=, <=, >, <)
+                  } else if (
+                    solidityOperator === "==" || solidityOperator === "!=" ||
+                    solidityOperator === ">=" || solidityOperator === "<=" ||
+                    solidityOperator === ">" || solidityOperator === "<"
+                  ) {
+                    const conditionType: string = operatorMapping[solidityOperator] || "EQUAL";
+                    console.log("Mapping operatore Blockly:", conditionType);
+
+                    const left = statement.condition.left || statement.elseStatement?.condition.left;
+                    console.log("Left:", left);
+                    const right = statement.condition.right || statement.elseStatement?.condition.right;
+                    console.log("Right:", right);
+
+                    const requireConditionBlockId = generateUniqueId();
+                    requireConditionBlock = {
+                      type: "require_condition",
+                      fields: {
+                        OPERATOR: conditionType
+                      },
+                      id: requireConditionBlockId,
+                      parent: ifBlock?.id
+                    };
+                    requireConditionBlock.data = JSON.stringify({ parentId: requireConditionBlock.parent });
+                    blocklyJson.blocks.blocks.push(requireConditionBlock);
+
+                    // Resto del codice per inputBlockLeft e inputBlockRight puoi copiarlo dallo stesso schema di sopra
+                    if (right) {
+                      const inputBlockRightId: string = generateUniqueId();
+
+                      if (findVariable(ast, right.name) === true) {
+                        const type: string = findVariableType(ast, right.name)!;
+                        console.log("name:", type);
+
+                        if (type === "string") {
+                          inputBlockRight = {
+                            type: "variables_get_string",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "uint") {
+                          inputBlockRight = {
+                            type: "variables_get_uint",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "uint256") {
+                          inputBlockRight = {
+                            type: "variables_get_uint256",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "uint8") {
+                          inputBlockRight = {
+                            type: "variables_get_uint8",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "int") {
+                          inputBlockRight = {
+                            type: "variables_get_int",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "bool") {
+                          inputBlockRight = {
+                            type: "variables_get_bool",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "bytes") {
+                          inputBlockRight = {
+                            type: "variables_get_bytes",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "bytes32") {
+                          inputBlockRight = {
+                            type: "variables_get_bytes32",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        } else if (type === "address") {
+                          inputBlockRight = {
+                            type: "variables_get_address",
+                            fields: { VAR: right.name },
+                            id: inputBlockRightId,
+                            parent: requireConditionBlock.id
+                          };
+                        }
+
+                        console.log("inputBlockRight for rightOperand equal to a variable created!");
+
+                      } else {
+                        let rightOperand: string = "";
+
+                        if (right.type === "MemberAccess" && right.memberName) {
+                          rightOperand = right.expression.name + "." + right.memberName;
+
+                        } else if (
+                          right.type === "FunctionCall" &&
+                          right.expression.type === "ElementaryTypeName" &&
+                          right.expression.name === "address" &&
+                          right.arguments?.[0].type === "NumberLiteral" &&
+                          right.arguments[0].value === "0"
+                        ) {
+                          rightOperand = "address(0)";
+
+                        } else if (
+                          right.type === "FunctionCall" &&
+                          right.expression.type === "ElementaryTypeName" &&
+                          right.expression.name === "address" &&
+                          right.arguments?.[0].type === "Identifier" &&
+                          right.arguments[0].name === "this"
+                        ) {
+                          rightOperand = "address(this)";
+
+                        } else if (
+                          right.type === "MemberAccess" &&
+                          right.expression.type === "FunctionCall" &&
+                          right.expression.expression.type === "ElementaryTypeName" &&
+                          right.expression.expression.name === "address" &&
+                          right.expression.arguments?.[0].type === "Identifier" &&
+                          right.expression.arguments[0].name === "this" &&
+                          right.memberName === "balance"
+                        ) {
+                          rightOperand = "address(this).balance";
+
+                        } else {
+                          rightOperand = typeof right === 'object' ? (right.name ?? right.value) : right;
+                        }
+
+                        inputBlockRight = {
+                          type: "input_right",
+                          fields: {
+                            input_name: rightOperand
+                          },
+                          id: inputBlockRightId,
+                          parent: requireConditionBlock.id
+                        };
+                      }
+                      if(inputBlockRight){
+                        inputBlockRight.data = JSON.stringify({ parentId: inputBlockRight.parent });
+                        blocklyJson.blocks.blocks.push(inputBlockRight);
+                      }  
+                    }
+
+                    const inputBlockLeftId: string = generateUniqueId();
+
+                    if (findVariable(ast, left.name) === true) {
+                      const type: string = findVariableType(ast, left.name)!;
+                      console.log("name:", type);
+
+                      if (type === "string") {
+                        inputBlockLeft = {
+                          type: "variables_get_string",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "uint") {
+                        inputBlockLeft = {
+                          type: "variables_get_uint",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "uint256") {
+                        inputBlockLeft = {
+                          type: "variables_get_uint256",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "uint8") {
+                        inputBlockLeft = {
+                          type: "variables_get_uint8",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "int") {
+                        inputBlockLeft = {
+                          type: "variables_get_int",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "bool") {
+                        inputBlockLeft = {
+                          type: "variables_get_bool",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "bytes") {
+                        inputBlockLeft = {
+                          type: "variables_get_bytes",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "bytes32") {
+                        inputBlockLeft = {
+                          type: "variables_get_bytes32",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      } else if (type === "address") {
+                        inputBlockLeft = {
+                          type: "variables_get_address",
+                          fields: { VAR: left.name },
+                          id: inputBlockLeftId,
+                          parent: requireConditionBlock.id
+                        };
+                      }
+
+                    } else {
+                      let leftOperand: string;
+
+                      if (left.type === "MemberAccess" && left.memberName) {
+                        leftOperand = `${left.expression.name}.${left.memberName}`;
+                      } else if (
+                        left.type === "FunctionCall" &&
+                        left.expression.type === "ElementaryTypeName" &&
+                        left.expression.name === "address" &&
+                        left.arguments?.[0].type === "NumberLiteral" &&
+                        left.arguments[0].value === "0"
+                      ) {
+                        leftOperand = "address(0)";
+                      } else if (
+                        left.type === "FunctionCall" &&
+                        left.expression.type === "ElementaryTypeName" &&
+                        left.expression.name === "address" &&
+                        left.arguments?.[0].type === "Identifier" &&
+                        left.arguments[0].name === "this"
+                      ) {
+                        leftOperand = "address(this)";
+                      } else if (
+                        left.type === "MemberAccess" &&
+                        left.expression.type === "FunctionCall" &&
+                        left.expression.expression.type === "ElementaryTypeName" &&
+                        left.expression.expression.name === "address" &&
+                        left.expression.arguments?.[0].type === "Identifier" &&
+                        left.expression.arguments[0].name === "this" &&
+                        left.memberName === "balance"
+                      ) {
+                        leftOperand = "address(this).balance";
+                      } else {
+                        leftOperand = typeof left === "object" ? (left.name ?? left.value) : (left as string);
+                      }
+
+                      inputBlockLeft = {
+                        type: "input",
+                        fields: {
+                          input_name: leftOperand
+                        },
+                        id: inputBlockLeftId,
+                        parent: requireConditionBlock.id
+                      };
+                    }
+                    // Aggiunta al JSON finale
+                    if(inputBlockLeft){
+                      inputBlockLeft.data = JSON.stringify({ parentId: inputBlockLeft.parent });
+                      blocklyJson.blocks.blocks.push(inputBlockLeft);
+                      console.log("inputBlockLeft for Binary Operation created!");
+                    }
+                  }
+                }
+
+                if (statement.ifStatement && statement.ifStatement.statements) {
+                  const statements = statement.ifStatement.statements;
+                  const sortedIfStatements = statements.slice().sort((a: any, b: any) => b.range[0] - a.range[0]);
+
+                  sortedIfStatements.forEach((statement: any) => {
+                    if (
+                      statement.type === "ExpressionStatement" &&
+                      statement.expression.type === "Assignment"
+                    ) {
+                      const assignment = statement.expression;
+                      const varName = assignment.left.name;
+                      const returnValue = assignment.right.name;
+
+                      if (variableTypes[varName]) {
+                        const varType = variableTypes[varName];
+                        const setBlockId = generateUniqueId();
+                        let setblock: BlocklyBlock | undefined;
+
+                        switch (varType) {
+                          case "string":
+                          case "uint":
+                          case "uint256":
+                          case "uint8":
+                          case "int":
+                          case "address":
+                          case "bool":
+                          case "bytes":
+                          case "bytes32":
+                            setblock = {
+                              type: `variables_set_${varType}`,
+                              fields: { VAR: varName },
+                              id: setBlockId,
+                              parent: ifBlock?.id,
+                            };
+                            break;
+                        }
+                        if (setblock){
+                          setblock.data = JSON.stringify({ parentId: setblock.parent });
+                          blocklyJson.blocks.blocks.push(setblock);
+                        }
+
+                        let returnvalueBlock: BlocklyBlock | undefined;
+                        const inputBlockId = generateUniqueId();
+
+                        if (statement.expression.operator === "+=") {
+                          const incvalue = assignment.right.value || assignment.right.name;
+                          returnvalueBlock = {
+                            type: "input_somma",
+                            fields: {
+                              input_name: assignment.left.name,
+                              input_increment: incvalue,
+                            },
+                            id: inputBlockId,
+                            parent: setBlockId,
+                          };
+                        } else if (statement.expression.operator === "-=") {
+                          const decvalue = assignment.right.value || assignment.right.name;
+                          returnvalueBlock = {
+                            type: "input_diff",
+                            fields: {
+                              input_name: assignment.left.name,
+                              input_decrement: decvalue,
+                            },
+                            id: inputBlockId,
+                            parent: setBlockId,
+                          };
+                        } else if (statement.expression.operator === "=") {
+                          if (assignment.right.type === "BinaryOperation") {
+                            const inputvalue = assignment.right.right.value || assignment.right.right.name;
+                            const inputname = assignment.right.left.name;
+
+                            if (assignment.right.operator === "+") {
+                              returnvalueBlock = {
+                                type: "input_somma",
+                                fields: {
+                                  input_name: inputname,
+                                  input_increment: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            } else if (assignment.right.operator === "-") {
+                              returnvalueBlock = {
+                                type: "input_diff",
+                                fields: {
+                                  input_name: inputname,
+                                  input_decrement: inputvalue,
+                                },
+                                id: inputBlockId,
+                                parent: setBlockId,
+                              };
+                            }
+                          } else if (assignment.right.type === "Identifier") {
+                            returnvalueBlock = {
+                              type: "input",
+                              fields: {
+                                input_name: returnValue,
+                              },
+                              id: inputBlockId,
+                              parent: setBlockId,
+                            };
+                          }
+                        }
+                        if(returnvalueBlock){
+                          returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                          blocklyJson.blocks.blocks.push(returnvalueBlock);
+                        }
+                        
+                      } else {
+                        const lhs =
+                          assignment.left.baseExpression.name +
+                          "[" +
+                          assignment.left.indexExpression.name +
+                          "]";
+                        const rhs =
+                          assignment.right.expression.name + "." + assignment.right.memberName;
+                        const code = `${lhs} = ${rhs};`;
+
+                        const returnvalueBlockId = generateUniqueId();
+                        const returnvalueBlock = {
+                          type: "internalAss",
+                          fields: {
+                            CODE: code,
+                          },
+                          id: returnvalueBlockId,
+                          parent: ifBlock?.id,
+                          data: JSON.stringify({ parentId: ifBlock?.id})
+                        };
+                        //returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                        blocklyJson.blocks.blocks.push(returnvalueBlock);
+                      }
+                    } else if (
+                      statement.type === "ExpressionStatement" &&
+                      statement.expression.type === "UnaryOperation"
+                    ) {
+                      console.log("Seconda condizione letta");
+
+                      const assignment = statement.expression;
+                      const varName = assignment.left.name;
+
+                      if (variableTypes[varName]) {
+                        const varType: string = variableTypes[varName];
+                        const setBlockId = generateUniqueId();
+                        let setblock: BlocklyBlock | undefined;
+
+                        switch (varType) {
+                          case "string":
+                          case "uint":
+                          case "uint256":
+                          case "uint8":
+                          case "int":
+                          case "address":
+                          case "bool":
+                          case "bytes":
+                          case "bytes32":
+                            setblock = {
+                              type: `variables_set_${varType}`,
+                              fields: { VAR: varName },
+                              id: setBlockId,
+                              parent: ifBlock?.id,
+                            };
+                            break;
+                        }
+                        if (setblock){
+                          setblock.data = JSON.stringify({ parentId: setblock.parent });
+                          blocklyJson.blocks.blocks.push(setblock);
+                        }
+                        
+                        const inputvalue = "1";
+                        const inputBlockId = generateUniqueId();
+                        let returnvalueBlock: any;
+
+                        if (assignment.operator === "++") {
+                          returnvalueBlock = {
+                            type: "input_somma",
+                            fields: {
+                              input_name: assignment.left.name,
+                              input_increment: inputvalue,
+                            },
+                            id: inputBlockId,
+                            parent: setBlockId,
+                          };
+                        } else if (assignment.operator === "--") {
+                          returnvalueBlock = {
+                            type: "input_diff",
+                            fields: {
+                              input_name: assignment.left.name,
+                              input_decrement: inputvalue,
+                            },
+                            id: inputBlockId,
+                            parent: setBlockId,
+                          };
+                        }
+
+                        returnvalueBlock.data = JSON.stringify({ parentId: returnvalueBlock.parent });
+                        blocklyJson.blocks.blocks.push(returnvalueBlock);
+                      }
+                    } else if (statement.type === "ReturnStatement") {
+                      console.log("Terza condizione letta");
+
+                      let returnBlock: BlocklyBlock | undefined;
+
+                      if (!statement.expression) {
+                        console.log("Null expression!");
+                        const returnBlockId: string = generateUniqueId();
+                        returnBlock = {
+                          type: "return_block",
+                          fields: {
+                            input_name: ""
+                          },
+                          id: returnBlockId,
+                          parent: ifBlock?.id
+                        };
+
+                      } else if (statement.expression.type === "Identifier") {
+                        const assignment = statement.expression;
+                        const varName: string = assignment.name;
+                        const returnBlockId: string = generateUniqueId();
+                        returnBlock = {
+                          type: "return_block",
+                          fields: {
+                            input_name: varName
+                          },
+                          id: returnBlockId,
+                          parent: ifBlock?.id
+                        };
+
+                      } else if (statement.expression.type === "FunctionCall") {
+                        const assignment = statement.expression;
+
+                        const name1: string | undefined = assignment?.expression?.expression?.name;
+                        const membername: string | undefined = assignment?.expression?.memberName;
+
+                        const varName: string = `${name1}.${membername}`;
+                        const returnBlockId: string = generateUniqueId();
+                        returnBlock = {
+                          type: "return_block",
+                          fields: {
+                            input_name: varName
+                          },
+                          id: returnBlockId,
+                          parent: ifBlock?.id
+                        };
+                      }
+                      if (returnBlock){
+                        returnBlock.data = JSON.stringify({ parentId: returnBlock.parent });
+                        blocklyJson.blocks.blocks.push(returnBlock);
+                      }
+                      
+                    } else {
+                      console.warn("Nodo non gestito:", statement.type);
+                      if (ifBlock) {
+                        const blackBlock: BlocklyBlock = generateBlackBlock(statement, ifBlock.id);
+                        blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
+                        blocklyJson.blocks.blocks.push(blackBlock);
+                      }
+                    }
+                });
+                }
+              //}
               } else {
                 console.warn("Nodo non gestito:", statement.type);
+
                 const blackBlock: BlocklyBlock = generateBlackBlock(statement, functionBlock.id);
                 blackBlock.data = JSON.stringify({ parentId: blackBlock.parent });
                 blocklyJson.blocks.blocks.push(blackBlock);
               }
-
             });
           }
-
-
-
         }
         break;
       }
@@ -2540,3 +4591,62 @@ export function positionBlocks(blocks: Blockly.Block[]): void {
     }
   });
 }
+
+
+// Tipizzazione generica per i nodi, puoi specificare un'interfaccia migliore se nota
+let elseStatementnodes: any[] = [];
+let savedElseBlockStatements: any[] = [];
+let savedElseBlockStatements1: any[] = [];
+
+// Funzione per svuotare gli array
+function resetArrays(): void {
+  savedElseBlockStatements = [];
+  savedElseBlockStatements1 = [];
+  elseStatementnodes = [];
+}
+
+/*
+// Tipo generico per ASTNode (puoi adattarlo secondo la tua definizione completa dell'AST)
+interface ASTNode {
+  type: string;
+  elseStatement?: ASTNode;
+  nodes?: ASTNode[];
+  [key: string]: any;
+}*/
+
+function countElseIfStatements(node: ASTNode): number {
+  let count = 0;
+
+  if (node.type === "IfStatement") {
+    if (node.elseStatement && node.elseStatement.type === "IfStatement") {
+      count++;
+      elseStatementnodes.push(node);
+
+      // Salva blocco annidato in un IfStatement → Block
+      if (
+        node.elseStatement.elseStatement &&
+        node.elseStatement.elseStatement.type === "Block"
+      ) {
+        savedElseBlockStatements1.push(node.elseStatement);
+      }
+
+      // Ricorsione
+      count += countElseIfStatements(node.elseStatement);
+    }
+
+    // else finale di tipo Block
+    if (node.elseStatement && node.elseStatement.type === "Block") {
+      savedElseBlockStatements.push(node.elseStatement);
+    }
+  }
+
+  // Esplora eventuali nodi figli
+  if (node.nodes && Array.isArray(node.nodes)) {
+    node.nodes.forEach((childNode) => {
+      count += countElseIfStatements(childNode);
+    });
+  }
+
+  return count;
+}
+
