@@ -4588,7 +4588,553 @@ export function positionBlocks(blocks: Blockly.Block[]): void {
           inputContracts.connection.connect(block.previousConnection);
         }
       }
-    }
+    } else if (block.type === "mapping" || block.type === "assign_values_to_variable_array" || block.type === "define_variable" || block.type === "array" || block.type === "define_variable_with_assignment" ||block.type === "define_struct_variable_with_assignment" || block.type === "define_variable_with_assignment1" || block.type === "method" || block.type === "contract_constructor" || block.type === "modifier1" || block.type ===  "event" || block.type === "contract_structures"){
+        const parent = blocks.find(b => b.type === "contract" && parentId === b.id); 
+        if (parent){ 
+          const inputVariables = parent.getInput('VARIABLES');
+          const inputStructs = parent.getInput('STRUCTS');
+          const inputMappings = parent.getInput('MAPPINGS');
+          const inputEvents = parent.getInput('EVENTS');
+          const inputConstructor = parent.getInput('CONSTRUCTOR');
+          const inputModifiers = parent.getInput('MODIFIERS');
+          const inputmethods = parent.getInput('METHODS');  // Troviamo lo spazio input
+          const inputArrays = parent.getInput('ARRAYS');
+          
+          
+          if (inputVariables && inputVariables.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "define_variable" || block.type === "define_variable_with_assignment" || block.type === "define_variable_with_assignment1") {
+              if (block.previousConnection){
+                inputVariables.connection.connect(block.previousConnection);
+              }
+            }
+          }
+          if (inputStructs && inputStructs.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "contract_structures" || block.type === "define_struct_variable_with_assignment") {
+              if (block.previousConnection){
+                inputStructs.connection.connect(block.previousConnection);
+              }
+            }
+          }
+          if (inputMappings && inputMappings.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "mapping") {
+              if (block.previousConnection){
+                inputMappings.connection.connect(block.previousConnection);
+              }
+            }
+          }
+          if (inputEvents && inputEvents.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "event") {
+              if (block.previousConnection){
+                inputEvents.connection.connect(block.previousConnection);
+              }
+            }
+          }
+          if (inputArrays?.connection) {
+            const arrayBlocks = blocks.filter(
+              b =>
+                b.type === 'array' ||
+                b.type === 'structs_array' ||
+                b.type === 'assign_values_to_variable_array'
+            );
+
+            let prevBlock: Blockly.Block | null = null;
+
+            arrayBlocks.forEach((arrayBlock, i) => {
+              if (i === 0) {
+                if(arrayBlock.previousConnection){
+                  inputArrays.connection!.connect(arrayBlock.previousConnection);
+                }
+                } else if (prevBlock?.nextConnection && arrayBlock.previousConnection) {
+                prevBlock.nextConnection.connect(arrayBlock.previousConnection);
+              }
+              prevBlock = arrayBlock;
+            });
+          }
+          if (inputConstructor && inputConstructor.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "contract_constructor") {
+              if (block.previousConnection){
+                inputConstructor.connection.connect(block.previousConnection);
+              }
+            }
+          }
+          if (inputModifiers && inputModifiers.connection) {
+            // Se il blocco non è di tipo "method", lo connettiamo a STATES
+            if (block.type === "modifier1") {
+              if (block.previousConnection){
+                inputModifiers.connection.connect(block.previousConnection);
+              }
+            }
+          }  
+          if (inputmethods?.connection) {
+            const type = block.type as string;
+
+            if (
+              type === "method" ||
+              type === "variables_get_u" ||
+              type === "variables_get_s" ||
+              type === "variables_get_b" ||
+              type === "variables_get_a" ||
+              type === "variables_get_i" ||
+              type === "variables_get_u8" ||
+              type === "variables_get_u256" ||
+              type === "variables_get_bytes" ||
+              type === "variables_get_bytes32"
+            ) {
+              if (block.previousConnection) {
+                inputmethods.connection.connect(block.previousConnection);
+              }
+            }
+          }    
+        }  
+        } else if (
+          [
+            "variables_get_string", "variables_get_string_constants", "variables_get_string_immutables",
+            "variables_get_uint", "variables_get_uint_constants", "variables_get_uint_immutables",
+            "variables_get_uint8", "variables_get_uint8_constants", "variables_get_uint8_immutables",
+            "variables_get_int", "variables_get_int_constants", "variables_get_int_immutables",
+            "variables_get_address", "variables_get_address_constants", "variables_get_address_immutables",
+            "variables_get_bool", "variables_get_bool_constants", "variables_get_bool_immutables",
+            "variables_get_uint256", "variables_get_uint256_constants", "variables_get_uint256_immutables",
+            "variables_get_bytes", "variables_get_bytes_constants", "variables_get_bytes_immutables",
+            "variables_get_bytes32", "variables_get_bytes32_constants", "variables_get_bytes32_immutables",
+            "variables_black_block"
+          ].includes(block.type as string)
+        ) {
+          const parent = blocks.find(
+            (b: Blockly.Block) =>
+              ["define_variable", "require_condition", "define_variable_with_assignment", "define_variable_with_assignment1"].includes(b.type as string) &&
+              parentId === b.id
+          );
+
+          if (parent) {
+            if (parent.type === "define_variable") {
+              const inputValue = parent.getInput("VALUE");
+              if (inputValue?.connection && block.outputConnection) {
+                console.log(`Collegamento getter ${block.id} a define_variable ${parent.id}`);
+                inputValue.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "define_variable_with_assignment") {
+              const input = parent.getInput("VALUE");
+              if (input?.connection&& block.outputConnection) {
+                console.log(`Collegamento getter ${block.id} a define_variable_WITH_ASS ${parent.id}`);
+                input.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "define_variable_with_assignment1") {
+              const input1 = parent.getInput("VALUE");
+              if (input1?.connection && block.outputConnection) {
+                console.log(`Collegamento getter ${block.id} a define_variable_WITH_ASS_1 ${parent.id}`);
+                input1.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "require_condition") {
+              const inputValueLeft = parent.getInput("LEFT");
+              const inputValueRight = parent.getInput("RIGHT");
+
+              if (inputValueLeft?.connection) {
+                const connectedBlockL = inputValueLeft.connection.targetBlock();
+                if (!connectedBlockL && block.outputConnection) {
+                  console.log(`Collegamento input ${block.id} a LEFT di require_condition ${parent.id}`);
+                  inputValueLeft.connection.connect(block.outputConnection);
+                }
+              }
+
+              if (inputValueRight?.connection) {
+                const connectedBlockR = inputValueRight.connection.targetBlock();
+                if (!connectedBlockR && block.outputConnection) {
+                  console.log(`Collegamento input ${block.id} a RIGHT di require_condition ${parent.id}`);
+                  inputValueRight.connection.connect(block.outputConnection);
+                }
+              }
+            }
+          }
+        } else if (block.type === "internalAss") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block => ["method", "if"].includes(b.type) && parentId === b.id
+          );
+          if (parent && parent.type === "if") {
+            const doInput = parent.getInput("DO");
+            if (doInput?.connection && block.previousConnection) {
+              doInput.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (block.type === "return_block") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block =>
+              ["method", "if", "else_if", "else", "controls_if", "controls_ifelse"].includes(b.type) && parentId === b.id
+          );
+          if (parent) {
+            if (parent.type === "method") {
+              const inputReturn = parent.getInput("STACK");
+              if (inputReturn?.connection && block.previousConnection) {
+                inputReturn.connection.connect(block.previousConnection);
+              }
+            } else if (["if", "else_if", "else"].includes(parent.type)) {
+              const doInput = parent.getInput("DO");
+              if (doInput?.connection && block.previousConnection) {
+                doInput.connection.connect(block.previousConnection);
+              }
+            } else if (["controls_if", "controls_ifelse"].includes(parent.type)) {
+              let n = 0;
+              let doInput: Blockly.Input | null;
+              while ((doInput = parent.getInput("DO" + n))) {
+                if (doInput.connection && !doInput.connection.isConnected() && block.previousConnection) {
+                  doInput.connection.connect(block.previousConnection);
+                  break;
+                }
+                n++;
+              }
+            }
+          }
+
+        } else if (block.type === "internalFunc" || block.type === "localVariable") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block => b.type === "method" && parentId === b.id
+          );
+          if (parent) {
+            const inputMethod = parent.getInput("STACK");
+            if (inputMethod?.connection && block.previousConnection) {
+              inputMethod.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (block.type === "unknownCode") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block => ["method", "if", "else", "else_if"].includes(b.type) && parentId === b.id
+          );
+          if (parent) {
+            if (["else_if", "if", "else"].includes(parent.type)) {
+              const inputMethod = parent.getInput("DO");
+              if (inputMethod?.connection && block.previousConnection) {
+                inputMethod.connection.connect(block.previousConnection);
+              }
+            } else if (parent.type === "method") {
+              const inputMethod = parent.getInput("STACK");
+              if (inputMethod?.connection && block.previousConnection) {
+                inputMethod.connection.connect(block.previousConnection);
+              }
+            }
+          }
+        } else if (block.type === "if") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block =>
+              ["if_else_container", "if_elseif_else_container", "method"].includes(b.type) && parentId === b.id
+          );
+          if (parent) {
+            if (["if_else_container", "if_elseif_else_container"].includes(parent.type)) {
+              const inputReturn = parent.getInput("IF");
+              if (inputReturn?.connection && block.previousConnection) {
+                inputReturn.connection.connect(block.previousConnection);
+              }
+            } else if (parent.type === "method") {
+              const inputReturn = parent.getInput("STACK");
+              if (inputReturn?.connection && block.previousConnection) {
+                inputReturn.connection.connect(block.previousConnection);
+              }
+            }
+          }
+
+        } else if (block.type === "emit_event") {
+          const parent = blocks.find((b): b is Blockly.Block => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput("STACK");
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (
+          ["define_arrayVariable", "array_pop", "new_struct_value", "array_push", "array_delete", "struct_push"].includes(block.type)
+        ) {
+          const parent = blocks.find((b): b is Blockly.Block => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput("STACK");
+            if (inputReturn?.connection) {
+              const arrayBlocks = blocks.filter(
+                b =>
+                  [
+                    "define_arrayVariable",
+                    "array_pop",
+                    "new_struct_value",
+                    "array_push",
+                    "array_delete",
+                    "struct_push"
+                  ].includes(b.type)
+              );
+              let prevBlock: Blockly.Block | null = null;
+              arrayBlocks.forEach((block, i) => {
+                if (i === 0) {
+                  if (inputReturn.connection && block.previousConnection) {
+                    inputReturn.connection.connect(block.previousConnection);
+                  }
+                } else if (prevBlock?.nextConnection && block.previousConnection) {
+                  prevBlock.nextConnection.connect(block.previousConnection);
+                }
+                prevBlock = block;
+              });
+            }
+          }
+
+        } else if (block.type === "new_struct") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block =>
+              ["struct_push", "define_struct_variable_with_assignment"].includes(b.type) && parentId === b.id
+          );
+          if (parent) {
+            if (parent.type === "struct_push") {
+              const inputPush = parent.getInput("PARAMS1");
+              if (inputPush?.connection && block.outputConnection) {
+                inputPush.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "define_struct_variable_with_assignment") {
+              const inputPush = parent.getInput("ASSIGNED_STRUCT");
+              if (inputPush?.connection && block.outputConnection) {
+                inputPush.connection.connect(block.outputConnection);
+              }
+            }
+          }
+
+        } else if (block.type === "getter_mappings" || block.type === "array_values") {
+          const parent = blocks.find((b): b is Blockly.Block => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput("STACK");
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (block.type === "else_if") {
+          const parent = blocks.find((b): b is Blockly.Block => b.type === "if_elseif_else_container" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput("ELSE_IF");
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (block.type === "else") {
+          const parent = blocks.find(
+            (b): b is Blockly.Block => ["if_else_container", "if_elseif_else_container"].includes(b.type) && parentId === b.id
+          );
+          if (parent) {
+            const inputReturn = parent.getInput("ELSE");
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (block.type === "controls_if" || block.type === "controls_ifelse") {
+          const parent = blocks.find(b => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput('STACK');
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (block.type === "if_else_container" || block.type === "if_elseif_else_container") {
+          const parent = blocks.find(b => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturn = parent.getInput('STACK');
+            if (inputReturn?.connection && block.previousConnection) {
+              inputReturn.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (block.type === "func_inputs" || block.type === "func_inputs_black") {
+          const parent = blocks.find(b =>
+            ["method", "contract_constructor", "modifier1", "event", "variables_get_modifiers"].includes(b.type)
+            && parentId === b.id);
+          if (parent) {
+            const inputParams = parent.getInput('PARAMS');
+            if (inputParams?.connection && block.previousConnection) {
+              inputParams.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (block.type === "func_returnValues") {
+          const parent = blocks.find(b => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const inputReturnValues = parent.getInput('RETURN_VALUES');
+            if (inputReturnValues?.connection && block.previousConnection) {
+              inputReturnValues.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (block.type === "struct_variables" || block.type === "structVariables_black") {
+          //console.log(`🔍 Prima del posizionamento: ID=${block.id}, Tipo=${block.type}, Parent=${block.parent}`);
+          const parent = blocks.find(b => b.type === "contract_structures" && parentId === b.id);
+          if (parent) {
+            console.log(`Trovato parent: ${parent.id}, Tipo: ${parent.type}`);
+          } else {
+            console.log(`❌ Parent non trovato per struct_variables ${block.id}`);
+          }
+
+          if (parent) {
+            const input = parent.getInput('STATES');
+            if (input?.connection && block.previousConnection) {
+              input.connection.connect(block.previousConnection);
+            }
+          }
+        } else if (
+          [
+            "variables_set_string", "variables_set_bytes", "variables_set_bytes32", "variables_set_uint",
+            "variables_set_uint256", "variables_set_uint8", "variables_set_int", "variables_set_address",
+            "variables_set_bool"
+          ].includes(block.type)
+        ) {
+          const parent = blocks.find(b =>
+            ["method", "if", "else_if", "else", "controls_if", "controls_ifelse", "contract_constructor", "modifier1"]
+              .includes(b.type) && parentId === b.id);
+
+          console.log("section: " + section);
+
+          if (parent) {
+            if (["method", "contract_constructor", "modifier1"].includes(parent.type)) {
+              const inputCode = parent.getInput('STACK');
+              if (inputCode?.connection && block.previousConnection) {
+                inputCode.connection.connect(block.previousConnection);
+              }
+            } else if (["if", "else_if", "else"].includes(parent.type)) {
+              const doInput = parent.getInput('DO');
+              if (doInput?.connection && block.previousConnection) {
+                doInput.connection.connect(block.previousConnection);
+              }
+            } else if (["controls_if", "controls_ifelse"].includes(parent.type)) {
+              let doInput, elseInput;
+
+              if (section === "DO") {
+                let n = 0;
+                while ((doInput = parent.getInput("DO" + n))) {
+                  if (doInput.connection && block.previousConnection) {
+                    doInput.connection.connect(block.previousConnection);
+                    break;
+                  }
+                  n++;
+                }
+              } else if (section === "ELSE") {
+                elseInput = parent.getInput("ELSE");
+                if (elseInput?.connection && block.previousConnection) {
+                  elseInput.connection.connect(block.previousConnection);
+                }
+              }
+            }
+          }
+        } else if (block.type === "input") {
+          const parent = blocks.find(b =>
+            [
+              "variables_set_string", "variables_set_uint", "variables_set_bytes", "variables_set_bytes32",
+              "variables_set_uint256", "variables_set_uint8", "variables_set_int", "variables_set_address",
+              "variables_set_bool", "require_condition"
+            ].includes(b.type) && parentId === b.id
+          );
+
+          if (parent?.type &&
+            [
+              "variables_set_string", "variables_set_bytes", "variables_set_bytes32", "variables_set_uint",
+              "variables_set_uint256", "variables_set_uint8", "variables_set_int", "variables_set_address",
+              "variables_set_bool"
+            ].includes(parent.type)
+          ) {
+            const inputValue = parent.getInput('VALUE');
+            if (inputValue?.connection && block.outputConnection) {
+              inputValue.connection.connect(block.outputConnection);
+            }
+          } else if (parent?.type === "require_condition") {
+            const inputValueLeft = parent.getInput("LEFT");
+            if (inputValueLeft?.connection && block.outputConnection) {
+              inputValueLeft.connection.connect(block.outputConnection);
+            }
+          }
+
+        } else if (block.type === "input_right") {
+          const parent = blocks.find(b => b.type === "require_condition" && parentId === b.id);
+          if (parent?.type === "require_condition") {
+            const inputValueRight = parent.getInput("RIGHT");
+            if (inputValueRight?.connection && block.outputConnection) {
+              inputValueRight.connection.connect(block.outputConnection);
+            }
+          }
+
+        } else if (block.type === 'input_somma' || block.type === 'input_diff') {
+          const parent = blocks.find(b =>
+            [
+              "variables_set_string", "variables_set_uint", "variables_set_uint256", "variables_set_uint8",
+              "variables_set_int", "variables_set_address", "variables_set_bool",
+              "variables_set_bytes", "variables_set_bytes32", "require_condition"
+            ].includes(b.type) && parentId === b.id
+          );
+
+          if (parent?.type &&
+            [
+              "variables_set_string", "variables_set_bytes", "variables_set_bytes32", "variables_set_uint",
+              "variables_set_uint256", "variables_set_uint8", "variables_set_int", "variables_set_address",
+              "variables_set_bool"
+            ].includes(parent.type)
+          ) {
+            const inputValue = parent.getInput('VALUE');
+            if (inputValue?.connection && block.outputConnection) {
+              inputValue.connection.connect(block.outputConnection);
+            }
+          }
+
+        } else if (block.type === "require_condition") {
+          const parent = blocks.find(b =>
+            [
+              "modifier1", "if", "else_if", "else", "controls_if", "controls_ifelse", "require_condition_method1"
+            ].includes(b.type) && parentId === b.id
+          );
+
+          if (parent) {
+            if (parent.type === "controls_if" || parent.type === "controls_ifelse") {
+              let n = 0;
+              let ifInput;
+              do {
+                ifInput = parent.getInput("IF" + n);
+                n++;
+              } while (!ifInput && parent.getInput("IF" + n));
+
+              if (ifInput?.connection && block.outputConnection) {
+                ifInput.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "if") {
+              const doInput = parent.getInput('IF');
+              if (doInput?.connection && block.outputConnection) {
+                doInput.connection.connect(block.outputConnection);
+              }
+            } else if (parent.type === "else_if") {
+              const doInput = parent.getInput('ELSE_IF');
+              if (doInput?.connection && block.outputConnection) {
+                doInput.connection.connect(block.outputConnection);
+              }
+            } else if (
+              parent.type === "modifier1" ||
+              parent.type === "require_condition_method1"
+            ) {
+              const conditionInput = parent.getInput("CONDITION");
+              if (conditionInput?.connection && block.outputConnection) {
+                conditionInput.connection.connect(block.outputConnection);
+              }
+            }
+          }
+
+        } else if (block.type === "variables_get_modifiers") {
+          const parent = blocks.find(b => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const modifierInput = parent.getInput("MODIFIERS");
+            if (modifierInput?.connection && block.previousConnection) {
+              modifierInput.connection.connect(block.previousConnection);
+            }
+          }
+
+        } else if (block.type === "require_condition_method1") {
+          const parent = blocks.find(b => b.type === "method" && parentId === b.id);
+          if (parent) {
+            const requireInput = parent.getInput("REQUIRE");
+            if (requireInput?.connection && block.previousConnection) {
+              requireInput.connection.connect(block.previousConnection);
+            }
+          }
+        }
   });
 }
 

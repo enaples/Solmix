@@ -1512,8 +1512,8 @@ Blockly.defineBlocksWithJsonArray([
         text: 'b'
         }
         ],
-        previousStatement: [true, ['struct_variables','structVariables_black'] ], 
-        nextStatement: [true, ['struct_variables','structVariables_black']], // 'struct_variables' ),
+        previousStatement: ['struct_variables','structVariables_black'], 
+        nextStatement: ['struct_variables','structVariables_black'], // 'struct_variables' ),
         colour: "#FF8000",
         tooltip: 'Struct attribute.',
         helpUrl: '',
@@ -2234,8 +2234,8 @@ Blockly.defineBlocksWithJsonArray([
                 check: "code",
             },
         ],
-        previousStatement: [true, ["if", "code"]],
-        nextStatement: [true, ["if", "code"]],
+        previousStatement: ["if", "code"],
+        nextStatement: ["if", "code"],
         colour: 330,
         tooltip: "If block.",
         helpUrl: "",

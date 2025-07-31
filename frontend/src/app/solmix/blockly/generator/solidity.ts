@@ -940,6 +940,70 @@ solidityGenerator.forBlock["if_elseif_else_container"] = function (
     return code;
 };
 
+// InternalFunc
+solidityGenerator.forBlock['internalFunc'] = function(block: Blockly.Block): string {
+  const text: string = block.getFieldValue('CODE');
+  return `${text}\n`;
+};
+
+// func_returnValues
+solidityGenerator.forBlock['func_returnValues'] = function (block: Blockly.Block): string {
+  const name: string = block.getFieldValue('NAME');
+  const typeKey: string = block.getFieldValue('TYPE');
+
+  const types: Record<string, string> = {
+    'TYPE_BOOL': 'bool',
+    'TYPE_INT': 'int',
+    'TYPE_UINT': 'uint',
+    'TYPE_UINT256': 'uint256',
+    'TYPE_UINT8': 'uint8',
+    'TYPE_STRING': 'string',
+    'TYPE_ADDRESS': 'address',
+    'TYPE_BYTES32': 'bytes32',
+    'TYPE_BYTES': 'bytes',
+  };
+
+  const nextBlock: Blockly.Block | null = block.getNextBlock();
+  const sep: string = nextBlock && nextBlock.type === block.type ? ', ' : '';
+  const code: string = `${types[typeKey] ?? ''} ${name}${sep}`;
+  return code;
+};
+
+// func_inputs_black
+solidityGenerator.forBlock['func_inputs_black'] = function (block: Blockly.Block): string {
+  const name: string = block.getFieldValue('NAME');
+  const type: string = block.getFieldValue('TYPE');
+  const nextBlock: Blockly.Block | null = block.getNextBlock();
+  let parentBlock: Blockly.Block | null = block.getParent();
+
+  // Risaliamo nella catena finché troviamo il vero parent di tipo 'variables_get_modifiers'
+  while (parentBlock) {
+    if (parentBlock.type === "variables_get_modifiers") {
+      break;  // Se lo troviamo, usciamo dal ciclo
+    }
+    parentBlock = parentBlock.getParent();
+  }
+
+  const sep: string = nextBlock && nextBlock.type === block.type ? ', ' : '';
+
+  let code: string;
+  if (parentBlock && parentBlock.type === "variables_get_modifiers") {
+    code = `${name}${sep}`;
+  } else {
+    code = `${type} ${name}${sep}`;
+  }
+
+  return code;
+};
+
+// unknownCode
+solidityGenerator.forBlock["unknownCode"] = function (block: Blockly.Block): string {
+  const code: string = block.getFieldValue("CODE");
+  return code + ";\n";
+};
+
+
+
 // Method/Function generator
 solidityGenerator.forBlock["method"] = function (
     block: Blockly.Block,
