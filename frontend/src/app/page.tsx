@@ -11,10 +11,10 @@ import Navbar from "@/app/ui/navbar";
 export default function Home() {
     return (
         <main className="w-full">
-            <div className=" min-h-screen">
+            <div className="">
                 <Navbar/>
                 <div
-                    className="flex flex-wrap m-auto items-center mx-auto max-w-screen-xl justify-items-center h-fit p-8 pb-20 gap-16 sm:p-20 flex flex-col gap-[32px] row-start-2 items-center m-auto">
+                    className="flex flex-wrap m-auto items-center mx-auto max-w-screen-xl justify-items-center p-8 pb-20 gap-16 sm:p-20 flex flex-col gap-[32px] row-start-2 items-center m-auto">
                     <p className="text-5xl font-black text-global-color-title font-black text-global-color-title ">Smart Contract builder</p>
 
                     <p className="max-w-lg text-center">
