@@ -4486,7 +4486,9 @@ function generateUniqueId(): string {
   return 'block_' + Math.random().toString(36).slice(2, 11);
 }
 
-//npx ts-node src/app.ts
+//cd backend, npx ts-node src/app.ts
+//cd frontend, npm run dev
+
 
 
 type ASTNode = {
