@@ -146,7 +146,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     const goServer = () => {
         console.log("Codice Solidity generato:", code); //codeToSend);
         console.log("Invio codice solidity al server...");
+       
+        if (isEditing){
+            setIsEditing(!isEditing);
+            window.alert(isEditing + ": isEditing is going to be set to False!");
+        } else {
+            window.alert(isEditing + ": isEditing already set to False!");
+            
+        }
+
         sendSolidityToServer(code);
+
         //sendSolidityToServer(code); //codeDiv.value); 
     }
 
