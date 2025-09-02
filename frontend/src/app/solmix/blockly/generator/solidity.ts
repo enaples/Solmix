@@ -1,5 +1,17 @@
 import * as Blockly from "blockly";
 import { variableTypes } from "../blocks/variable_types";
+import {getSolidityEvent, getSolidityMapping, getSolidityArray, getSolidityModifier} from "../dropdown/dropdown";
+import {getSolidityStringVariable, getSolidityStringConstantsVariable, getSolidityStringImmutablesVariable } from "../dropdown/dropdown";
+import {getSolidityIntVariable, getSolidityIntConstantsVariable, getSolidityIntImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityAddressVariable, getSolidityAddressConstantsVariable, getSolidityAddressImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityUintVariable, getSolidityUintConstantsVariable, getSolidityUintImmutablesVariable, getSolidityUint256Variable, getSolidityUint256ConstantsVariable, getSolidityUint256ImmutablesVariable, getSolidityUint8Variable, getSolidityUint8ConstantsVariable, getSolidityUint8ImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityBoolVariable, getSolidityBoolConstantsVariable, getSolidityBoolImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityBytesVariable, getSolidityBytesConstantsVariable, getSolidityBytesImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityBytes32Variable, getSolidityBytes32ConstantsVariable, getSolidityBytes32ImmutablesVariable} from "../dropdown/dropdown";
+import {getSolidityStruct, structRegistry} from "../dropdown/dropdown";
+//import { javascriptGenerator } from "blockly/javascript";
+
+//import {addEvent} from "../blocks/dynamicEventBloks";
 
 export const solidityGenerator = new Blockly.Generator("Solidity");
 
@@ -7,6 +19,8 @@ export const solidityGenerator = new Blockly.Generator("Solidity");
 const Order = {
     ATOMIC: 0,
     ASSIGNMENT: 1,
+    FUNCTION_CALL: 2,
+    NONE: 2,
 };
 
 // Type mappings for reusability
@@ -90,6 +104,279 @@ Object.keys(variableTypes).forEach((type: string) => {
     };
 });
 
+solidityGenerator.forBlock["emit_event"] = function (block){
+  //block: Blockly.Block,
+  //generator: Blockly.Generator
+//): string {
+  const variableName = block.getFieldValue("VAR");
+  const event = getSolidityEvent(variableName);
+  const params = block.getFieldValue("PARAMS");
+  const code = event
+    ? `emit ${event.name}(${params});\n`
+    : "// emit event (undefined)\n";
+  return code;
+};
+
+
+solidityGenerator.forBlock["getter_mappings"] = function(
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityMapping(variableName);
+
+  if (!myVar) {
+    throw new Error(`Mapping '${variableName}' non trovato in solidityMappings.`);
+  }
+
+  const param1 = block.getFieldValue("PARAMS1") || "";
+  const param2 = block.getFieldValue("PARAMS2") || "";
+
+  const code = `${myVar.name}[${param1}] = ${param2};\n`;
+
+  return code;
+};
+
+solidityGenerator.forBlock["new_struct_value"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar || !myVar.name || !structRegistry[myVar.name]) {
+    console.warn(
+      "❌ Struct non trovato o non definito:",
+      variableName,
+      myVar
+    );
+    return `/* Errore: struct ${variableName} non trovato */\n`;
+  }
+
+  const attribute = block.getFieldValue("ATTRIBUTE");
+  const value = block.getFieldValue("VALUE");
+
+  const attributes = structRegistry[myVar.name];
+  const selectedAttr = attributes.find((attr) => attr.name === attribute);
+
+  if (!selectedAttr) {
+    console.warn(
+      "❌ Attributo non trovato nello struct:",
+      attribute,
+      "in",
+      attributes
+    );
+    return `/* Errore: attributo ${attribute} non trovato nello struct ${myVar.name} */\n`;
+  }
+
+  const needsQuotes =
+    selectedAttr.type === "string" || selectedAttr.type === "address";
+
+  const code = `${myVar.name}.${attribute} = ${needsQuotes ? `"${value}"` : value};\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["structs_array"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const variableNameArray = block.getFieldValue("NAME");
+  const type3 = block.getFieldValue("TYPE3");
+
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar) {
+    console.warn(`❌ Struct '${variableName}' non trovato.`);
+    return `/* Errore: struct '${variableName}' non trovato */\n`;
+  }
+
+  const typesMap: Record<string, string> = {
+    TYPE_PUBLIC: "public",
+    TYPE_PRIVATE: "private",
+    TYPE_INTERNAL: "internal",
+    TYPE_EXTERNAL: "external"
+  };
+
+  const visibility = typesMap[type3] || "public";
+
+  const code = `${myVar.name}[] ${visibility} ${variableNameArray};\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["struct_push"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const arrayName = block.getFieldValue("VAR") || "";
+  const inputBlock = block.getInputTargetBlock("PARAMS1");
+
+  const pushParam =
+    generator.valueToCode(block, "PARAMS1", Order.ATOMIC) || "";
+
+  const isNewStruct = inputBlock && inputBlock.type === "new_struct";
+
+  const code = isNewStruct
+    ? `${arrayName}.push${pushParam};\n`
+    : `${arrayName}.push(${pushParam});\n`;
+
+  return code;
+};
+
+solidityGenerator.forBlock["new_struct"] = function (
+  block: Blockly.Block
+): [string, number] {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityStruct(variableName);
+
+  if (!myVar || !myVar.name || !structRegistry[myVar.name]) {
+    console.warn("❌ Errore: struct non trovata:", myVar);
+    return [`/* struct ${variableName} non trovata */`, Order.ATOMIC];
+  }
+
+  const attributes = structRegistry[myVar.name];
+  const values = block.data ? JSON.parse(block.data).values || {} : {};
+
+  // 🔹 Genera la stringa degli attributi per la sintassi { key: value }
+  const attributeString = attributes
+    .map((attr) => {
+      const value = values[attr.name];
+      const needsQuotes = attr.type === "string" || attr.type === "address";
+
+      if (value !== undefined && value !== null) {
+        return `${attr.name}: ${needsQuotes ? `"${value}"` : value}`;
+      } else {
+        return `${attr.name}: ${
+          needsQuotes ? `"/* ${attr.type} */"` : `/* ${attr.type} */`
+        }`;
+      }
+    })
+    .join(",\n ");
+
+  // 🔹 Genera la stringa dei valori per la sintassi (..., ...)
+  const attributeValue = attributes
+    .map((attr) => {
+      const value = values[attr.name];
+      const needsQuotes = attr.type === "string" || attr.type === "address";
+
+      if (value !== undefined && value !== null) {
+        return `${needsQuotes ? `"${value}"` : value}`;
+      } else {
+        return `${
+          needsQuotes
+            ? `"/* yourValue_${attr.type} */"`
+            : `/* yourValue_${attr.type} */`
+        }`;
+      }
+    })
+    .join(", ");
+
+  // 🔹 Verifica se il blocco è figlio di struct_push o assign_values_to_struct
+  const parent = block.getParent();
+  const inPush =
+    parent &&
+    (parent.type === "struct_push" || parent.type === "assign_values_to_struct");
+
+  const code = inPush
+    ? `${myVar.name}({\n ${attributeString}\n})`
+    : `${myVar.name}(${attributeValue})`;
+
+  return [code, Order.ASSIGNMENT];
+};
+
+solidityGenerator.forBlock["array_pop"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const code = `${myVar.name}.pop();\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_push"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const pushParam = block.getFieldValue("PARAMS1") || "0";
+
+  const code = `${myVar.name}.push(${pushParam});\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_push_S_A_B"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const pushParam = block.getFieldValue("PARAMS1") || "";
+
+  const code = `${myVar.name}.push("${pushParam}");\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["array_delete"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const index = block.getFieldValue("PARAMS1") || "0";
+
+  const code = `delete ${myVar.name}[${index}];\n`;
+  return code;
+};
+
+solidityGenerator.forBlock["variables_get_modifiers"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityModifier(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: modifier '${variableName}' non trovato.`);
+    return `/* Errore: modifier '${variableName}' non trovato */\n`;
+  }
+
+  const params = generator.statementToCode(block, "PARAMS");
+  const parentBlock = block.getParent();
+
+  if (parentBlock && (parentBlock.type === "method" || parentBlock.type === "variables_get_modifiers")) {
+    const code = `${myVar.name}(${params}) `;
+    return code;
+  }
+
+  return "";
+};
+
+
+
+
+
+
+
+
 // # import block code generator
 solidityGenerator.forBlock["import"] = function (block) {
     const imp1 = block.getFieldValue("Imp1");
@@ -114,9 +401,51 @@ solidityGenerator.forBlock["structure"] = function (block, generator) {
     return code;
 };
 
+function generateStatements(block: Blockly.Block, inputName: string, generator: any): string {
+  let code = "";
+  let currentBlock = block.getInputTargetBlock(inputName);
+
+  while (currentBlock) {
+    code += generator.blockToCode(currentBlock);
+    currentBlock = currentBlock.getNextBlock();
+  }
+
+  return code;
+}
+
+solidityGenerator.forBlock["contract"] = function (block, generator) {
+  const variables = generateStatements(block, "VARIABLES", generator);
+  const structures = generateStatements(block, "STRUCTS", generator);
+  const mappings = generateStatements(block, "MAPPINGS", generator);
+  const events = generateStatements(block, "EVENTS", generator);
+  const arrays = generateStatements(block, "ARRAYS", generator);
+  const constructor = generateStatements(block, "CONSTRUCTOR", generator);
+  const modifiers = generateStatements(block, "MODIFIERS", generator);
+  const methods = generateStatements(block, "METHODS", generator);
+  const is_ = block.getFieldValue("IS");
+
+  const code =
+    `contract ${block.getFieldValue("NAME")}` +
+    (is_ ? ` is ${is_}` : "") +
+    ` {\n` +
+    variables +
+    structures +
+    mappings +
+    events +
+    arrays +
+    constructor +
+    modifiers +
+    methods +
+    `}\n`;
+
+  return code;
+};
+
+
+/*
 // # Code generator for contract
 solidityGenerator.forBlock["contract"] = function (block, generator) {
-    const variables = generator.statementToCode(block, "constIABLES") || "";
+    const variables = generator.statementToCode(block, "VARIABLES") || "";
     const structures = generator.statementToCode(block, "STRUCTS");
     const mappings = generator.statementToCode(block, "MAPPINGS");
     const events = generator.statementToCode(block, "EVENTS");
@@ -128,25 +457,42 @@ solidityGenerator.forBlock["contract"] = function (block, generator) {
     //const ctor = generator.statementToCode(block, 'CTOR');
 
     const methods = generator.statementToCode(block, "METHODS");
-    const code = //'pragma solidity ^0.8.2;\n\n'
-        //+ imports + ' \n'
-        "contract " +
-        block.getFieldValue("NAME") +
-        " is " +
-        is_ +
-        " {\n" + //credo che posso usare il 'getFieldValue' come proprietà del blocco
-        variables + //states
-        structures +
-        mappings +
-        events +
-        arrays +
-        constructor +
-        modifiers +
-        methods +
-        "}\n";
+    
+   var code;
+  if (is_ !== "") {
+  code = //'pragma solidity ^0.8.2;\n\n'
+    //+ imports + ' \n'
+    'contract ' + block.getFieldValue('NAME') + ' is ' + is_ +' {\n' //credo che posso usare il 'getFieldValue' come proprietà del blocco
+    + variables //states
+    + structures
+    + mappings
+    + events
+    + arrays
+    + constructor
+    + modifiers
+    + methods
+    + '}\n';
+  } else {
+    code = 'contract ' + block.getFieldValue('NAME') + ' {\n' //credo che posso usare il 'getFieldValue' come proprietà del blocco
+    + variables //states
+    + structures
+    + mappings
+    + events
+    + arrays
+    + constructor
+    + modifiers
+    + methods
+    + '}\n';
 
-    return code;
+  }
+
+   // + "  function () { throw; }\n"
+    //+ ctor
+    
+
+  return code;
 };
+*/
 
 // # Code generator for array
 solidityGenerator.forBlock["array"] = function (block) {
@@ -161,7 +507,7 @@ solidityGenerator.forBlock["array"] = function (block) {
     ) as keyof typeof ACCESS_MODIFIERS;
     const code =
         SOLIDITY_TYPES[solidityType] +
-        " " +
+        "[] " +
         ACCESS_MODIFIERS[visibility] +
         " " +
         name +
@@ -198,12 +544,13 @@ solidityGenerator.forBlock["mapping"] = function (block) {
 solidityGenerator.forBlock["event"] = function (block, generator) {
     const params = generator.statementToCode(block, "PARAMS");
     const name = block.getFieldValue("NAME");
+    //addEvent(name); --> funziona, aggiorna l'array, ma ho poi introdotto l'aggiornamento con il listener perchè in questo modo andava a inserire nel Ddown ogni singola nuovca lettera;
     const code = "event " + name + "(" + params + ");\n";
     return code;
 };
 
 // # Code generator for function input
-solidityGenerator.forBlock["function_input"] = function (block) {
+solidityGenerator.forBlock["func_inputs"] = function (block) {
     const name = block.getFieldValue("NAME");
     const type = block.getFieldValue("TYPE") as keyof typeof SOLIDITY_TYPES;
 
@@ -266,7 +613,7 @@ solidityGenerator.forBlock["state"] = function (block) {
 };
 
 // # Code generator for contract structures
-solidityGenerator.forBlock["structure"] = function (block) {
+solidityGenerator.forBlock["contract_structures"] = function (block) {
     const name = block.getFieldValue("NAME");
     const firstFieldBlock = block.getInputTargetBlock("STATES");
 
@@ -411,17 +758,60 @@ solidityGenerator.forBlock["require_statement"] = function (
     return code;
 };
 
-// # Solidity code generator for require consition method1
-solidityGenerator.forBlock["require_condition_method1"] = function (
-    block,
-    generator
-) {
-    const message = block.getFieldValue("MESSAGE");
-    const condition =
-        generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
-    const code = "require(" + condition + ', "' + message + '");\n';
-    return code;
+
+// # Solidity code generator for require condition inside the modifier
+solidityGenerator.forBlock["require_condition"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const operator = block.getFieldValue("OPERATOR");
+  const leftOperand = generator.valueToCode(block, "LEFT", Order.ATOMIC) || "false";
+  const rightOperand = generator.valueToCode(block, "RIGHT", Order.ATOMIC) || "false";
+
+  let code: string;
+
+  switch (operator) {
+    case "NOT":
+      code = `!${leftOperand}`;
+      break;
+    case "NOT_EQUAL":
+      code = `${leftOperand} != ${rightOperand}`;
+      break;
+    case "EQUAL":
+      code = `${leftOperand} == ${rightOperand}`;
+      break;
+    case "BIGGER OR EQUAL TO":
+      code = `${leftOperand} >= ${rightOperand}`;
+      break;
+    case "LOWER OR EQUAL TO":
+      code = `${leftOperand} <= ${rightOperand}`;
+      break;
+    case "BIGGER THAN":
+      code = `${leftOperand} > ${rightOperand}`;
+      break;
+    case "LOWER THAN":
+      code = `${leftOperand} < ${rightOperand}`;
+      break;
+    default:
+      code = "false"; // fallback di sicurezza
+  }
+
+  return [code, Order.ATOMIC];
 };
+
+// # Solidity code generator for require condition 
+solidityGenerator.forBlock["require_condition_method1"] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const message = block.getFieldValue("MESSAGE");
+  const condition = generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
+
+  const code = `require(${condition}, "${message}");\n`;
+  return code;
+};
+
+
 
 // Import block generator (from your example)
 solidityGenerator.forBlock["import"] = function (block: Blockly.Block) {
@@ -567,7 +957,7 @@ solidityGenerator.forBlock["method"] = function (
     const params = generator.statementToCode(block, "PARAMS").trim();
     const values = generator.statementToCode(block, "RETURN_VALUES").trim();
     const modifiers =
-        generator.valueToCode(block, "MODIFIERS", Order.ASSIGNMENT) || "";
+        generator.statementToCode(block, "MODIFIERS").trim() || "";
     const branch = generator.statementToCode(block, "STACK");
     const require = generator.statementToCode(block, "REQUIRE").trim() || "";
 
@@ -735,6 +1125,25 @@ solidityGenerator.forBlock["assign_values_to_variable_array"] = function (
         " ];\n"
     );
 };
+
+solidityGenerator.forBlock["array_values"] = function (
+  block: Blockly.Block
+): string {
+  const variableName = block.getFieldValue("VAR");
+  const myVar = getSolidityArray(variableName);
+
+  if (!myVar || !myVar.name) {
+    console.warn(`❌ Errore: array '${variableName}' non trovato.`);
+    return `/* Errore: array '${variableName}' non trovato */\n`;
+  }
+
+  const index = block.getFieldValue("PARAMS1") || "0";
+  const param2 = block.getFieldValue("PARAMS2") || "0";
+
+  const code = `${myVar.name}[${index}] = ${param2};\n`;
+  return code;
+};
+
 
 // String variable definition with assignment generator
 solidityGenerator.forBlock["define_variable_with_assignment1"] = function (
@@ -1051,5 +1460,1202 @@ solidityGenerator.forBlock["proposalThreshold"] = function () {
         "}\n";
     return code;
 };
+
+//STRING VARIABLES 
+// ## variables_get_string
+solidityGenerator.forBlock['variables_get_string'] = function(block): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityStringVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`❌ Variabile stringa '${variable_name}' non trovata.`);
+    return [`/* Errore: variabile ${variable_name} non trovata */`, Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_string' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback
+  return [myVar.name, Order.ATOMIC];
+};
+
+// ## variables set string
+solidityGenerator.forBlock['variables_set_string'] = function(block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    // ⚠️ Fallback generazione setter Solidity
+    code = `function set_${variable_name}(string memory _value) public {\n  ${variable_name} = _value;\n}\n`;
+  } else {
+    // Assegnazione inline
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_string_constants
+solidityGenerator.forBlock['variables_get_string_constants'] = function (
+  block: Blockly.Block,
+  generator: Blockly.Generator
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityStringConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  
+  if (!myVar) {
+    console.warn(`❌ Variabile costante non trovata: ${variable_name}`);
+    return [`/* costante ${variable_name} non trovata */`, Order.ATOMIC];
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    switch (parentBlock.type) {
+      case 'define_variable_with_assignment1':
+        code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+        return [code, Order.ATOMIC];
+
+      case 'variables_set_string':
+      case 'require_condition':
+        code = myVar.name;
+        return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_string_immutables
+solidityGenerator.forBlock['variables_get_string_immutables'] = function (block: Blockly.Block, generator: any): [string, number] {
+  const variableName = block.getFieldValue('VAR');
+  const myVar = getSolidityStringImmutablesVariable(variableName);
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (myVar) {
+    if (parentBlock) {
+      if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+        code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+        return [code, Order.ATOMIC]; // Presupponendo che tu abbia definito Order.FUNCTION_CALL
+      } else if (parentBlock.type === 'variables_set_string' || parentBlock.type === 'require_condition') {
+        code = myVar.name;
+        return [code, Order.ATOMIC];
+      }
+    } else {
+      code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  // In caso myVar non venga trovato
+  code = `/* Variabile immutable non trovata: ${variableName} */`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_s
+solidityGenerator.forBlock['variables_get_s'] = function (block, generator) {
+  const variableName = block.getFieldValue('VAR');
+  const myVar = getSolidityStringVariable(variableName);
+
+  if (!myVar) {
+    console.warn(`❌ Variabile stringa non trovata: ${variableName}`);
+    return `/* Errore: variabile ${variableName} non trovata */\n`;
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}\n`;
+  return code;
+};
+
+// UINT VARIABLES
+// ## variables_get_uint
+solidityGenerator.forBlock['variables_get_uint'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityUintVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    console.warn(`❌ Variabile uint "${variable_name}" non trovata.`);
+    return ["/* uint variable not found */", Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment'
+    ) {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback di sicurezza
+  return [myVar.name, Order.ATOMIC];
+};
+
+// ## variables_set_uint
+solidityGenerator.forBlock['variables_set_uint'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variableName: string = block.getFieldValue('VAR');
+  const value: string = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code =
+      `function set_${variableName}(${value}) {\n` +
+      `  ${variableName} = ${value};\n` +
+      `}`;
+  } else {
+    code = `${variableName} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_uint_constants
+solidityGenerator.forBlock['variables_get_uint_constants'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variableName: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUintConstantsVariable(variableName);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    console.warn("Variabile non trovata:", variableName);
+    return [`/* constant ${variableName} not found */`, Order.ATOMIC];
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      return [myVar.name, Order.ATOMIC];
+    }
+  }
+
+  code =
+    `function get_${myVar.name}() public view returns (${myVar.type}) {\n` +
+    `  return ${myVar.name};\n` +
+    `}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_uint_immutables
+solidityGenerator.forBlock['variables_get_uint_immutables'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variableName: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUintImmutablesVariable(variableName);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    console.warn("Variabile immutable non trovata:", variableName);
+    return [`/* immutable ${variableName} not found */`, Order.ATOMIC];
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      return [myVar.name, Order.ATOMIC];
+    }
+  }
+
+  code =
+    `function get_${myVar.name}() public view returns (${myVar.type}) {\n` +
+    `  return ${myVar.name};\n` +
+    `}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_u
+solidityGenerator.forBlock['variables_get_u'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variableName: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUintVariable(variableName);
+
+  if (!myVar) {
+    console.warn("Variabile uint non trovata:", variableName);
+    return `/* Getter for ${variableName} not found */\n`;
+  }
+
+  const code =
+    `function get_${myVar.name}() public view returns (${myVar.type}) {\n` +
+    `  return ${myVar.name};\n` +
+    `}\n`;
+
+  return code;
+};
+
+// ## variables_get_uint256
+solidityGenerator.forBlock['variables_get_uint256'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint256Variable(variable_name);
+
+  if (!myVar) {
+    console.warn("Variabile uint256 non trovata:", variable_name);
+    return [`/* Variable ${variable_name} not found */`, Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_uint256' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code =
+    `get_${myVar.name}() returns (${myVar.type}) {\n` +
+    `  return ${myVar.name};\n` +
+    `}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_uint256
+solidityGenerator.forBlock['variables_set_uint256'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variable_name: string = block.getFieldValue('VAR');
+  const value: string = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code =
+      `function set_${variable_name}(${value}) public {\n` +
+      `  ${variable_name} = ${value};\n` +
+      `}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_uint256_constants
+solidityGenerator.forBlock['variables_get_uint256_constants'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint256ConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    code = variable_name;
+    return [code, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint256' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  return [variable_name, Order.ATOMIC]; // fallback
+};
+
+// ## variables_get_uint256_immutables
+solidityGenerator.forBlock['variables_get_uint256_immutables'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint256ImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    code = variable_name; // fallback in caso di variabile non trovata
+    return [code, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint256' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  return [variable_name, Order.ATOMIC]; // ulteriore fallback
+};
+
+// ## variables_get_u256
+solidityGenerator.forBlock['variables_get_u256'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint256Variable(variable_name);
+
+  if (!myVar) {
+    return `// Error: variable ${variable_name} not found\n`;
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return code;
+};
+
+// ## variables_get_uint8
+solidityGenerator.forBlock['variables_get_uint8'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint8Variable(variable_name);
+
+  if (!myVar) {
+    return [`// Error: variable ${variable_name} not found`, Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment'
+    ) {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_uint8' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_uint8
+solidityGenerator.forBlock['variables_set_uint8'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): string {
+  const variable_name: string = block.getFieldValue('VAR');
+  const value: string = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '0';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ##
+solidityGenerator.forBlock['variables_get_uint8_constants'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name: string = block.getFieldValue('VAR');
+  const myVar = getSolidityUint8ConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (myVar) {
+    if (parentBlock) {
+      if (parentBlock.type === 'define_variable_with_assignment') {
+        code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+        return [code, Order.ATOMIC];
+      } else if (
+        parentBlock.type === 'variables_set_uint8' ||
+        parentBlock.type === 'require_condition'
+      ) {
+        return [myVar.name, Order.ATOMIC];
+      }
+    } else {
+      code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  // Fallback per sicurezza: restituisce un valore di default se la variabile non esiste
+  return ['/* undefined variable */', Order.ATOMIC];
+};
+
+// ## variables_get_uint8_immutables
+solidityGenerator.forBlock['variables_get_uint8_immutables'] = function (
+  block: Blockly.Block,
+  generator: Blockly.CodeGenerator
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityUint8ImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (myVar) {
+    if (parentBlock) {
+      if (
+        parentBlock.type === 'define_variable' ||
+        parentBlock.type === 'define_variable_with_assignment'
+      ) {
+        const code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+        return [code, Order.ATOMIC];
+      } else if (
+        parentBlock.type === 'variables_set_uint8' ||
+        parentBlock.type === 'require_condition'
+      ) {
+        return [myVar.name, Order.ATOMIC];
+      }
+    } else {
+      const code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  // Fallback se la variabile non è definita
+  return ['/* undefined variable */', Order.ATOMIC];
+};
+
+// ## variables_get_u8
+solidityGenerator.forBlock['variables_get_u8'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityUint8Variable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    console.warn(`Variabile uint8 '${variable_name}' non trovata.`);
+    return ''; // oppure `return ['', Order.ATOMIC];` se il contesto richiede un'espressione
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return code;
+};
+
+// ## INT VARIABLES
+// ## variables_get_int
+solidityGenerator.forBlock['variables_get_int'] = function (block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    console.warn(`Variabile int '${variable_name}' non trovata.`);
+    return ['', Order.ATOMIC];
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_int' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_int
+solidityGenerator.forBlock['variables_set_int'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_int_constants
+
+solidityGenerator.forBlock['variables_get_int_constants'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    code = variable_name; // fallback di sicurezza
+    return [code, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_int' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+solidityGenerator.forBlock['variables_get_int_immutables'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in solidityIntImmutablesVariables.`);
+    return ["undefined", Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment'
+    ) {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_int' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback per evitare errori TypeScript: anche se tutti i casi sono coperti, serve un return.
+  return ["", Order.ATOMIC];
+};
+
+// ## variables_get_i
+solidityGenerator.forBlock['variables_get_i'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityIntVariable(variable_name);
+
+  if (!myVar) {
+    throw new Error(`Variable '${variable_name}' not found in solidityIntVariables.`);
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+
+  return code;
+};
+
+// ADDRESS VARIABLES
+// ## variables_get_address
+solidityGenerator.forBlock['variables_get_address'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressVariable(variable_name);
+
+  if (!myVar) {
+    throw new Error(`Address variable '${variable_name}' not found.`);
+  }
+
+  const parentBlock = block.getParent();
+  let code;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = myVar.payable === 'yes'
+        ? `${myVar.type} payable ${myVar.access} ${myVar.name}`
+        : `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      return [myVar.name, Order.ATOMIC];
+    }
+  }
+
+  // Se non ha parent, genera getter
+  code = `get_${myVar.name}() returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_address
+solidityGenerator.forBlock['variables_set_address'] = function (block, generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+  const myVar = getSolidityAddressVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  let code;
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in registry.`);
+    code = `/* undefined address variable: ${variable_name} */\n`;
+    return code;
+  }
+
+  if (!parentBlock) {
+    const payablePrefix = myVar.payable === 'yes' ? 'payable ' : '';
+    code =
+      `function set_${variable_name}(${payablePrefix}${myVar.type} _value) public {\n` +
+      `  ${variable_name} = _value;\n` +
+      `}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+  }
+
+  return code;
+};
+
+// ## variables_get_address_constants
+solidityGenerator.forBlock['variables_get_address_constants'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code;
+
+  if (!myVar) {
+    console.warn(`Variabile costante address '${variable_name}' non trovata.`);
+    return [`/* undefined address constant: ${variable_name} */`, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback: per evitare errori se nessuna condizione è soddisfatta
+  return [`/* incomplete logic for: ${variable_name} */`, Order.ATOMIC];
+};
+
+// ## variables_get_address_immutables
+solidityGenerator.forBlock['variables_get_address_immutables'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressImmutablesVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variable ${variable_name} not found in address immutables.`);
+    return ['undefined', Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_address' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Fallback nel caso in cui nessuna condizione venga soddisfatta (evita TS error: missing return)
+  return ['undefined', Order.ATOMIC];
+};
+
+// ## variables_get_a
+solidityGenerator.forBlock['variables_get_a'] = function(block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityAddressVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variabile address "${variable_name}" non trovata.`);
+    return ''; // oppure return '// Errore: variabile non trovata\n';
+  }
+
+  const payablePrefix = myVar.payable === 'yes' ? 'payable ' : '';
+  const code = `function get_${myVar.name}() public view returns (${payablePrefix}address) {\n  return ${myVar.name};\n}`;
+
+  return code;
+};
+
+// ## Boolean
+// ## variables_get_bool
+
+solidityGenerator.forBlock['variables_get_bool'] = function (block: Blockly.Block, generator: Blockly.Generator) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBoolVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    console.warn(`Variabile bool "${variable_name}" non trovata.`);
+    return ["", Order.ATOMIC]; // fallback sicuro
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_bool' || parentBlock.type === 'require_condition') {
+      return [myVar.name, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  return ["", Order.ATOMIC]; // caso di fallback finale
+};
+
+// ## variables_set_bool
+solidityGenerator.forBlock['variables_set_bool'] = function (block: Blockly.Block, generator: Blockly.Generator): string {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+    console.log("Generated setter code:", code);
+  }
+
+  return code;
+};
+
+// ## variables_get_bool_constants
+solidityGenerator.forBlock['variables_get_bool_constants'] = function (block: Blockly.Block): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBoolConstantsVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    throw new Error(`Bool constant variable '${variable_name}' not found.`);
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_bool' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_bool_immutables
+solidityGenerator.forBlock['variables_get_bool_immutables'] = function (
+  block: Blockly.Block
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBoolImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    // fallback di sicurezza se non trovata
+    return [`/* unknown variable: ${variable_name} */`, Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment'
+    ) {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_bool' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // fallback esplicito se nessun ramo viene preso (utile per TypeScript)
+  return [`/* fallback for ${variable_name} */`, Order.ATOMIC];
+};
+
+// ## variables_get_b
+solidityGenerator.forBlock['variables_get_b'] = function(block: Blockly.Block): string {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBoolVariable(variable_name);
+
+  if (!myVar) {
+    // Gestione di fallback se la variabile non è trovata
+    return `// ERROR: Boolean variable '${variable_name}' not found.\n`;
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+
+  return code;
+};
+
+// ## BYTES
+// ## variables_get_bytes
+solidityGenerator.forBlock['variables_get_bytes'] = function (block: Blockly.Block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytesVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  let code: string;
+
+  if (!myVar) {
+    throw new Error(`Variable '${variable_name}' not found in solidityBytesVariables`);
+  }
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_bytes' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  } else {
+    code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+    return [code, Order.ATOMIC];
+  }
+
+  // Aggiunto per soddisfare il tipo di ritorno
+  return ["", Order.NONE];
+};
+
+// ## variables_set_bytes
+solidityGenerator.forBlock['variables_set_bytes'] = function (
+  block: Blockly.Block,
+  generator: Blockly.Generator
+): string {
+  const variable_name: string = block.getFieldValue('VAR');
+  const value: string = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock: Blockly.Block | null = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `function set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+    console.log("Generated setter code:", code);
+  }
+
+  return code;
+};
+
+// ## variables_get_bytes_constants
+solidityGenerator.forBlock['variables_get_bytes_constants'] = function (
+  block: Blockly.Block
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytesConstantsVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variabile bytes constant '${variable_name}' non trovata.`);
+    return ["/* unknown constant bytes variable */", Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_bytes' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      return [myVar.name, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ##
+solidityGenerator.forBlock['variables_get_bytes_immutables'] = function (
+  block: Blockly.Block
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytesImmutablesVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in immutables.`);
+    return [`/* unknown variable ${variable_name} */`, Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    switch (parentBlock.type) {
+      case 'define_variable':
+      case 'define_variable_with_assignment1':
+        code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+        return [code, Order.ATOMIC];
+      case 'variables_set_bytes':
+      case 'require_condition':
+        code = myVar.name;
+        return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_by
+solidityGenerator.forBlock['variables_get_by'] = function(block: Blockly.Block): string {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytesVariable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in solidityBytesVariables.`);
+    return '';
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return code;
+};
+
+// ## variables_get_bytes32
+solidityGenerator.forBlock['variables_get_bytes32'] = function(block: Blockly.Block) {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytes32Variable(variable_name);
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!myVar) {
+    console.warn(`Variabile bytes32 "${variable_name}" non trovata.`);
+    return ["/* unknown bytes32 variable */", Order.ATOMIC];
+  }
+
+  if (parentBlock) {
+    if (
+      parentBlock.type === 'define_variable' ||
+      parentBlock.type === 'define_variable_with_assignment1'
+    ) {
+      code = `${myVar.type} ${myVar.access} ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_bytes32' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `function get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_set_bytes32
+solidityGenerator.forBlock['variables_set_bytes32'] = function (
+  block: Blockly.Block,
+  generator: Blockly.Generator
+): string {
+  const variable_name = block.getFieldValue('VAR');
+  const value = generator.valueToCode(block, 'VALUE', Order.ASSIGNMENT) || '""';
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (!parentBlock) {
+    code = `set_${variable_name}(${value}) {\n  ${variable_name} = ${value};\n}`;
+  } else {
+    code = `${variable_name} = ${value};\n`;
+    console.log("Generated setter code:", code);
+  }
+
+  return code;
+};
+
+// ## variables_get_bytes32_constants
+solidityGenerator.forBlock['variables_get_bytes32_constants'] = function (
+  block: Blockly.Block,
+  generator: Blockly.Generator
+): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytes32ConstantsVariable(variable_name);
+
+  if (!myVar) {
+    // Fallback in caso la variabile non sia trovata
+    return [`/* Unknown variable: ${variable_name} */`, Order.ATOMIC];
+  }
+
+  const parentBlock = block.getParent();
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} constant ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (
+      parentBlock.type === 'variables_set_bytes32' ||
+      parentBlock.type === 'require_condition'
+    ) {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  // Default: restituisce una funzione getter
+  code = `function get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_bytes32_immutables
+solidityGenerator.forBlock['variables_get_bytes32_immutables'] = function (block: Blockly.Block, generator: Blockly.Generator): [string, number] {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytes32ImmutablesVariable(variable_name);
+  const parentBlock = block.getParent();
+
+  if (!myVar) {
+    throw new Error(`Variable '${variable_name}' not found in bytes32 immutables.`);
+  }
+
+  let code: string;
+
+  if (parentBlock) {
+    if (parentBlock.type === 'define_variable' || parentBlock.type === 'define_variable_with_assignment1') {
+      code = `${myVar.type} ${myVar.access} immutable ${myVar.name}`;
+      return [code, Order.ATOMIC];
+    } else if (parentBlock.type === 'variables_set_bytes32' || parentBlock.type === 'require_condition') {
+      code = myVar.name;
+      return [code, Order.ATOMIC];
+    }
+  }
+
+  code = `get_${myVar.name}() returns (${myVar.type}){\n  return ${myVar.name};\n}`;
+  return [code, Order.ATOMIC];
+};
+
+// ## variables_get_by32
+solidityGenerator.forBlock['variables_get_by32'] = function (
+  block: Blockly.Block,
+  generator: Blockly.Generator
+): string {
+  const variable_name = block.getFieldValue('VAR');
+  const myVar = getSolidityBytes32Variable(variable_name);
+
+  if (!myVar) {
+    console.warn(`Variable '${variable_name}' not found in solidityBytes32Variables.`);
+    return '';
+  }
+
+  const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}`;
+  return code;
+};
+
+
+
+
+
+
+
 
 export default solidityGenerator;

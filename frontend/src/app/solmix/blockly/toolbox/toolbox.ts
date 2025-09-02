@@ -42,19 +42,19 @@ export const blocklyToolbox = {
             name: "Smart Contract Basic Blocks",
             //colour: "#6456BF",
             contents: [
-                // {
-                //     kind: "block",
-                //     type: "structure",
-                // },
-                // {
-                //     kind: "block",
-                //     type: "import",
-                // },
-                // {
-                //     kind: "block",
-                //     type: "contract",
-                //     //custom: 'INITIALIZE_VARIABLES'
-                // },
+                {
+                     kind: "block",
+                     type: "structure",
+                },
+                {
+                     kind: "block",
+                     type: "import",
+                 },
+                {
+                     kind: "block",
+                    type: "contract",
+                     //custom: 'INITIALIZE_VARIABLES'
+                },
                 {
                     kind: "category",
                     name: "Init",
@@ -65,7 +65,66 @@ export const blocklyToolbox = {
                             name: "Variables",
                             colour: "#D74C22", //"#F89A33",
                             id: "variables",
-                            custom: "SOLIDITY_TYPE",
+                            //custom: "SOLIDITY_TYPE",
+                            contents: [
+                                {
+                                kind: 'block',
+                                type: 'define_variable',
+                                //colour: "#FA7E00",
+                                },
+                                {
+                                kind: 'block',
+                                type: 'define_variable_with_assignment',
+                                },
+                                {
+                                kind: 'block',
+                                type: 'define_variable_with_assignment1',
+                                },
+                                {
+                                kind: "category",
+                                name: "String",
+                                colour: "#FDC18D",
+                                //colour: "#FE414C",
+                                //colour: "230",
+                                custom: "NEW_STRING_VARIABLE"
+                                
+                                },
+                                {
+                                kind: "category",
+                                name: "Uint",
+                                colour: "#FDC18D",
+                                //colour: "330",
+                                custom: "NEW_UINT_VARIABLE"
+                                },
+                                {
+                                kind: "category",
+                                name: "Int",
+                                colour: "#FDC18D",
+                                //colour: '%{BKY_VARIABLES_DYNAMIC_HUE}', 
+                                custom: "NEW_INT_VARIABLE"
+                                },
+                                {
+                                kind: "category",
+                                name: "Address",
+                                colour: "#FDC18D",
+                                //colour: '%{BKY_LOGIC_HUE}',
+                                custom: "NEW_ADDRESS_VARIABLE",
+                                },
+                                {
+                                kind: "category",
+                                name: "Boolean",
+                                colour: "#FDC18D",
+                                //colour: "175",
+                                custom: "NEW_BOOL_VARIABLE"
+                                },
+                                {
+                                kind: "category",
+                                name: "Bytes",
+                                colour: "#FDC18D",
+                                //colour: "175",
+                                custom: "NEW_BYTES_VARIABLE"
+                                }
+                            ]
                         },
                         {
                             kind: "category",
