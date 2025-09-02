@@ -1,40 +1,37 @@
-import colorama
-import toml
 import time
-from poe_api_wrapper import PoeApi
 from pathlib import Path
+import openai
+import os
+from dotenv import load_dotenv
+import openai
+
 
 ROOT_DIR = Path(__file__).parent.absolute()
 
-# pip install -U poe-api-wrapper
-
 # POE
-auth = dict()
-try:
-    auth = toml.load(f'{ROOT_DIR}/config.toml')
-except FileNotFoundError as e:
-    print(colorama.Fore.RED + f'{e}')
-    print(colorama.Fore.RED + '[ERROR] How-to insert Poe credentials:\n'
-                              '1. duplicate \'config-example.toml\'\n'
-                              '2. rename the file into \'config.toml\'\n'
-                              '3. open \'config.toml\' and replace the dummy credentials with yours')
-
-tokens = {
-    'p-b': auth['poe']['p_b'],
-    'p-lat': auth['poe']['p_lat'],
-}
-BOT_NAME = "Claude-Sonnet-3.7"
-CHAT_CODE = "p25djm12p3pvwmo25x"
+# pip install openai
+# pip install fastapi-poe
 
 
-def run_prompt(prompt_message: str):
-    client = PoeApi(tokens=tokens)
+def run_prompt(user_message: str, sys_prompt:str = ""):
+    load_dotenv()
+    client = openai.OpenAI(
+        api_key=os.getenv('POE_API_KEY'),
+        base_url="https://api.poe.com/v1",
+    )
 
-    time.sleep(2)
+    response = client.chat.completions.create(
+        model="Claude-Sonnet-3.7",
+        messages=[
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": user_message}],
+        stream=True
+    )
+
     result = ''
-    for chunk in client.send_message(bot=BOT_NAME, message=prompt_message, chatCode=CHAT_CODE):
-        result += chunk["response"]
-    client.chat_break(bot=BOT_NAME, chatCode=CHAT_CODE)
+    for chunk in response:
+        if chunk.choices[0].delta.content:
+            result += chunk.choices[0].delta.content
 
     return result
 
