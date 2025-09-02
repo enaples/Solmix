@@ -465,7 +465,7 @@ export function createGetterSetterBlocks(
   ];
 
   if (!supportedTypes.includes(variableType)) {
-    console.warn(`Tipo ${variableType} non supportato.`);
+    console.warn(`Type ${variableType} not supported.`);
     return;
   }
 
@@ -474,5 +474,5 @@ export function createGetterSetterBlocks(
 
   // Aggiungi la variabile al workspace
   workspace.createVariable(variableName, variableType);
-  console.log("workspace.createvariable eseguita");
+  console.log("workspace.createvariable executed");
 }

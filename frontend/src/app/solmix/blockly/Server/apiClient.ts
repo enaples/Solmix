@@ -23,12 +23,12 @@ export async function sendSolidityToServer(solidityCode: string): Promise<void> 
     }
 
     const ast = await response.json();
-    console.log("✅ AST ricevuto dal server:", ast);
+    console.log("✅ AST received from server:", ast);
 
     setSourceCode(solidityCode);
     updateUIWithParsedData(ast);
   } catch (error) {
-    console.error("❌ Errore nell'invio del codice Solidity:", error);
+    console.error("❌ Error in sending Solidity code:", error);
   }
 }
 
@@ -39,7 +39,7 @@ export function updateUIWithParsedData(parsedData: any): void {
   //const ws = Blockly.getMainWorkspace();
   const ws: WorkspaceSvg = Blockly.getMainWorkspace() as WorkspaceSvg;
   if (!ws) {
-    console.error("❌ Workspace non disponibile.");
+    console.error("❌ Workspace not available.");
     return;
   }
 

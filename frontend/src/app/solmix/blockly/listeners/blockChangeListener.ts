@@ -125,7 +125,7 @@ export function onBlockChange(event: Blockly.Events.Abstract): void {
     if (!alreadyInDropdown(newValue)) {
       addToDropdown(newValue, block.type as SolidityDropdownType);
     } else {
-      console.log(`⚠️ '${newValue}' già esistente nel dropdown (${block.type})`);
+      console.log(`⚠️ '${newValue}' already exists in dropdown (${block.type})`);
     }
   }
 }
@@ -182,7 +182,7 @@ export function onBlockChange(event: Blockly.Events.Abstract): void {
         if (existing !== updated) {
           structRegistry[name] = attributes;
           updateStructAttributeDropdowns(name);
-          console.log(`🔁 Struct "${name}" aggiornato in structRegistry`, attributes);
+          console.log(`🔁 Struct "${name}" updated in structRegistry`, attributes);
         }
       });
 
@@ -190,7 +190,7 @@ export function onBlockChange(event: Blockly.Events.Abstract): void {
       Object.keys(structRegistry).forEach(structName => {
         if (!currentNames.includes(structName)) {
           delete structRegistry[structName];
-          console.log(`🗑️ Struct "${structName}" rimosso da structRegistry`);
+          console.log(`🗑️ Struct "${structName}" removed from structRegistry`);
         }
       });
     }

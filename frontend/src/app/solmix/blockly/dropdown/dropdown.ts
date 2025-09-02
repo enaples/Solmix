@@ -675,7 +675,7 @@ export function updateStructAttributeDropdowns(structName: string): void {
         (attrDropdown as any).menuGenerator_ = options;
         attrDropdown.setValue(options[0]?.[1] || "");
         console.log(
-          `🔁 Dropdown ATTRIBUTI aggiornato per blocco '${block.id}' con struct '${structName}'`
+          `🔁 Dropdown ATTRIBUTES updates for block '${block.id}' with struct '${structName}'`
         );
       }
     }
@@ -691,7 +691,7 @@ export function updateStructAttributeDropdowns(structName: string): void {
 
         block.data = JSON.stringify(newData);
         console.log(
-          `🔁 Blocchi new_struct aggiornati per struct '${structName}'`
+          `🔁 Blocks new_struct updates for struct '${structName}'`
         );
       }
     }

@@ -1198,7 +1198,7 @@ solidityGenerator.forBlock["array_values"] = function (
 
   if (!myVar || !myVar.name) {
     console.warn(`❌ Errore: array '${variableName}' non trovato.`);
-    return `/* Errore: array '${variableName}' non trovato */\n`;
+    return `/* Error: array '${variableName}' not found */\n`;
   }
 
   const index = block.getFieldValue("PARAMS1") || "0";
@@ -1532,8 +1532,8 @@ solidityGenerator.forBlock['variables_get_string'] = function(block): [string, n
   const myVar = getSolidityStringVariable(variable_name);
 
   if (!myVar) {
-    console.warn(`❌ Variabile stringa '${variable_name}' non trovata.`);
-    return [`/* Errore: variabile ${variable_name} non trovata */`, Order.ATOMIC];
+    console.warn(`❌ String Variable '${variable_name}' not found.`);
+    return [`/* Error: variable ${variable_name} not found */`, Order.ATOMIC];
   }
 
   const parentBlock = block.getParent();
@@ -1585,8 +1585,8 @@ solidityGenerator.forBlock['variables_get_string_constants'] = function (
   const parentBlock = block.getParent();
   
   if (!myVar) {
-    console.warn(`❌ Variabile costante non trovata: ${variable_name}`);
-    return [`/* costante ${variable_name} non trovata */`, Order.ATOMIC];
+    console.warn(`❌ Constant Variable not found: ${variable_name}`);
+    return [`/* constant ${variable_name} not found */`, Order.ATOMIC];
   }
 
   let code: string;
@@ -1632,7 +1632,7 @@ solidityGenerator.forBlock['variables_get_string_immutables'] = function (block:
   }
 
   // In caso myVar non venga trovato
-  code = `/* Variabile immutable non trovata: ${variableName} */`;
+  code = `/* Immutable Variable not found: ${variableName} */`;
   return [code, Order.ATOMIC];
 };
 
@@ -1642,8 +1642,8 @@ solidityGenerator.forBlock['variables_get_s'] = function (block, generator) {
   const myVar = getSolidityStringVariable(variableName);
 
   if (!myVar) {
-    console.warn(`❌ Variabile stringa non trovata: ${variableName}`);
-    return `/* Errore: variabile ${variableName} non trovata */\n`;
+    console.warn(`❌ String Variable not found: ${variableName}`);
+    return `/* Error: variable ${variableName} not found */\n`;
   }
 
   const code = `function get_${myVar.name}() public view returns (${myVar.type}) {\n  return ${myVar.name};\n}\n`;
@@ -1659,7 +1659,7 @@ solidityGenerator.forBlock['variables_get_uint'] = function (block, generator) {
   let code: string;
 
   if (!myVar) {
-    console.warn(`❌ Variabile uint "${variable_name}" non trovata.`);
+    console.warn(`❌ Uint Variable "${variable_name}" not found.`);
     return ["/* uint variable not found */", Order.ATOMIC];
   }
 
@@ -1719,7 +1719,7 @@ solidityGenerator.forBlock['variables_get_uint_constants'] = function (
   const parentBlock = block.getParent();
 
   if (!myVar) {
-    console.warn("Variabile non trovata:", variableName);
+    console.warn("Variable not found:", variableName);
     return [`/* constant ${variableName} not found */`, Order.ATOMIC];
   }
 
@@ -1754,7 +1754,7 @@ solidityGenerator.forBlock['variables_get_uint_immutables'] = function (
   const parentBlock = block.getParent();
 
   if (!myVar) {
-    console.warn("Variabile immutable non trovata:", variableName);
+    console.warn("Immutable Variable not found:", variableName);
     return [`/* immutable ${variableName} not found */`, Order.ATOMIC];
   }
 
@@ -1788,7 +1788,7 @@ solidityGenerator.forBlock['variables_get_u'] = function (
   const myVar = getSolidityUintVariable(variableName);
 
   if (!myVar) {
-    console.warn("Variabile uint non trovata:", variableName);
+    console.warn("Uint Variable not found:", variableName);
     return `/* Getter for ${variableName} not found */\n`;
   }
 
@@ -1809,7 +1809,7 @@ solidityGenerator.forBlock['variables_get_uint256'] = function (
   const myVar = getSolidityUint256Variable(variable_name);
 
   if (!myVar) {
-    console.warn("Variabile uint256 non trovata:", variable_name);
+    console.warn("Uint256 Variabile not found:", variable_name);
     return [`/* Variable ${variable_name} not found */`, Order.ATOMIC];
   }
 
@@ -2262,7 +2262,7 @@ solidityGenerator.forBlock['variables_get_address_constants'] = function(block) 
   let code;
 
   if (!myVar) {
-    console.warn(`Variabile costante address '${variable_name}' non trovata.`);
+    console.warn(`Constant Address Variable '${variable_name}' not found.`);
     return [`/* undefined address constant: ${variable_name} */`, Order.ATOMIC];
   }
 
@@ -2319,7 +2319,7 @@ solidityGenerator.forBlock['variables_get_a'] = function(block) {
   const myVar = getSolidityAddressVariable(variable_name);
 
   if (!myVar) {
-    console.warn(`Variabile address "${variable_name}" non trovata.`);
+    console.warn(`Address Variable "${variable_name}" not found.`);
     return ''; // oppure return '// Errore: variabile non trovata\n';
   }
 
@@ -2516,7 +2516,7 @@ solidityGenerator.forBlock['variables_get_bytes_constants'] = function (
   const myVar = getSolidityBytesConstantsVariable(variable_name);
 
   if (!myVar) {
-    console.warn(`Variabile bytes constant '${variable_name}' non trovata.`);
+    console.warn(`Constant Bytes Variabile '${variable_name}' not found.`);
     return ["/* unknown constant bytes variable */", Order.ATOMIC];
   }
 

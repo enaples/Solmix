@@ -4499,17 +4499,17 @@ type ASTNode = {
 
 function extractSolidityCodeFromNode(node: ASTNode): string {
   if (!node || !node.range || node.range.length !== 2) {
-    return "// Nodo non valido o privo di range";
+    return "// Node not valid or without range";
   }
 
   const [start, end] = node.range;
 
   if (typeof start !== 'number' || typeof end !== 'number') {
-    return "// Intervallo non valido";
+    return "// Interval not valid";
   }
 
   if (start < 0 || end > globalSourceCode.length || start >= end) {
-    return "// Range fuori dai limiti del codice sorgente";
+    return "// Range out of limits";
   }
 
   return globalSourceCode.slice(start, end);
@@ -4541,17 +4541,17 @@ export function positionBlocks(blocks: Blockly.Block[]): void {
 
   function placeBlock(block: Blockly.Block, x: number, y: number) {
     block.moveBy(x, y);
-    console.log(`Posizionato blocco ${block.type} (ID: ${block.id}) a X:${x}, Y:${y}`);
+    console.log(`Positioned block ${block.type} (ID: ${block.id}) a X:${x}, Y:${y}`);
   }
 
   // Primo passaggio: posizionare il blocco di tipo "structure"
   blocks.forEach((block) => {
     if (!block) return;
-    console.log(`Blocchi in posizionamento: ID=${block.id}, Tipo=${block.type}, Parent=${block.data}`);
+    console.log(`Positioniong blocks: ID=${block.id}, Tipo=${block.type}, Parent=${block.data}`);
 
     if (["structure"].includes(block.type)) {
       placeBlock(block, x, y);
-      console.log(`Parent ${block.type} (ID: ${block.id}) posizionato a X:${x}, Y:${y}`);
+      console.log(`Parent ${block.type} (ID: ${block.id}) positioned at X:${x}, Y:${y}`);
     }
   });
 
@@ -4567,7 +4567,7 @@ export function positionBlocks(blocks: Blockly.Block[]): void {
       parentId = data.parentId || null;
       section = data.section || null;
     } catch (e) {
-      console.warn(`⚠️ Errore nel parsing dei dati del blocco ${block.id}:`, e);
+      console.warn(`⚠️ Error in parsing data of block ${block.id}:`, e);
     }
 
     console.log(`Blocco ID=${block.id}, Tipo=${block.type}, Parent=${parentId}, Section=${section}`);
@@ -4966,9 +4966,9 @@ export function positionBlocks(blocks: Blockly.Block[]): void {
           //console.log(`🔍 Prima del posizionamento: ID=${block.id}, Tipo=${block.type}, Parent=${block.parent}`);
           const parent = blocks.find(b => b.type === "contract_structures" && parentId === b.id);
           if (parent) {
-            console.log(`Trovato parent: ${parent.id}, Tipo: ${parent.type}`);
+            console.log(`Found parent: ${parent.id}, Type: ${parent.type}`);
           } else {
-            console.log(`❌ Parent non trovato per struct_variables ${block.id}`);
+            console.log(`❌ Parent non found for struct_variables ${block.id}`);
           }
 
           if (parent) {
