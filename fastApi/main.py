@@ -1,3 +1,5 @@
+import re
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -59,16 +61,37 @@ async def explain(item: smartContractItem):
     return result
 
 
+def extract_contract_name(solidity_code):
+    # Regular expression to match "contract ContractName is" pattern
+    contract_pattern = re.compile(r'contract\s+([a-zA-Z0-9_]+)(?:\s+is|\s*{)')
+
+    # Search for the pattern in the code
+    match = contract_pattern.search(solidity_code)
+
+    # Return the contract name if found, otherwise None
+    if match:
+        return match.group(1)
+    else:
+        return None
+
 @app.post("/deploy", response_model=str)
 async def explain(item: smartContractItem):
-
-    # todo save sc to file and then deploy .sol
-
     hash = random.getrandbits(128)
-    with open(f"../ignition/modules/{hash}.sol", "w") as text_file:
+    # TODO: pragma should be declared using the proper version
+    with open(f"../hardhat/contracts/solmix/{hash}.sol", "w") as text_file:
         text_file.write(item.code)
 
-    deploy = subprocess.Popen(["npx", "hardhat", "ignition", "deploy", "./ignition/modules/Lock.js"],
+    script = ""
+    with open('./res/deploy_script_sample.txt', encoding='utf-8') as file:
+        script = file.read() % extract_contract_name(item.code)
+    with open(f"../hardhat/scripts/deployments/{hash}.ts", "w") as f:
+        f.write(script)
+
+    #deploy = subprocess.Popen(["npx", "hardhat", "run", f"scripts/deployments/{hash}.ts", "--network", "dev"],
+    #                          cwd="../hardhat/",
+    #                          stdout=subprocess.PIPE)
+
+    deploy = subprocess.Popen(["npx", "hardhat", "run", f"scripts/deployments/{hash}.ts"],
                               cwd="../hardhat/",
                               stdout=subprocess.PIPE)
     print("the commandline is {}".format(deploy.args))
@@ -78,10 +101,4 @@ async def explain(item: smartContractItem):
     print("Output:", deploy.stdout)
     print("Error:", deploy.stderr)
 
-    try:
-        os.remove(f"../ignition/modules/{hash}.sol")
-        print(f"File '{hash}.sol' deleted successfully.")
-    except FileNotFoundError: (
-        print(f"File '{hash}.sol' not found."))
-
-    return output
+    return "ok"

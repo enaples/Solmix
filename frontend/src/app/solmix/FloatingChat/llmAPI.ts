@@ -56,5 +56,19 @@ export async function explainSmartContract(current_solidity_code: string) {
     });
     return (await res.text()).replace(/\\n/g, "\n")
         .replace(/\\t/g, "\t")
-        .replace(/\\"/g, '"');;
+        .replace(/\\"/g, '"');
+}
+
+export async function deploySmartContract(current_solidity_code: string) {
+    const newBody = {
+        code: current_solidity_code
+    }
+    const res = await fetch('http://127.0.0.1:8000/deploy', {
+        method: 'POST',
+        body: JSON.stringify(newBody),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+    return res.ok;
 }
