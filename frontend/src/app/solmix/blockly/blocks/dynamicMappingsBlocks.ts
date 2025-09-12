@@ -1,5 +1,5 @@
 import * as Blockly from "blockly";
-import {updateMappingsDropdown, solidityMappings} from "../dropdown/dropdown";
+import {solidityMappings} from "../dropdown/dropdown"; //updateMappingsDropdown, 
 
 
 Blockly.Blocks['getter_mappings'] = {

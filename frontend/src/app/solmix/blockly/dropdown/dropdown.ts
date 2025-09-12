@@ -26,41 +26,41 @@ export interface SolidityVariable {
   payable?: 'yes' | "doesn't matter"; //vedi se 'no' o 'doesn't matter'
 }
 
-export let solidityStringVariables: SolidityVariable[] = [];
-export let solidityStringConstantsVariables: SolidityVariable[] = [];
-export let solidityStringImmutablesVariables: SolidityVariable[] = [];
+export const solidityStringVariables: SolidityVariable[] = [];
+export const solidityStringConstantsVariables: SolidityVariable[] = [];
+export const solidityStringImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityUintVariables: SolidityVariable[] = [];
-export let solidityUintConstantsVariables: SolidityVariable[] = [];
-export let solidityUintImmutablesVariables: SolidityVariable[] = [];
+export const solidityUintVariables: SolidityVariable[] = [];
+export const solidityUintConstantsVariables: SolidityVariable[] = [];
+export const solidityUintImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityUint256Variables: SolidityVariable[] = [];
-export let solidityUint256ConstantsVariables: SolidityVariable[] = [];
-export let solidityUint256ImmutablesVariables: SolidityVariable[] = [];
+export const solidityUint256Variables: SolidityVariable[] = [];
+export const solidityUint256ConstantsVariables: SolidityVariable[] = [];
+export const solidityUint256ImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityUint8Variables: SolidityVariable[] = [];
-export let solidityUint8ConstantsVariables: SolidityVariable[] = [];
-export let solidityUint8ImmutablesVariables: SolidityVariable[] = [];
+export const solidityUint8Variables: SolidityVariable[] = [];
+export const solidityUint8ConstantsVariables: SolidityVariable[] = [];
+export const solidityUint8ImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityIntVariables: SolidityVariable[] = [];
-export let solidityIntConstantsVariables: SolidityVariable[] = [];
-export let solidityIntImmutablesVariables: SolidityVariable[] = [];
+export const solidityIntVariables: SolidityVariable[] = [];
+export const solidityIntConstantsVariables: SolidityVariable[] = [];
+export const solidityIntImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityAddressVariables: SolidityVariable[] = [];
-export let solidityAddressConstantsVariables: SolidityVariable[] = [];
-export let solidityAddressImmutablesVariables: SolidityVariable[] = [];
+export const solidityAddressVariables: SolidityVariable[] = [];
+export const solidityAddressConstantsVariables: SolidityVariable[] = [];
+export const solidityAddressImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityBoolVariables: SolidityVariable[] = [];
-export let solidityBoolConstantsVariables: SolidityVariable[] = [];
-export let solidityBoolImmutablesVariables: SolidityVariable[] = [];
+export const solidityBoolVariables: SolidityVariable[] = [];
+export const solidityBoolConstantsVariables: SolidityVariable[] = [];
+export const solidityBoolImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityBytesVariables: SolidityVariable[] = [];
-export let solidityBytesConstantsVariables: SolidityVariable[] = [];
-export let solidityBytesImmutablesVariables: SolidityVariable[] = [];
+export const solidityBytesVariables: SolidityVariable[] = [];
+export const solidityBytesConstantsVariables: SolidityVariable[] = [];
+export const solidityBytesImmutablesVariables: SolidityVariable[] = [];
 
-export let solidityBytes32Variables: SolidityVariable[] = [];
-export let solidityBytes32ConstantsVariables: SolidityVariable[] = [];
-export let solidityBytes32ImmutablesVariables: SolidityVariable[] = [];
+export const solidityBytes32Variables: SolidityVariable[] = [];
+export const solidityBytes32ConstantsVariables: SolidityVariable[] = [];
+export const solidityBytes32ImmutablesVariables: SolidityVariable[] = [];
 
 
 type SolidityDropdownType =

@@ -1,12 +1,12 @@
 "use client";
 import * as Blockly from "blockly";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef} from "react"; //, useState 
 import { blocklyToolbox } from "./toolbox/toolbox";
 import blocklyTheme from "./blocklyTheme";
 import "./blocks/blocks";
 import "./blocks/variable_dynamic_blocks";
 import { solidityGenerator } from "./generator/solidity";
-import { solidityGeneratorEvent } from "./blocks/dynamicEventBlocks";
+//import { solidityGeneratorEvent } from "./blocks/dynamicEventBlocks";
 import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
 import  './blocks/variable_dynamic_blocks';
 import "./validators/validators";

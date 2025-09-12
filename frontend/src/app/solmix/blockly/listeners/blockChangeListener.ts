@@ -1,8 +1,8 @@
 import * as Blockly from "blockly";
-import type { WorkspaceSvg } from "blockly";
+//import type { WorkspaceSvg } from "blockly";
 import { addToDropdown, removeFromDropdown, alreadyInDropdown } from "../dropdown/dropdown";
 //import { getStructAttributesFromBlock, updateStructAttributeDropdowns } from "../dropdown/dropdown";
-import { structRegistry, updateStructAttributeDropdowns, getStructAttributesFromBlock } from "../dropdown/dropdown";
+import { structRegistry, updateStructAttributeDropdowns } from "../dropdown/dropdown"; //, getStructAttributesFromBlock
 //import type { BlockChange } from "blockly/core/events";
 
 

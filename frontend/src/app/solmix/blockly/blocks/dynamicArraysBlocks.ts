@@ -1,6 +1,6 @@
 import * as Blockly from "blockly";
-import { javascriptGenerator } from "blockly/javascript";
-import {solidityArrays, updateArraysDropdown } from "../dropdown/dropdown";
+//import { javascriptGenerator } from "blockly/javascript";
+import {solidityArrays } from "../dropdown/dropdown";
 
 Blockly.Blocks["array_values"] = {
   init(this: Blockly.Block): void {

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import React, { useState, useCallback, useMemo} from "react"; //, useRef 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
@@ -111,16 +111,6 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         URL.revokeObjectURL(url);
     }, [code, fileName]);
 
-    // Download code as file
-    const handleExplanation = useCallback(async () => {
-        // todo: edit code section annotating the code using a llm
-        if (!code || code.trim() === "") return;
-
-        let codeExplanation = explainSmartContract(code);
-        let newcode = await codeExplanation;
-        handleCodeEdit(newcode);
-    }, [code]);
-
     // Handle code editing
     const handleCodeEdit = useCallback(
         (newCode: string) => {
@@ -130,6 +120,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         [onCodeChange]
     );
 
+    // Download code as file
+    const handleExplanation = useCallback(async () => {
+        // todo: edit code section annotating the code using a llm
+        if (!code || code.trim() === "") return;
+
+        const codeExplanation = explainSmartContract(code);
+        const newcode = await codeExplanation;
+        handleCodeEdit(newcode);
+    }, [code, handleCodeEdit]);
+
+    
     const toggleEdit = useCallback(() => {
         if (readOnly) return;
 

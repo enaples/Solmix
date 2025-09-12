@@ -2,11 +2,11 @@ import * as Blockly from "blockly";
 import { createBlocksFromAST, positionBlocks } from "./astToBlocks";
 import type { WorkspaceSvg } from 'blockly';
 
-let globalSourceCode = "";
+//let globalSourceCode = "";
 
-export function setSourceCode(code: string): void {
-  globalSourceCode = code;
-}
+/*export function setSourceCode(code: string): void {
+  //globalSourceCode = code;
+}*/
 
 export async function sendSolidityToServer(solidityCode: string): Promise<void> {
   try {
@@ -25,7 +25,7 @@ export async function sendSolidityToServer(solidityCode: string): Promise<void> 
     const ast = await response.json();
     console.log("✅ AST received from server:", ast);
 
-    setSourceCode(solidityCode);
+    //setSourceCode(solidityCode);
     updateUIWithParsedData(ast);
   } catch (error) {
     console.error("❌ Error in sending Solidity code:", error);

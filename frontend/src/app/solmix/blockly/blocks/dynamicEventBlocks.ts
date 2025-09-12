@@ -1,6 +1,6 @@
 import * as Blockly from "blockly";
-import { javascriptGenerator } from "blockly/javascript";
-import {solidityEvents, updateEventsDropdown, solidityModifiers, solidityArrays, solidityStructs, solidityStructArrays} from "../dropdown/dropdown";
+//import { javascriptGenerator } from "blockly/javascript";
+import {solidityEvents, updateEventsDropdown} from "../dropdown/dropdown"; //, solidityModifiers, solidityArrays, solidityStructs, solidityStructArrays
 // Questo array tiene traccia degli eventi Solidity
 //const solidityEvents: { name: string }[] = [];
 export const solidityGeneratorEvent = new Blockly.Generator("Solidity");

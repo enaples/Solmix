@@ -6,7 +6,7 @@ import { addSolidityVariable } from "../addSolidityType/addSolidityType";
 import { SolidityAccess } from "../dropdown/dropdown";
 
 export function mappingFlyoutCallback(
-  workspace: WorkspaceSvg
+  //workspace: WorkspaceSvg
 ): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
@@ -27,7 +27,7 @@ export function registerMappingFlyout(workspace: WorkspaceSvg): void {
 }
 
 export function createFlyoutModifier(
- workspace: WorkspaceSvg
+ //workspace: WorkspaceSvg
 ): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
@@ -47,7 +47,7 @@ export function registerModifierFlyout(workspace: WorkspaceSvg): void {
 }
 
 export function createFlyoutEvent(
-    workspace: WorkspaceSvg
+    //workspace: WorkspaceSvg
 ): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
     xmlList.push({ kind: 'block', type: "event" });
@@ -67,7 +67,7 @@ export function registerEventFlyout(workspace: WorkspaceSvg): void {
 }
 
 export function createFlyoutStruct (
-    workspace: WorkspaceSvg
+    //workspace: WorkspaceSvg
 ): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
   
@@ -96,7 +96,7 @@ export function registerStructFlyout(workspace: WorkspaceSvg): void {
 }
 
 export function createFlyoutArray (
-    workspace: WorkspaceSvg
+    //workspace: WorkspaceSvg
 ): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
     xmlList.push({ kind: 'block', type: "array" });
@@ -237,7 +237,7 @@ export function solidityTypeFlyoutCategoryBlocks(
 
 // ## STRING VARIABLES
 
-export function createFlyoutString(workspace: WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutString(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutString(workspace: WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
   // Bottone per creare una nuova variabile
@@ -271,7 +271,7 @@ export function registerStringFlyout(workspace: WorkspaceSvg): void {
 }
 
 // ## UINT VARIABLES
-export function createFlyoutUint(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutUint(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutUint(workspace: Blockly.WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
   // Bottone per creare una nuova variabile
@@ -312,7 +312,7 @@ export function registerUintFlyout(workspace: Blockly.WorkspaceSvg): void {
 }
 
 // ## INT VARIABLES
-export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutInt(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutInt(workspace: Blockly.WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
    // Bottone per creare una nuova variabile
@@ -345,7 +345,7 @@ export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.
   }
 
   // ## ADDRESS VARIABLES
-  export function createFlyoutAddress(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+  export function createFlyoutAddress(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutAddress(workspace: Blockly.WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
   xmlList.push({
@@ -379,7 +379,7 @@ export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.
 }
 
 // ## BOOL VARIABLES
-export function createFlyoutBool(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutBool(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutBool(workspace: Blockly.WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
     // Bottone per creare una nuova variabile
@@ -412,7 +412,7 @@ export function registerBoolFlyout(workspace: Blockly.WorkspaceSvg): void {
 }
 
 // ## BYTES VARIABLES
-export function createFlyoutBytes(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutBytes(): Blockly.utils.toolbox.ToolboxItemInfo[] { //createFlyoutBytes(workspace: Blockly.WorkspaceSvg)
   const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
    // Bottone per creare una nuova variabile

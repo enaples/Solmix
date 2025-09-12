@@ -1,5 +1,5 @@
 import * as Blockly from "blockly";
-import { javascriptGenerator } from "blockly/javascript";
+//import { javascriptGenerator } from "blockly/javascript";
 import {solidityBytesVariables, solidityBytesConstantsVariables, solidityBytesImmutablesVariables } from "../dropdown/dropdown";
 import {solidityBytes32Variables, solidityBytes32ConstantsVariables, solidityBytes32ImmutablesVariables} from "../dropdown/dropdown";
 

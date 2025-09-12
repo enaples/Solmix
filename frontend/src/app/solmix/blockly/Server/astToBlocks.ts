@@ -1,13 +1,13 @@
-import { SourceUnit, ImportDirective, ContractDefinition } from "solidity-antlr4";
+//import { SourceUnit, ImportDirective, ContractDefinition } from "solidity-antlr4";
 import * as Blockly from "blockly";
 import { structRegistry } from "../dropdown/dropdown";
 import { createGetterSetterBlocks } from "../toolbox/create_dynamic_variables";
 import { SolidityAccess, addEvent, addMapping, addArray, addModifier, addStruct, saveStruct, addStructArray, findVariable, findVariableType} from "../dropdown/dropdown";
 import { getSolidityStringVariable } from "../dropdown/dropdown";
-import type { WorkspaceSvg } from 'blockly';
+//import type { WorkspaceSvg } from 'blockly';
 
 //const workspace: WorkspaceSvg = Blockly.getMainWorkspace() as WorkspaceSvg;
-let globalSourceCode = "";
+const globalSourceCode = "";
 
 
 export interface BlocklyBlock {
@@ -395,7 +395,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                   console.log("AST requireNode:", requireNode);
 
                   let conditionType = "";
-                  let left = "";
+                  //const left = "";
                   let right: any;
 
                   if (requireNode.arguments?.length > 0) {
@@ -927,7 +927,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                   } else if (variableTypes[varName]) {
                     const varType = variableTypes[varName];
                     const setBlockId = generateUniqueId();
-                    let setblock: BlocklyBlock;
+                    //const setblock: BlocklyBlock;
 
                     const blockTypeMap: Record<string, string> = {
                       string: "variables_set_string",
@@ -947,7 +947,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                       throw new Error(`❌ Tipo di variabile non gestito: ${varType}`);
                     }
 
-                    setblock = {
+                    const setblock: BlocklyBlock = {
                       type: blockType,
                       fields: { VAR: varName },
                       id: setBlockId,
@@ -1397,7 +1397,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
               } else if(statement.type === "IfStatement" ){ 
                 let elseBlock: BlocklyBlock | undefined;
                 let if_elseIf_else_Block: BlocklyBlock | undefined;
-                let if_else_Block: BlocklyBlock | undefined;
+                //let if_else_Block: BlocklyBlock | undefined;
 
                 const operatorMapping: Record<string, string> = {
                   "!": "NOT",
@@ -1409,9 +1409,9 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                   "<": "LOWER THAN"
                 };
 
-                let conditionType = "";
-                let left = "";
-                let right = "";
+                //let conditionType = "";
+                //let left = "";
+                //let right = "";
 
                 // 1) --> dichiaro if block:
                 let ifBlock: BlocklyBlock | undefined;
@@ -1659,7 +1659,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                               blocklyJson.blocks.blocks.push(inputBlockRight);
                             }
                           }
-                          let inputBlockLeftId: string = generateUniqueId();
+                          const inputBlockLeftId: string = generateUniqueId();
                           let inputBlockLeft: BlocklyBlock | undefined;
 
                           const type: string | null = findVariableType(ast, left.name);
@@ -2097,7 +2097,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                       }
                     });
 
-                    (savedElseBlockStatements1 as any[]).forEach((statement, i) => {
+                    (savedElseBlockStatements1 as any[]).forEach((statement, ) => {
                       (statement.elseStatement.statements as any[]).forEach((statement: any) => {
                         console.log("elsecondition rilevata");
 
@@ -2436,7 +2436,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                     blocklyJson.blocks.blocks.push(elseBlock);
                     console.log("Else block added to the json");
 
-                    savedElseBlockStatements.forEach((statement, i) => {
+                    savedElseBlockStatements.forEach((statement, ) => {
                       statement.statements.forEach((statement: any) => {
                         console.log("elsecondition rilevata");
 
@@ -3717,7 +3717,8 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
             blocklyJson.blocks.blocks.push(variableBlock);
           }
 
-          
+          variableBlock.data = JSON.stringify({ parentId: variableBlock.parent });
+          blocklyJson.blocks.blocks.push(variableBlock);
 
         } else {
           // TS conversion of the 'else' section in VariableDeclaration
@@ -3847,10 +3848,10 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
       }
 
       case "StructDefinition": {
-        var structBlockId = generateUniqueId();
+        const structBlockId = generateUniqueId();
         addStruct(node.name.name); 
 
-        var structBlock = {
+        const structBlock = {
           type: "contract_structures",
           fields: { NAME: node.name.name },
           id: structBlockId,
@@ -3862,7 +3863,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
         console.log("StructDefinition - ID: " + structBlock.id + ", Parent: " + parentBlockId);
         blocklyJson.blocks.blocks.push(structBlock);
 
-        var attributes : any = [];
+        const attributes : any = [];
         node.members.forEach(function(member: any) {
           attributes.push({
             name: member.name.name,
@@ -3895,7 +3896,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
         };
 
         let typeStr: string = "";
-        let name: string = node.name.name;
+        const name: string = node.name.name;
 
         if (
           node.typeName.name === "int" ||
@@ -4070,7 +4071,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
           node.parameters.forEach((param: any) => {
             const paramBlockId: string = generateUniqueId();
             let typeStr = "";
-            let name = param.name?.name || "param";
+            const name = param.name?.name || "param";
 
             if (
               ["int", "bool", "uint", "uint256", "uint8", "string", "address", "bytes32"].includes(param.typeName?.name)
@@ -4078,8 +4079,8 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
               console.log("casi definiti");
               typeStr = returnTypeModifier[param.typeName.name];
 
-              let datalocation = param.dataLocation?.name || "";
-              let completeName = datalocation ? `${datalocation} ${name}` : name;
+              const datalocation = param.dataLocation?.name || "";
+              const completeName = datalocation ? `${datalocation} ${name}` : name;
 
               const paramBlock: BlocklyBlock = {
                 type: "func_inputs",
@@ -4138,7 +4139,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
 
           if (requireNode.arguments?.length > 0) {
             const requireArg = requireNode.arguments[0];
-            let conditionExpression = requireArg?.expressions?.length
+            const conditionExpression = requireArg?.expressions?.length
               ? requireArg.expressions[0]
               : requireArg;
 
@@ -4536,8 +4537,8 @@ function generateBlackBlock(node: ASTNode, parentId: string): BlocklyBlock {
  * @param blocks Array di blocchi da posizionare
  */
 export function positionBlocks(blocks: Blockly.Block[]): void {
-  let x = 20, y = 20;
-  const yOffset = 300;
+  const x = 20, y = 20;
+  //const yOffset = 300;
 
   function placeBlock(block: Blockly.Block, x: number, y: number) {
     block.moveBy(x, y);

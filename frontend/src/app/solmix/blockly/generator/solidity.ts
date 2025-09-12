@@ -1578,7 +1578,7 @@ solidityGenerator.forBlock['variables_set_string'] = function(block, generator) 
 // ## variables_get_string_constants
 solidityGenerator.forBlock['variables_get_string_constants'] = function (
   block: Blockly.Block,
-  generator: Blockly.Generator
+  //generator: Blockly.Generator
 ): [string, number] {
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityStringConstantsVariable(variable_name);
@@ -1609,7 +1609,7 @@ solidityGenerator.forBlock['variables_get_string_constants'] = function (
 };
 
 // ## variables_get_string_immutables
-solidityGenerator.forBlock['variables_get_string_immutables'] = function (block: Blockly.Block, generator: any): [string, number] {
+solidityGenerator.forBlock['variables_get_string_immutables'] = function (block: Blockly.Block): [string, number] { //, generator: any
   const variableName = block.getFieldValue('VAR');
   const myVar = getSolidityStringImmutablesVariable(variableName);
 
@@ -1637,7 +1637,7 @@ solidityGenerator.forBlock['variables_get_string_immutables'] = function (block:
 };
 
 // ## variables_get_s
-solidityGenerator.forBlock['variables_get_s'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_s'] = function (block) { //, generator
   const variableName = block.getFieldValue('VAR');
   const myVar = getSolidityStringVariable(variableName);
 
@@ -1652,7 +1652,7 @@ solidityGenerator.forBlock['variables_get_s'] = function (block, generator) {
 
 // UINT VARIABLES
 // ## variables_get_uint
-solidityGenerator.forBlock['variables_get_uint'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_uint'] = function (block) { //, generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityUintVariable(variable_name);
   const parentBlock = block.getParent();
@@ -1712,7 +1712,7 @@ solidityGenerator.forBlock['variables_set_uint'] = function (
 // ## variables_get_uint_constants
 solidityGenerator.forBlock['variables_get_uint_constants'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variableName: string = block.getFieldValue('VAR');
   const myVar = getSolidityUintConstantsVariable(variableName);
@@ -1747,7 +1747,7 @@ solidityGenerator.forBlock['variables_get_uint_constants'] = function (
 // ## variables_get_uint_immutables
 solidityGenerator.forBlock['variables_get_uint_immutables'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variableName: string = block.getFieldValue('VAR');
   const myVar = getSolidityUintImmutablesVariable(variableName);
@@ -1782,7 +1782,7 @@ solidityGenerator.forBlock['variables_get_uint_immutables'] = function (
 // ## variables_get_u
 solidityGenerator.forBlock['variables_get_u'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): string {
   const variableName: string = block.getFieldValue('VAR');
   const myVar = getSolidityUintVariable(variableName);
@@ -1803,7 +1803,7 @@ solidityGenerator.forBlock['variables_get_u'] = function (
 // ## variables_get_uint256
 solidityGenerator.forBlock['variables_get_uint256'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint256Variable(variable_name);
@@ -1859,7 +1859,7 @@ solidityGenerator.forBlock['variables_set_uint256'] = function (
 // ## variables_get_uint256_constants
 solidityGenerator.forBlock['variables_get_uint256_constants'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint256ConstantsVariable(variable_name);
@@ -1893,7 +1893,7 @@ solidityGenerator.forBlock['variables_get_uint256_constants'] = function (
 // ## variables_get_uint256_immutables
 solidityGenerator.forBlock['variables_get_uint256_immutables'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint256ImmutablesVariable(variable_name);
@@ -1927,7 +1927,7 @@ solidityGenerator.forBlock['variables_get_uint256_immutables'] = function (
 // ## variables_get_u256
 solidityGenerator.forBlock['variables_get_u256'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): string {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint256Variable(variable_name);
@@ -1943,7 +1943,7 @@ solidityGenerator.forBlock['variables_get_u256'] = function (
 // ## variables_get_uint8
 solidityGenerator.forBlock['variables_get_uint8'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint8Variable(variable_name);
@@ -1998,7 +1998,7 @@ solidityGenerator.forBlock['variables_set_uint8'] = function (
 // ##
 solidityGenerator.forBlock['variables_get_uint8_constants'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name: string = block.getFieldValue('VAR');
   const myVar = getSolidityUint8ConstantsVariable(variable_name);
@@ -2029,7 +2029,7 @@ solidityGenerator.forBlock['variables_get_uint8_constants'] = function (
 // ## variables_get_uint8_immutables
 solidityGenerator.forBlock['variables_get_uint8_immutables'] = function (
   block: Blockly.Block,
-  generator: Blockly.CodeGenerator
+  //generator: Blockly.CodeGenerator
 ): [string, number] {
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityUint8ImmutablesVariable(variable_name);
@@ -2063,7 +2063,7 @@ solidityGenerator.forBlock['variables_get_uint8_immutables'] = function (
 solidityGenerator.forBlock['variables_get_u8'] = function(block) {
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityUint8Variable(variable_name);
-  const parentBlock = block.getParent();
+  //const parentBlock = block.getParent();
 
   if (!myVar) {
     console.warn(`Variabile uint8 '${variable_name}' non trovata.`);
@@ -2121,7 +2121,7 @@ solidityGenerator.forBlock['variables_set_int'] = function (block, generator) {
 
 // ## variables_get_int_constants
 
-solidityGenerator.forBlock['variables_get_int_constants'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_int_constants'] = function (block) { //, generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityIntConstantsVariable(variable_name);
   const parentBlock = block.getParent();
@@ -2149,7 +2149,7 @@ solidityGenerator.forBlock['variables_get_int_constants'] = function (block, gen
   return [code, Order.ATOMIC];
 };
 
-solidityGenerator.forBlock['variables_get_int_immutables'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_int_immutables'] = function (block) { //, generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityIntImmutablesVariable(variable_name);
   const parentBlock = block.getParent();
@@ -2184,7 +2184,7 @@ solidityGenerator.forBlock['variables_get_int_immutables'] = function (block, ge
 };
 
 // ## variables_get_i
-solidityGenerator.forBlock['variables_get_i'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_i'] = function (block) { //, generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityIntVariable(variable_name);
 
@@ -2199,7 +2199,7 @@ solidityGenerator.forBlock['variables_get_i'] = function (block, generator) {
 
 // ADDRESS VARIABLES
 // ## variables_get_address
-solidityGenerator.forBlock['variables_get_address'] = function (block, generator) {
+solidityGenerator.forBlock['variables_get_address'] = function (block) { //, generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityAddressVariable(variable_name);
 
@@ -2332,7 +2332,7 @@ solidityGenerator.forBlock['variables_get_a'] = function(block) {
 // ## Boolean
 // ## variables_get_bool
 
-solidityGenerator.forBlock['variables_get_bool'] = function (block: Blockly.Block, generator: Blockly.Generator) {
+solidityGenerator.forBlock['variables_get_bool'] = function (block: Blockly.Block) { //, generator: Blockly.Generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityBoolVariable(variable_name);
   const parentBlock = block.getParent();
@@ -2641,7 +2641,7 @@ solidityGenerator.forBlock['variables_set_bytes32'] = function (
 // ## variables_get_bytes32_constants
 solidityGenerator.forBlock['variables_get_bytes32_constants'] = function (
   block: Blockly.Block,
-  generator: Blockly.Generator
+  //generator: Blockly.Generator
 ): [string, number] {
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityBytes32ConstantsVariable(variable_name);
@@ -2673,7 +2673,7 @@ solidityGenerator.forBlock['variables_get_bytes32_constants'] = function (
 };
 
 // ## variables_get_bytes32_immutables
-solidityGenerator.forBlock['variables_get_bytes32_immutables'] = function (block: Blockly.Block, generator: Blockly.Generator): [string, number] {
+solidityGenerator.forBlock['variables_get_bytes32_immutables'] = function (block: Blockly.Block): [string, number] { //, generator: Blockly.Generator
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityBytes32ImmutablesVariable(variable_name);
   const parentBlock = block.getParent();
@@ -2701,7 +2701,7 @@ solidityGenerator.forBlock['variables_get_bytes32_immutables'] = function (block
 // ## variables_get_by32
 solidityGenerator.forBlock['variables_get_by32'] = function (
   block: Blockly.Block,
-  generator: Blockly.Generator
+  //generator: Blockly.Generator
 ): string {
   const variable_name = block.getFieldValue('VAR');
   const myVar = getSolidityBytes32Variable(variable_name);

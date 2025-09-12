@@ -1,3 +1,4 @@
+/*
 import { useEffect, useCallback, useRef } from 'react';
 
 // Type definitions
@@ -279,3 +280,4 @@ export const useBlocklyStorage = (props?: BlocklyStorageProps) => {
 };
 
 export default useBlocklyStorage;
+*/
