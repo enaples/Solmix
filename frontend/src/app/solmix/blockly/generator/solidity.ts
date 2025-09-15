@@ -1448,21 +1448,21 @@ solidityGenerator.forBlock["Governor"] = function (block, generator) {
         "pragma solidity ^0.8.27;\n\n" +
         imports +
         "\n\n" +
-        "contract" +
+        "contract " +
         name +
-        "is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl" +
+        " is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl" +
         " {\n\n" +
         "constructor(IVotes _token, TimelockController _timelock)\n" +
         'Governor(" ' +
         name +
         ' ")\n' +
-        "GovernorSettings(" +
+        /*"GovernorSettings(" +
         delay +
         ", " +
         voting_period +
         ", " +
         proposal_threshold +
-        ")\n" /*7200 /* 1 day */ /*, 50400 /* 1 week */ /*, 0)'*/ +
+        ")\n" */ /*7200 /* 1 day */ /*, 50400 /* 1 week */ /*, 0)'*/ /*+ */
         "GovernorVotes(_token)\n" +
         "GovernorVotesQuorumFraction( " +
         quorum +
