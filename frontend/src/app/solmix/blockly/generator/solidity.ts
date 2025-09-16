@@ -686,6 +686,8 @@ solidityGenerator.forBlock["contract_constructor"] = function (
     generator
 ) {
     const params = generator.statementToCode(block, "PARAMS").trim() || "";
+    console.log("PARAMS: ", JSON.stringify(params));
+
     const branch = generator.statementToCode(block, "STACK").trim() || "";
     const modifiers = block.getFieldValue("MODIFIERS");
     console.log("Branch code inside constructor:", branch);
@@ -984,13 +986,19 @@ solidityGenerator.forBlock['func_inputs_black'] = function (block: Blockly.Block
     parentBlock = parentBlock.getParent();
   }
 
+  // Rimuove spazi e virgole finali se presenti nei blocchi precedenti
+  //const isLastInput = nextBlock === null|| nextBlock.type !== block.type;
+
+  //const sep: string = isLastInput ? '' : ', ';
+
+
   const sep: string = nextBlock && nextBlock.type === block.type ? ', ' : '';
 
   let code: string;
   if (parentBlock && parentBlock.type === "variables_get_modifiers") {
-    code = `${name}${sep}`;
+    code = `${name}${sep}`; //${sep}
   } else {
-    code = `${type} ${name}${sep}`;
+    code = `${type} ${name}${sep}`; //${sep}
   }
 
   return code;

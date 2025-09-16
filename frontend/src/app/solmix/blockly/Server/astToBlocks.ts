@@ -160,7 +160,7 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
             type: "contract_constructor",
             //statements: [],
             fields: {
-              MODIFIERS: modifiers.join(", ")
+              MODIFIERS: modifiers.join(" ")
             },
             id: constructorBlockId,
             parent: parentBlockId || undefined,
