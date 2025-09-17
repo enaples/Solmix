@@ -359,7 +359,7 @@ solidityGenerator.forBlock["variables_get_modifiers"] = function (
     return `/* Errore: modifier '${variableName}' non trovato */\n`;
   }
 
-  const params = generator.statementToCode(block, "PARAMS");
+  const params = generateStatements(block, "PARAMS", generator);//generator.statementToCode(block, "PARAMS");
   const parentBlock = block.getParent();
 
   if (parentBlock && (parentBlock.type === "method" || parentBlock.type === "variables_get_modifiers")) {
@@ -386,9 +386,9 @@ solidityGenerator.forBlock["import"] = function (block) {
 
 // # Code generator for structure
 solidityGenerator.forBlock["structure"] = function (block, generator) {
-    const imports = generator.statementToCode(block, "IMPORT");
+    const imports = generateStatements(block, "IMPORT", generator);; //generator.statementToCode(block, "IMPORT");
     const pragma = block.getFieldValue("PRAGMA");
-    const contract = generator.statementToCode(block, "CONTRACT");
+    const contract = generateStatements(block, "CONTRACT", generator);//generator.statementToCode(block, "CONTRACT");
     const code =
         "pragma solidity " +
         pragma +
@@ -542,7 +542,7 @@ solidityGenerator.forBlock["mapping"] = function (block) {
 
 // # Code generator for event
 solidityGenerator.forBlock["event"] = function (block, generator) {
-    const params = generator.statementToCode(block, "PARAMS");
+    const params = generateStatements(block, "PARAMS", generator);//generator.statementToCode(block, "PARAMS");
     const name = block.getFieldValue("NAME");
     //addEvent(name); --> funziona, aggiorna l'array, ma ho poi introdotto l'aggiornamento con il listener perchè in questo modo andava a inserire nel Ddown ogni singola nuovca lettera;
     const code = "event " + name + "(" + params + ");\n";
@@ -685,7 +685,7 @@ solidityGenerator.forBlock["contract_constructor"] = function (
     block,
     generator
 ) {
-    const params = generator.statementToCode(block, "PARAMS").trim() || "";
+    const params = generateStatements(block, "PARAMS", generator);//generator.statementToCode(block, "PARAMS").trim() || "";
     console.log("PARAMS: ", JSON.stringify(params));
 
     const branch = generator.statementToCode(block, "STACK").trim() || "";
@@ -707,8 +707,8 @@ solidityGenerator.forBlock["contract_constructor"] = function (
 // # Code generator for modifier
 solidityGenerator.forBlock["modifier"] = function (block, generator) {
     const name = block.getFieldValue("NAME");
-    const params = generator.statementToCode(block, "PARAMS").trim() || "";
-    const branch = generator.statementToCode(block, "STACK").trim() || "";
+    const params = generateStatements(block, "PARAMS", generator);//generator.statementToCode(block, "PARAMS").trim() || "";
+    const branch = generateStatements(block, "STACK", generator);//generator.statementToCode(block, "STACK").trim() || "";
     const code =
         "modifier " +
         name +
@@ -829,7 +829,7 @@ solidityGenerator.forBlock["modifier1"] = function (
 ) {
     const name = block.getFieldValue("NAME");
     const message = block.getFieldValue("MESSAGE");
-    const params = generator.statementToCode(block, "PARAMS").trim();
+    const params = generateStatements(block, "PARAMS", generator);//generator.statementToCode(block, "PARAMS").trim();
     const condition =
         generator.valueToCode(block, "CONDITION", Order.ATOMIC) || "false";
 
@@ -857,7 +857,7 @@ solidityGenerator.forBlock["if"] = function (
 ) {
     const condition =
         generator.valueToCode(block, "IF", Order.ATOMIC) || "false";
-    const branch = generator.statementToCode(block, "DO");
+    const branch = generateStatements(block, "DO", generator);//generator.statementToCode(block, "DO");
     const code = "if " + condition + " {\n" + branch + "}";
     return code;
 };
@@ -869,7 +869,7 @@ solidityGenerator.forBlock["else_if"] = function (
 ) {
     const condition =
         generator.valueToCode(block, "ELSE_IF", Order.ATOMIC) || "false";
-    const branch = generator.statementToCode(block, "DO");
+    const branch = generateStatements(block, "DO", generator);//generator.statementToCode(block, "DO");
     const code = "else if " + condition + " {\n" + branch + "}";
     return code;
 };
@@ -879,7 +879,7 @@ solidityGenerator.forBlock["else"] = function (
     block: Blockly.Block,
     generator: Blockly.Generator
 ) {
-    const branch = generator.statementToCode(block, "DO");
+    const branch = generateStatements(block, "DO", generator);//generator.statementToCode(block, "DO");
     const code = "else {\n" + branch + "}";
     return code;
 };
@@ -889,9 +889,9 @@ solidityGenerator.forBlock["if_container"] = function (
     block: Blockly.Block,
     generator: Blockly.Generator
 ) {
-    const ifCondition = generator.statementToCode(block, "IF");
-    const elseIfCondition = generator.statementToCode(block, "ELSE_IF");
-    const elseStatement = generator.statementToCode(block, "ELSE");
+    const ifCondition = generateStatements(block, "IF", generator);//generator.statementToCode(block, "IF");
+    const elseIfCondition = generateStatements(block, "ELSE_IF", generator);//generator.statementToCode(block, "ELSE_IF");
+    const elseStatement = generateStatements(block, "ELSE", generator);//generator.statementToCode(block, "ELSE");
     let code = ifCondition;
 
     if (elseIfCondition) {
@@ -910,8 +910,8 @@ solidityGenerator.forBlock["if_else_container"] = function (
     block: Blockly.Block,
     generator: Blockly.Generator
 ) {
-    const ifCondition = generator.statementToCode(block, "IF");
-    const elseStatement = generator.statementToCode(block, "ELSE");
+    const ifCondition = generateStatements(block, "IF", generator); //generator.statementToCode(block, "IF");
+    const elseStatement = generateStatements(block, "ELSE", generator); //generator.statementToCode(block, "ELSE");
     let code = ifCondition;
 
     if (elseStatement) {
@@ -926,9 +926,9 @@ solidityGenerator.forBlock["if_elseif_else_container"] = function (
     block: Blockly.Block,
     generator: Blockly.Generator
 ) {
-    const ifCondition = generator.statementToCode(block, "IF");
-    const elseIfCondition = generator.statementToCode(block, "ELSE_IF");
-    const elseStatement = generator.statementToCode(block, "ELSE");
+    const ifCondition = generateStatements(block, "IF", generator); //generator.statementToCode(block, "IF");
+    const elseIfCondition = generateStatements(block, "ELSE_IF", generator); //generator.statementToCode(block, "ELSE_IF");
+    const elseStatement = generateStatements(block, "ELSE", generator); //generator.statementToCode(block, "ELSE");
     let code = ifCondition;
 
     if (elseIfCondition) {
@@ -1026,12 +1026,11 @@ solidityGenerator.forBlock["method"] = function (
     const return_ = block.getFieldValue("RETURN");
     const override = block.getFieldValue("OVERRIDE");
 
-    const params = generator.statementToCode(block, "PARAMS").trim();
-    const values = generator.statementToCode(block, "RETURN_VALUES").trim();
-    const modifiers =
-        generator.statementToCode(block, "MODIFIERS").trim() || "";
-    const branch = generator.statementToCode(block, "STACK");
-    const require = generator.statementToCode(block, "REQUIRE").trim() || "";
+    const params = generateStatements(block, "PARAMS", generator); //generator.statementToCode(block, "PARAMS").trim();
+    const values = generateStatements(block, "RETURN_VALUES", generator); //generator.statementToCode(block, "RETURN_VALUES").trim();
+    const modifiers = generateStatements(block, "MODIFIERS", generator); //generator.statementToCode(block, "MODIFIERS").trim() || "";
+    const branch = generateStatements(block, "STACK", generator); //generator.statementToCode(block, "STACK");
+    const require = generateStatements(block, "REQUIRE", generator); //generator.statementToCode(block, "REQUIRE").trim() || "";
 
     const accessValue =
         ACCESS_MODIFIERS[access as keyof typeof ACCESS_MODIFIERS];
@@ -1403,7 +1402,7 @@ solidityGenerator.forBlock["Governor"] = function (block, generator) {
     const delay = block.getFieldValue("voting_delay");
     const voting_period = block.getFieldValue("voting_period");
     const quorum = block.getFieldValue("quorum");
-    const methods = generator.statementToCode(block, "METHODS");
+    const methods = generateStatements(block, "METHODS", generator); //generator.statementToCode(block, "METHODS");
     const proposal_threshold = block.getFieldValue("proposal_threshold");
 
     const imports =
