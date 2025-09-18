@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import {commentSmartContract, explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
+import {commentSmartContract, explainSmartContract, deploySmartContract} from "@/app/solmix/FloatingChat/llmAPI";
 
 interface CodeViewerProps {
     code: string;
@@ -14,6 +14,7 @@ interface CodeViewerProps {
     showCopyButton?: boolean;
     showDownloadButton?: boolean;
     showExplainCodeButton?: boolean;
+    showDeployCodeButton?: boolean;
     showExplainSCButton?: boolean;
     showHeader?: boolean;
     placeholder?: string;
@@ -33,6 +34,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showCopyButton = true,
     showDownloadButton = true,
     showExplainCodeButton = true,
+    showDeployCodeButton = true,
     showExplainSCButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
@@ -151,6 +153,19 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         setShowSpinner(false);
 
     }, [code, fileNameExplanation]);
+
+    // deploy smart contract
+    const handleDeploy = useCallback(async () => {
+        if (!code || code.trim() === "") return;
+
+        setShowSpinner(true);
+
+        let res = await deploySmartContract(code);
+        console.log(res);  // todo: remove
+
+        setShowSpinner(false);
+
+    }, [code]);
 
     // Handle code editing
     const handleCodeEdit = useCallback(
@@ -277,6 +292,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
                                 title="Download as file"
                             >
                                 Explain
+                            </button>
+                        )}
+
+                        {showDeployCodeButton && (
+                            <button
+                                onClick={handleDeploy}
+                                disabled={stats.isEmpty}
+                                className="px-3 py-1 text-xs bg-green-400 text-white rounded hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                title="Download as file"
+                            >
+                                Deploy
                             </button>
                         )}
                     </div>
