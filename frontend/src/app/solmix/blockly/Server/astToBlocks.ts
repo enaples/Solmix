@@ -2431,10 +2431,15 @@ export function createBlocksFromAST(ast: any, workspace: Blockly.WorkspaceSvg): 
                     };
                     console.log("ELSE block with the if_else ID");
 
-                    // AGGIUNGI ELSE BLOCK AL JSON
+                    // AGGIUNGI IF BLOCK AL JSON
+                    blocklyJson.blocks.blocks.push(ifBlock);
+                    ifBlock.data = JSON.stringify({ parentId: ifBlock.parent });
+
+                     // AGGIUNGI ELSE BLOCK AL JSON
                     elseBlock.data = JSON.stringify({ parentId: elseBlock.parent });
                     blocklyJson.blocks.blocks.push(elseBlock);
-                    console.log("Else block added to the json");
+                    
+                    console.log("Else block and If block added to the json");
 
                     savedElseBlockStatements.forEach((statement, ) => {
                       statement.statements.forEach((statement: any) => {

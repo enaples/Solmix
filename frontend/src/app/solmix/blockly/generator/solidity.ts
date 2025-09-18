@@ -1397,10 +1397,13 @@ solidityGenerator.forBlock["erc20"] = function (block) {
 };
 
 // # Code generator for Governor template
+//GovernorSettings(7200 /* 1 day */, 50400 /* 1 week */, 0)
 solidityGenerator.forBlock["Governor"] = function (block, generator) {
     const name = block.getFieldValue("NAME");
     const delay = block.getFieldValue("voting_delay");
+    const effective_delay = delay * 7200;
     const voting_period = block.getFieldValue("voting_period");
+    const effective_votingPeriod = voting_period * 50400;
     const quorum = block.getFieldValue("quorum");
     const methods = generateStatements(block, "METHODS", generator); //generator.statementToCode(block, "METHODS");
     const proposal_threshold = block.getFieldValue("proposal_threshold");
@@ -1450,7 +1453,39 @@ solidityGenerator.forBlock["Governor"] = function (block, generator) {
         "{\n" +
         "return super._executor();\n" +
         "}\n";
+    
+    const stateFunction = 
+      "function state(uint256 proposalId)\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (ProposalState)\n" +
+        "{\n" +
+        "return super.state(proposalId);\n" +
+        "}\n";
+    
+    const proposalNeedsQueuing =
+    "function proposalNeedsQueuing(uint256 proposalId)\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (bool)\n" +
+        "{\n" +
+        "return super.proposalNeedsQueuing(proposalId);\n" +
+        "}\n";
+    
+    const proposalThreshold =
+    "function proposalThreshold()\n" +
+        "public\n" +
+        "view\n" +
+        "override(Governor, GovernorTimelockControl)\n" +
+        "returns (uint256)\n" +
+        "{\n" +
+        "return super.proposalThreshold();\n" +
+        "}\n";
 
+
+    ///*7200 /* 1 day */ /*, 50400 /* 1 week */ /*, 0)'*/ + 
     const code =
         "pragma solidity ^0.8.27;\n\n" +
         imports +
@@ -1463,13 +1498,13 @@ solidityGenerator.forBlock["Governor"] = function (block, generator) {
         'Governor(" ' +
         name +
         ' ")\n' +
-        /*"GovernorSettings(" +
-        delay +
+        "GovernorSettings(" +
+        effective_delay + //delay +
         ", " +
-        voting_period +
+        effective_votingPeriod +//voting_period +
         ", " +
         proposal_threshold +
-        ")\n" */ /*7200 /* 1 day */ /*, 50400 /* 1 week */ /*, 0)'*/ /*+ */
+        ")\n" + 
         "GovernorVotes(_token)\n" +
         "GovernorVotesQuorumFraction( " +
         quorum +
@@ -1485,6 +1520,12 @@ solidityGenerator.forBlock["Governor"] = function (block, generator) {
         internalMethod3 +
         "\n\n" +
         internalMethod4 +
+        "\n\n" +
+        stateFunction +
+        "\n\n" +
+        proposalNeedsQueuing +
+        "\n\n" +
+        proposalThreshold +
         "\n\n" +
         "}\n";
 

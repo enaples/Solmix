@@ -1131,22 +1131,22 @@ Blockly.defineBlocksWithJsonArray([
                 text: "MyGovernor",
             },
         ],
-        message1: "Voting Delay %1",
+        message1: "Voting Delay %1 day",
         args1: [
             {
                 type: "field_input",
                 name: "voting_delay",
-                check: "String",
-                text: "1 day",
+                //check: "String",
+                text: "1", //1 day
             },
         ],
-        message2: "Voting Period %1",
+        message2: "Voting Period %1 week",
         args2: [
             {
                 type: "field_input",
                 name: "voting_period",
-                check: "String",
-                text: "1 week",
+                //check: "String",
+                text: "1", //1 week GovernorSettings(7200 /* 1 day */, 50400 /* 1 week */, 0)
             },
         ],
         message3: "Proposal Threshold %1",
@@ -1165,14 +1165,14 @@ Blockly.defineBlocksWithJsonArray([
                 text: "4",
             },
         ],
-        message5: "Body %1",
+        /*message5: "Body %1",
         args5: [
             {
                 type: "input_statement",
                 name: "METHODS",
                 check: ["governor_method"], // methods del contratto
             },
-        ],
+        ],*/
         colour: 160,
         tooltip:
             "Governor smart contract:\n Voting Delay: delay since proposal is created until voting starts.\n Voting period: length of period during which people can cast their vote.\n Proposal threshold: minimum number of votes an account must have to create a proposal.\n Quorum: quorum required for a proposal to pass. ",
