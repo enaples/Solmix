@@ -5,121 +5,100 @@ import * as Blockly from "blockly";
 import { addSolidityVariable } from "../addSolidityType/addSolidityType";
 import { SolidityAccess } from "../dropdown/dropdown";
 
-export function mappingFlyoutCallback(
-  workspace: WorkspaceSvg
-): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function mappingFlyoutCallback(): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
     xmlList.push({ kind: "block", type: "mapping" });
     xmlList.push({ kind: "block", type: "getter_mappings" }); //## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
 
-     return xmlList;
+    return xmlList;
 }
 
 /**
  * Helper to register the flyout callback on a workspace.
  */
 export function registerMappingFlyout(workspace: WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    "NEW_MAPPING",
-    mappingFlyoutCallback
-  );
-}
-
-export function createFlyoutModifier(
- workspace: WorkspaceSvg
-): Blockly.utils.toolbox.ToolboxItemInfo[] {
-    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
-
-  xmlList.push({ kind: 'block', type: "modifier1" });
-  xmlList.push({ kind: 'block', type: "require_condition" });
-  xmlList.push({ kind: 'block', type: "func_inputs" });
-  xmlList.push({ kind: 'block', type: "variables_get_modifiers" });
-  xmlList.push({ kind: 'block', type: "input" })  // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
-  return xmlList;
-}
-
-export function registerModifierFlyout(workspace: WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    "NEW_MODIFIER",
-    createFlyoutModifier
-  );
-}
-
-export function createFlyoutEvent(
-    workspace: WorkspaceSvg
-): Blockly.utils.toolbox.ToolboxItemInfo[] {
-    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
-    xmlList.push({ kind: 'block', type: "event" });
-    xmlList.push({ kind: 'block', type: "func_inputs" });
-
-    // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
-    xmlList.push({ kind: 'block', type: "emit_event" });
-
-    return xmlList; 
-}
-
-export function registerEventFlyout(workspace: WorkspaceSvg): void {
     workspace.registerToolboxCategoryCallback(
-        'NEW_EVENT',
-    createFlyoutEvent,
+        "NEW_MAPPING",
+        mappingFlyoutCallback
     );
 }
 
-export function createFlyoutStruct (
-    workspace: WorkspaceSvg
-): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutModifier(): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
-  
-    xmlList.push({ kind: 'block', type: "contract_structures" });
-    xmlList.push({ kind: 'block', type: "struct_variables" });
+
+    xmlList.push({ kind: "block", type: "modifier1" });
+    xmlList.push({ kind: "block", type: "require_condition" });
+    xmlList.push({ kind: "block", type: "func_inputs" });
+    xmlList.push({ kind: "block", type: "variables_get_modifiers" });
+    xmlList.push({ kind: "block", type: "input" }); // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
+    return xmlList;
+}
+
+export function registerModifierFlyout(workspace: WorkspaceSvg): void {
+    workspace.registerToolboxCategoryCallback(
+        "NEW_MODIFIER",
+        createFlyoutModifier
+    );
+}
+
+export function createFlyoutEvent(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+    xmlList.push({ kind: "block", type: "event" });
+    xmlList.push({ kind: "block", type: "func_inputs" });
+
+    // ## da aggiungere dopo che ho creato i blocchi dinamici getters e setters
+    xmlList.push({ kind: "block", type: "emit_event" });
+
+    return xmlList;
+}
+
+export function registerEventFlyout(workspace: WorkspaceSvg): void {
+    workspace.registerToolboxCategoryCallback("NEW_EVENT", createFlyoutEvent);
+}
+
+export function createFlyoutStruct(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+
+    xmlList.push({ kind: "block", type: "contract_structures" });
+    xmlList.push({ kind: "block", type: "struct_variables" });
 
     // ## da aggiungere dopo che ho creato i blocchi dinamici, getters e setters
 
-    xmlList.push({ kind: 'block', type: "new_struct_value" });
-    xmlList.push({ kind: 'block', type: "structs_array" });
-    xmlList.push({ kind: 'block', type: "struct_push" });
-    xmlList.push({ kind: 'block', type: "new_struct" });
-
+    xmlList.push({ kind: "block", type: "new_struct_value" });
+    xmlList.push({ kind: "block", type: "structs_array" });
+    xmlList.push({ kind: "block", type: "struct_push" });
+    xmlList.push({ kind: "block", type: "new_struct" });
 
     //questo blocco era già commentato nel js file
     //xmlList.push({ kind: 'block', type: "assign_values_to_struct" });
-    
+
     return xmlList;
 }
 
 export function registerStructFlyout(workspace: WorkspaceSvg): void {
-    workspace.registerToolboxCategoryCallback(
-    'NEW_STRUCT',
-    createFlyoutStruct,
-    );
+    workspace.registerToolboxCategoryCallback("NEW_STRUCT", createFlyoutStruct);
 }
 
-export function createFlyoutArray (
-    workspace: WorkspaceSvg
-): Blockly.utils.toolbox.ToolboxItemInfo[] {
+export function createFlyoutArray(): Blockly.utils.toolbox.ToolboxItemInfo[] {
     const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
-    xmlList.push({ kind: 'block', type: "array" });
-    xmlList.push({ kind: 'block', type: "define_arrayVariable" });
+    xmlList.push({ kind: "block", type: "array" });
+    xmlList.push({ kind: "block", type: "define_arrayVariable" });
 
     // ## da aggiungere dopo che ho creato i blocchi dinamici, getters e setters
-    xmlList.push({ kind: 'block', type: "assign_values_to_variable_array" });
-    xmlList.push({ kind: 'block', type: "array_values" });
-    xmlList.push({ kind: 'block', type: "array_pop" });
-    xmlList.push({ kind: 'block', type: "array_push" });
-    xmlList.push({ kind: 'block', type: "array_push_S_A_B" });
-    xmlList.push({ kind: 'block', type: "array_delete" });
-   
-  return xmlList;
+    xmlList.push({ kind: "block", type: "assign_values_to_variable_array" });
+    xmlList.push({ kind: "block", type: "array_values" });
+    xmlList.push({ kind: "block", type: "array_pop" });
+    xmlList.push({ kind: "block", type: "array_push" });
+    xmlList.push({ kind: "block", type: "array_push_S_A_B" });
+    xmlList.push({ kind: "block", type: "array_delete" });
+
+    return xmlList;
 }
 
 export function registerArrayFlyout(workspace: WorkspaceSvg): void {
-    workspace.registerToolboxCategoryCallback(
-    'NEW_ARRAY',
-    createFlyoutArray,
-    );
+    workspace.registerToolboxCategoryCallback("NEW_ARRAY", createFlyoutArray);
 }
-
 
 export default function solidityTypesFlyoutCallback(
     workspace: WorkspaceSvg
@@ -237,242 +216,258 @@ export function solidityTypeFlyoutCategoryBlocks(
 
 // ## STRING VARIABLES
 
-export function createFlyoutString(workspace: WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+export function createFlyoutString(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
-  // Bottone per creare una nuova variabile
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback',
-  } as Blockly.utils.toolbox.ButtonInfo);
+    // Bottone per creare una nuova variabile
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback",
+    } as Blockly.utils.toolbox.ButtonInfo);
 
-  // Blocchi da inserire nella categoria
-  const blockTypes = [
-    "variables_get_string",
-    "variables_set_string",
-    "variables_get_string_constants",
-    "variables_get_string_immutables",
-    "variables_get_s"
-  ];
+    // Blocchi da inserire nella categoria
+    const blockTypes = [
+        "variables_get_string",
+        "variables_set_string",
+        "variables_get_string_constants",
+        "variables_get_string_immutables",
+        "variables_get_s",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
+    return xmlList;
 }
 
 export function registerStringFlyout(workspace: WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    'NEW_STRING_VARIABLE',
-    createFlyoutString
-  );
+    workspace.registerToolboxCategoryCallback(
+        "NEW_STRING_VARIABLE",
+        createFlyoutString
+    );
 }
 
 // ## UINT VARIABLES
-export function createFlyoutUint(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+export function createFlyoutUint(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
-  // Bottone per creare una nuova variabile
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
-  });
+    // Bottone per creare una nuova variabile
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback", // usa `callbackkey` minuscolo, non `callbackKey`
+    });
 
-  const blockTypes = [
-    'address_this_balance',
-    'variables_get_uint',
-    'variables_set_uint',
-    'variables_get_uint_constants',
-    'variables_get_uint_immutables',
-    'variables_get_u',
-    'variables_get_uint256',
-    'variables_set_uint256',
-    'variables_get_uint256_constants',
-    'variables_get_uint256_immutables',
-    'variables_get_u256',
-    'variables_get_uint8',
-    'variables_set_uint8',
-    'variables_get_uint8_constants',
-    'variables_get_uint8_immutables',
-    'variables_get_u8',
-  ];
+    const blockTypes = [
+        "address_this_balance",
+        "variables_get_uint",
+        "variables_set_uint",
+        "variables_get_uint_constants",
+        "variables_get_uint_immutables",
+        "variables_get_u",
+        "variables_get_uint256",
+        "variables_set_uint256",
+        "variables_get_uint256_constants",
+        "variables_get_uint256_immutables",
+        "variables_get_u256",
+        "variables_get_uint8",
+        "variables_set_uint8",
+        "variables_get_uint8_constants",
+        "variables_get_uint8_immutables",
+        "variables_get_u8",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
+    return xmlList;
 }
 
 export function registerUintFlyout(workspace: Blockly.WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback('NEW_UINT_VARIABLE', createFlyoutUint);
+    workspace.registerToolboxCategoryCallback(
+        "NEW_UINT_VARIABLE",
+        createFlyoutUint
+    );
 }
 
 // ## INT VARIABLES
-export function createFlyoutInt(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+export function createFlyoutInt(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
-   // Bottone per creare una nuova variabile
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
-  });
+    // Bottone per creare una nuova variabile
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback", // usa `callbackkey` minuscolo, non `callbackKey`
+    });
 
-  const blockTypes = [
-    'variables_get_int',
-    'variables_set_int',
-    'variables_get_int_constants',
-    'variables_get_int_immutables',
-    'variables_get_i',
-  ];
+    const blockTypes = [
+        "variables_get_int",
+        "variables_set_int",
+        "variables_get_int_constants",
+        "variables_get_int_immutables",
+        "variables_get_i",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
-  }
+    return xmlList;
+}
 
-  export function registerIntFlyout(workspace: Blockly.WorkspaceSvg): void {
+export function registerIntFlyout(workspace: Blockly.WorkspaceSvg): void {
     workspace.registerToolboxCategoryCallback(
-      'NEW_INT_VARIABLE',
-      createFlyoutInt,
+        "NEW_INT_VARIABLE",
+        createFlyoutInt
     );
-  }
+}
 
-  // ## ADDRESS VARIABLES
-  export function createFlyoutAddress(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+// ## ADDRESS VARIABLES
+export function createFlyoutAddress(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
-  });
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback", // usa `callbackkey` minuscolo, non `callbackKey`
+    });
 
-  const blockTypes = [
-    'address_zero',
-    'address_this',
-    'variables_get_address',
-    'variables_set_address',
-    'variables_get_address_constants',
-    'variables_get_address_immutables',
-    'variables_get_a',
-  ];
+    const blockTypes = [
+        "address_zero",
+        "address_this",
+        "variables_get_address",
+        "variables_set_address",
+        "variables_get_address_constants",
+        "variables_get_address_immutables",
+        "variables_get_a",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
-  }
+    return xmlList;
+}
 
-  export function registerAddressFlyout(workspace: Blockly.WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    'NEW_ADDRESS_VARIABLE',
-    createFlyoutAddress,
-  );
+export function registerAddressFlyout(workspace: Blockly.WorkspaceSvg): void {
+    workspace.registerToolboxCategoryCallback(
+        "NEW_ADDRESS_VARIABLE",
+        createFlyoutAddress
+    );
 }
 
 // ## BOOL VARIABLES
-export function createFlyoutBool(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+export function createFlyoutBool(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
     // Bottone per creare una nuova variabile
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
-  });
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback", // usa `callbackkey` minuscolo, non `callbackKey`
+    });
 
-  const blockTypes = [
-    'variables_get_bool',
-    'variables_set_bool',
-    'variables_get_bool_constants',
-    'variables_get_bool_immutables',
-    'variables_get_b',
-  ];
+    const blockTypes = [
+        "variables_get_bool",
+        "variables_set_bool",
+        "variables_get_bool_constants",
+        "variables_get_bool_immutables",
+        "variables_get_b",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
+    return xmlList;
 }
 
 export function registerBoolFlyout(workspace: Blockly.WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    'NEW_BOOL_VARIABLE',
-    createFlyoutBool,
-  );
+    workspace.registerToolboxCategoryCallback(
+        "NEW_BOOL_VARIABLE",
+        createFlyoutBool
+    );
 }
 
 // ## BYTES VARIABLES
-export function createFlyoutBytes(workspace: Blockly.WorkspaceSvg): Blockly.utils.toolbox.ToolboxItemInfo[] {
-  const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
+export function createFlyoutBytes(): Blockly.utils.toolbox.ToolboxItemInfo[] {
+    const xmlList: Blockly.utils.toolbox.ToolboxItemInfo[] = [];
 
-   // Bottone per creare una nuova variabile
-  xmlList.push({
-    kind: 'button',
-    text: 'Create Variable',
-    callbackkey: 'createVariableCallback', // usa `callbackkey` minuscolo, non `callbackKey`
-  });
+    // Bottone per creare una nuova variabile
+    xmlList.push({
+        kind: "button",
+        text: "Create Variable",
+        callbackkey: "createVariableCallback", // usa `callbackkey` minuscolo, non `callbackKey`
+    });
 
-  const blockTypes = [
-    'variables_get_bytes',
-    'variables_set_bytes',
-    'variables_get_bytes_constants',
-    'variables_get_bytes_immutables',
-    'variables_get_by',
-    'variables_get_bytes32',
-    'variables_set_bytes32',
-    'variables_get_bytes32_constants',
-    'variables_get_bytes32_immutables',
-    'variables_get_by32',
-  ];
+    const blockTypes = [
+        "variables_get_bytes",
+        "variables_set_bytes",
+        "variables_get_bytes_constants",
+        "variables_get_bytes_immutables",
+        "variables_get_by",
+        "variables_get_bytes32",
+        "variables_set_bytes32",
+        "variables_get_bytes32_constants",
+        "variables_get_bytes32_immutables",
+        "variables_get_by32",
+    ];
 
-  blockTypes.forEach(type => {
-    xmlList.push({ kind: 'block', type });
-  });
+    blockTypes.forEach((type) => {
+        xmlList.push({ kind: "block", type });
+    });
 
-  return xmlList;
+    return xmlList;
 }
-  export function registerByteslFlyout(workspace: Blockly.WorkspaceSvg): void {
-  workspace.registerToolboxCategoryCallback(
-    'NEW_BYTES_VARIABLE',
-    createFlyoutBytes,
-  );
+export function registerByteslFlyout(workspace: Blockly.WorkspaceSvg): void {
+    workspace.registerToolboxCategoryCallback(
+        "NEW_BYTES_VARIABLE",
+        createFlyoutBytes
+    );
 }
-
 
 export function createGetterSetterBlocks(
-  variableName: string,
-  variableType: string,
-  variableAccess: SolidityAccess,
-  payable_: 'yes' | "doesn't matter",
-  //payable_: string,
-  varConstant: string,
-  varImmutable: string,
-  workspace: Blockly.WorkspaceSvg
+    variableName: string,
+    variableType: string,
+    variableAccess: SolidityAccess,
+    payable_: "yes" | "doesn't matter",
+    //payable_: string,
+    varConstant: string,
+    varImmutable: string,
+    workspace: Blockly.WorkspaceSvg
 ): void {
-  const supportedTypes = [
-    'string', 'uint', 'uint256', 'uint8', 'int',
-    'bool', 'address', 'bytes', 'bytes32',
-  ];
+    const supportedTypes = [
+        "string",
+        "uint",
+        "uint256",
+        "uint8",
+        "int",
+        "bool",
+        "address",
+        "bytes",
+        "bytes32",
+    ];
 
-  if (!supportedTypes.includes(variableType)) {
-    console.warn(`Tipo ${variableType} non supportato.`);
-    return;
-  }
+    if (!supportedTypes.includes(variableType)) {
+        console.warn(`Tipo ${variableType} non supportato.`);
+        return;
+    }
 
-  // Aggiungi la variabile alle strutture interne e genera i blocchi
-  addSolidityVariable(variableName, variableType, variableAccess, payable_, varConstant, varImmutable);
+    // Aggiungi la variabile alle strutture interne e genera i blocchi
+    addSolidityVariable(
+        variableName,
+        variableType,
+        variableAccess,
+        payable_,
+        varConstant,
+        varImmutable
+    );
 
-  // Aggiungi la variabile al workspace
-  workspace.createVariable(variableName, variableType);
-  console.log("workspace.createvariable eseguita");
+    // Aggiungi la variabile al workspace
+    workspace.createVariable(variableName, variableType);
+    console.log("workspace.createvariable eseguita");
 }
