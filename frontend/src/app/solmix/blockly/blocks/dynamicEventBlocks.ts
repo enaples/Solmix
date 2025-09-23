@@ -1,6 +1,5 @@
 import * as Blockly from "blockly";
-import { javascriptGenerator } from "blockly/javascript";
-import {solidityEvents, updateEventsDropdown, solidityModifiers, solidityArrays, solidityStructs, solidityStructArrays} from "../dropdown/dropdown";
+import { solidityEvents, updateEventsDropdown } from "../dropdown/dropdown";
 // Questo array tiene traccia degli eventi Solidity
 //const solidityEvents: { name: string }[] = [];
 export const solidityGeneratorEvent = new Blockly.Generator("Solidity");
@@ -10,13 +9,13 @@ export const solidityGeneratorEvent = new Blockly.Generator("Solidity");
  */
 
 export function addEvent(name: string): void {
-  if (!solidityEvents.some((item) => item.name === name)) {
-    solidityEvents.push({ name });
-    updateEventsDropdown();
-    console.log("✅ New Event added:", name);
-  } else {
-    console.log("⚠️ Event already exists:", name);
-  }
+    if (!solidityEvents.some((item) => item.name === name)) {
+        solidityEvents.push({ name });
+        updateEventsDropdown();
+        console.log("✅ New Event added:", name);
+    } else {
+        console.log("⚠️ Event already exists:", name);
+    }
 }
 
 /**
@@ -24,38 +23,38 @@ export function addEvent(name: string): void {
  */
 
 export function removeEvent(name: string): void {
-  const index = solidityEvents.findIndex((item) => item.name === name);
-  if (index !== -1) {
-    solidityEvents.splice(index, 1);
-    updateEventsDropdown();
-    console.log("🗑️ Event removed:", name);
-  }
+    const index = solidityEvents.findIndex((item) => item.name === name);
+    if (index !== -1) {
+        solidityEvents.splice(index, 1);
+        updateEventsDropdown();
+        console.log("🗑️ Event removed:", name);
+    }
 }
 
 /**
  * Definizione del blocco emit_event.
  */
 Blockly.Blocks["emit_event"] = {
-  init(this: Blockly.Block): void {
-    this.appendDummyInput() //SENZA "DUMMY" IL DROPDOWN NON SI AGGIORNA
-      .appendField("emit")
-      .appendField(
-        new Blockly.FieldDropdown((): [string, string][] => {
-          return solidityEvents.length
-            ? solidityEvents.map((v) => [v.name, v.name])
-            : [["", ""]];
-        }),
-        "VAR"
-      )
-      .appendField("(")
-      .appendField(new Blockly.FieldTextInput("input_names"), "PARAMS")
-      .appendField(")");
+    init(this: Blockly.Block): void {
+        this.appendDummyInput() //SENZA "DUMMY" IL DROPDOWN NON SI AGGIORNA
+            .appendField("emit")
+            .appendField(
+                new Blockly.FieldDropdown((): [string, string][] => {
+                    return solidityEvents.length
+                        ? solidityEvents.map((v) => [v.name, v.name])
+                        : [["", ""]];
+                }),
+                "VAR"
+            )
+            .appendField("(")
+            .appendField(new Blockly.FieldTextInput("input_names"), "PARAMS")
+            .appendField(")");
 
-    this.setPreviousStatement(true, "code");
-    this.setNextStatement(true, "code");
-    this.setOutput(false);
-    this.setColour("#FFB280");
-  },
+        this.setPreviousStatement(true, "code");
+        this.setNextStatement(true, "code");
+        this.setOutput(false);
+        this.setColour("#FFB280");
+    },
 };
 
 /**
@@ -217,12 +216,9 @@ Blockly.Blocks["emit_event"] = {
     /*if (parentBlock && parentBlock.type === 'method') {
       code = myVar.name + '(' + params + ')';
     }*/
-    /*return code;
+/*return code;
     //return [code, Order.ATOMIC];
   }*/
-  
-
-
 
 // const dynamicStructBlocks = [
 

@@ -38,17 +38,15 @@ const setters = Object.keys(variableTypes).map((type: string) =>
             {
                 type: "field_input",
                 name: `${type.toUpperCase()}_VAL`,
-                text: ""
+                text: "",
             },
         ],
         previousStatement: null,
         nextStatement: null,
         tooltip: variableTypes[type].tooltip,
         colour: variableTypes[type].colour,
-        extension: [`${type}_validator`]
+        extension: [`${type}_validator`],
     })
 );
 
 Blockly.defineBlocksWithJsonArray([...getters, ...setters]);
-
-

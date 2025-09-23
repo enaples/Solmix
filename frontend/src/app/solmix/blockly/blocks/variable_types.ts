@@ -49,7 +49,8 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= -32768 && num <= 32767 ? value : null;
         },
-        errorMessage: "Value must be a 16-bit signed integer (-32,768 to 32,767)",
+        errorMessage:
+            "Value must be a 16-bit signed integer (-32,768 to 32,767)",
     },
     int32: {
         colour: "#FFB266",
@@ -60,7 +61,8 @@ export const variableTypes: Record<
                 ? value
                 : null;
         },
-        errorMessage: "Value must be a 32-bit signed integer (-2,147,483,648 to 2,147,483,647)",
+        errorMessage:
+            "Value must be a 32-bit signed integer (-2,147,483,648 to 2,147,483,647)",
     },
     int64: {
         colour: "#FF66FF",
@@ -132,7 +134,8 @@ export const variableTypes: Record<
             const num = parseInt(value);
             return !isNaN(num) && num >= 0 && num <= 4294967295 ? value : null;
         },
-        errorMessage: "Value must be a 32-bit unsigned integer (0 to 4,294,967,295)",
+        errorMessage:
+            "Value must be a 32-bit unsigned integer (0 to 4,294,967,295)",
     },
     uint64: {
         colour: "#8000FF",
@@ -147,7 +150,8 @@ export const variableTypes: Record<
                 return null;
             }
         },
-        errorMessage: "Value must be a 64-bit unsigned integer (0 to 18,446,744,073,709,551,615)",
+        errorMessage:
+            "Value must be a 64-bit unsigned integer (0 to 18,446,744,073,709,551,615)",
     },
     uint128: {
         colour: "#FFCC99",
