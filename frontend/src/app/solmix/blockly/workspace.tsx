@@ -1,18 +1,30 @@
 "use client";
 import * as Blockly from "blockly";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { blocklyToolbox } from "./toolbox/toolbox";
 import blocklyTheme from "./blocklyTheme";
 import "./blocks/blocks";
 import "./blocks/variable_dynamic_blocks";
 import { solidityGenerator } from "./generator/solidity";
-import { solidityGeneratorEvent } from "./blocks/dynamicEventBlocks";
 import solidityTypesFlyoutCallback from "./toolbox/create_dynamic_variables";
-import  './blocks/variable_dynamic_blocks';
+import "./blocks/variable_dynamic_blocks";
 import "./validators/validators";
 // import { solidityTypeFlyoutCategoryBlocks } from "./toolbox/create_dynamic_variables";
-import { registerMappingFlyout, registerModifierFlyout, registerEventFlyout, registerStructFlyout, registerArrayFlyout} from "./toolbox/create_dynamic_variables";
-import { registerStringFlyout, registerUintFlyout, registerIntFlyout, registerAddressFlyout, registerBoolFlyout, registerByteslFlyout} from "./toolbox/create_dynamic_variables";
+import {
+    registerMappingFlyout,
+    registerModifierFlyout,
+    registerEventFlyout,
+    registerStructFlyout,
+    registerArrayFlyout,
+} from "./toolbox/create_dynamic_variables";
+import {
+    registerStringFlyout,
+    registerUintFlyout,
+    registerIntFlyout,
+    registerAddressFlyout,
+    registerBoolFlyout,
+    registerByteslFlyout,
+} from "./toolbox/create_dynamic_variables";
 import "./blocks/dynamicEventBlocks";
 import "./blocks/dynamicMappingsBlocks";
 import "./blocks/dynamicModifiersBlocks";
@@ -25,16 +37,16 @@ import "./blocks/variables_dynamic_int";
 import "./blocks/variables_dynamic_address";
 import "./blocks/variables_dynamic_bool";
 import "./blocks/variables_dynamic_bytes";
-import {onBlockChange, onStructRegistryUpdate} from "../blockly/listeners/blockChangeListener";
-import { createGetterSetterBlocks } from '../blockly/toolbox/create_dynamic_variables';
+import {
+    onBlockChange,
+    onStructRegistryUpdate,
+} from "../blockly/listeners/blockChangeListener";
+import { createGetterSetterBlocks } from "../blockly/toolbox/create_dynamic_variables";
 import { SolidityAccess } from "../blockly/dropdown/dropdown";
-
 
 interface BlocklyEditorProps {
     setCode: (code: string) => void;
 }
-
-
 
 export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
     const blocklyDivRef = useRef<HTMLDivElement>(null);
@@ -50,7 +62,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
     const [isImmutable, setIsImmutable] = useState("not");
     const [isPayable, setIsPayable] = useState("not");
     */
-    
+
     const openPopup = () => {
         //setPopupVisible(true);
         if (popupRef.current) popupRef.current.style.visibility = "visible";
@@ -71,41 +83,71 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
     });
     closePopup();
   };*/
-    
+
     const createVariableBlocks = () => {
-        const variableName = (document.getElementById("varName") as HTMLInputElement)?.value;
-        const variableType = (document.getElementById("varType") as HTMLSelectElement)?.value;
-        const variableAccess = (document.getElementById("varAccess") as HTMLSelectElement)?.value as SolidityAccess;
+        const variableName = (
+            document.getElementById("varName") as HTMLInputElement
+        )?.value;
+        const variableType = (
+            document.getElementById("varType") as HTMLSelectElement
+        )?.value;
+        const variableAccess = (
+            document.getElementById("varAccess") as HTMLSelectElement
+        )?.value as SolidityAccess;
         //const variableAccess = document.getElementById("varAccess").value as SolidityAccess;
 
-        if (!["public", "private", "internal", "external"].includes(variableAccess)) {
-        alert("Accesso non valido");
-        return;
+        if (
+            !["public", "private", "internal", "external"].includes(
+                variableAccess
+            )
+        ) {
+            alert("Accesso non valido");
+            return;
         }
 
-        const payable = (document.getElementById("payable") as HTMLSelectElement)?.value as 'yes' | "doesn't matter";;
-        const constant = (document.getElementById("constant") as HTMLSelectElement)?.value;
-        const immutable = (document.getElementById("immutable") as HTMLSelectElement)?.value;
+        const payable = (
+            document.getElementById("payable") as HTMLSelectElement
+        )?.value as "yes" | "doesn't matter";
+        const constant = (
+            document.getElementById("constant") as HTMLSelectElement
+        )?.value;
+        const immutable = (
+            document.getElementById("immutable") as HTMLSelectElement
+        )?.value;
 
         if (!variableName) {
             alert("Il nome della variabile non può essere vuoto.");
             return;
         }
 
-        console.log({ variableName, variableType, variableAccess, payable, constant, immutable });
+        console.log({
+            variableName,
+            variableType,
+            variableAccess,
+            payable,
+            constant,
+            immutable,
+        });
 
         // Qui va la tua funzione personalizzata per generare blocchi
         //createGetterSetterBlocks(variableName, variableType, variableAccess, payable, constant, immutable);
 
         // Aggiorna la toolbox
         if (workspaceRef.current) {
-            createGetterSetterBlocks(variableName, variableType, variableAccess, payable, constant, immutable, workspaceRef.current);
+            createGetterSetterBlocks(
+                variableName,
+                variableType,
+                variableAccess,
+                payable,
+                constant,
+                immutable,
+                workspaceRef.current
+            );
             workspaceRef.current.updateToolbox(blocklyToolbox);
         }
 
         closePopup();
     };
-
 
     useEffect(() => {
         if (!blocklyDivRef.current) return;
@@ -136,7 +178,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
         );
 
         // Registra la callback per il pulsante "Create variable"
-        workspace.registerButtonCallback('createVariableCallback', () => {
+        workspace.registerButtonCallback("createVariableCallback", () => {
             console.log("CREA VARIABILE");
             openPopup();
         });
@@ -166,8 +208,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
 
         workspace.addChangeListener(onWorkspaceChange);
         workspace.addChangeListener(onBlockChange);
-         workspace.addChangeListener(onStructRegistryUpdate);
-        
+        workspace.addChangeListener(onStructRegistryUpdate);
 
         return () => {
             if (workspaceRef.current) {
@@ -180,17 +221,28 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
         <div className="w-full h-full rounded-md">
             <div ref={blocklyDivRef} className="w-full h-full rounded-md" />
             {/* Popup definito qui in JSX */}
-            <div ref={popupRef} id="popupOverlay" className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center" style={{ visibility: "hidden" }}>
+            <div
+                ref={popupRef}
+                id="popupOverlay"
+                className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+                style={{ visibility: "hidden" }}
+            >
                 <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h3 className="text-lg font-bold mb-4">Crea una Variabile</h3>
+                    <h3 className="text-lg font-bold mb-4">
+                        Crea una Variabile
+                    </h3>
 
-            { /* popupVisible && (
+                    {/* popupVisible && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-                    <h3 className="text-xl font-semibold mb-4">Crea una Variabile</h3>*/ }
+                    <h3 className="text-xl font-semibold mb-4">Crea una Variabile</h3>*/}
 
                     <label className="block mb-2">Nome:</label>
-                    <input id="varName" type="text" className="w-full border p-1 mb-2" />
+                    <input
+                        id="varName"
+                        type="text"
+                        className="w-full border p-1 mb-2"
+                    />
 
                     <label className="block mb-2">Tipo di dato:</label>
                     <select id="varType" className="w-full border p-1 mb-2">
@@ -213,7 +265,7 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
                         <option value="external">external</option>
                     </select>
 
-                     <label>Constant:</label>
+                    <label>Constant:</label>
                     <select id="constant" className="w-full border p-1 mb-2">
                         <option value="doesn't matter">not</option>
                         <option value="yes">yes</option>
@@ -232,21 +284,32 @@ export default function BlocklyEditor({ setCode }: BlocklyEditorProps) {
                     </select>
 
                     <div className="flex justify-end gap-4">
-                    <button onClick={createVariableBlocks} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                        OK
-                    </button>
-                    <button onClick={closePopup} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                        Annulla
-                    </button>
+                        <button
+                            onClick={createVariableBlocks}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        >
+                            OK
+                        </button>
+                        <button
+                            onClick={closePopup}
+                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                        >
+                            Annulla
+                        </button>
                     </div>
                 </div>
-                </div>
-                </div>
+            </div>
+        </div>
     );
-            {/*)}*/}
-        {/*</div>*/}
-    {/* ); */}
-    
+    {
+        /*)}*/
+    }
+    {
+        /*</div>*/
+    }
+    {
+        /* ); */
+    }
 }
 
 /*
