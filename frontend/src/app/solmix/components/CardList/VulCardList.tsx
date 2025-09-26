@@ -1,8 +1,8 @@
 import React from 'react';
-import DetectorCard from './Card';
+import DetectorCard from './VulCard';
 import { Props } from './types';
 
-const CardList: React.FC<Props> = ({ data, toKeep, defaultData}) => {
+const VulCardList: React.FC<Props> = ({ data, toKeep, defaultData}) => {
 const filteredDetectors = data.detectors
     .filter(detector => (toKeep ?? []).includes(detector.impact));
 
@@ -18,4 +18,4 @@ return (
 );
 };
 
-export default CardList;
+export default VulCardList;
