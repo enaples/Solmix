@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from llm_api import run_prompt, compose_comment_prompt, compose_explain_prompt, compose_edit_prompt
 
-import subprocess
+from subprocess import Popen
 import random
 import os
 
@@ -78,27 +78,27 @@ def extract_contract_name(solidity_code):
 async def explain(item: smartContractItem):
     hash = random.getrandbits(128)
     # TODO: pragma should be declared using the proper version
-    with open(f"../hardhat/contracts/solmix/{hash}.sol", "w") as text_file:
-        text_file.write(item.code)
-
-    script = ""
-    with open('./res/deploy_script_sample.txt', encoding='utf-8') as file:
-        script = file.read() % extract_contract_name(item.code)
-    with open(f"../hardhat/scripts/deployments/{hash}.ts", "w") as f:
-        f.write(script)
+    #with open(f"../hardhat3/contracts/{hash}.sol", "w") as text_file:
+    #    text_file.write(item.code)
+    #script = ""
+    #with open('./res/deploy_script_sample.txt', encoding='utf-8') as file:
+    #    script = file.read() % extract_contract_name(item.code)
+    #with open(f"../hardhat3/ignition/modules/{hash}.ts", "w") as f:
+    #    f.write(script)
 
     #deploy = subprocess.Popen(["npx", "hardhat", "run", f"scripts/deployments/{hash}.ts", "--network", "dev"],
     #                          cwd="../hardhat/",
     #                          stdout=subprocess.PIPE)
 
-    deploy = subprocess.Popen(["npx", "hardhat", "run", f"scripts/deployments/{hash}.ts"],
-                              cwd="../hardhat/",
-                              stdout=subprocess.PIPE)
-    print("the commandline is {}".format(deploy.args))
-    output = deploy.communicate()[0]
-    print(f"deploy API, output: {output}")
-    print("Return code:", deploy.returncode)
-    print("Output:", deploy.stdout)
-    print("Error:", deploy.stderr)
+    # todo: run new sc
+    p = Popen(
+        'npx hardhat ignition deploy ignition/modules/Counter.ts',
+        cwd=r'../hardhat3/')
+        #shell=True,
+        #cwd="../hardhat3/",
+        #capture_output=True,
+        #text=True
+
+    p.terminate()
 
     return "ok"
