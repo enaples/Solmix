@@ -62,3 +62,14 @@ def compose_explain_prompt(current_code: str):
             'explanations. Use analogies where helpful. No intro is needed.'
             '\n\nSmart Contract:'
             f'\n\"\"\"\n{current_code}\n\"\"\"')
+
+def compose_generatedeploycode_prompt(current_code: str, deployment_template: str):
+    return ('You are a smart contract and solidity expert, '
+            'generate a typescript code based on the template below '
+            'to deploy the following smart contract using Hardhat v3.'
+            '\nUse examples parameters if needed and add comments where the user should edit.'
+            '\n\nTypescript template for deployment:'
+            f'\n{deployment_template}'
+            '\n\nSolidity Smart Contract:'
+            f'\n{current_code}'
+            '\n\nReturn only the Typescript code.')

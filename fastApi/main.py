@@ -3,7 +3,8 @@ import re
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from llm_api import run_prompt, compose_comment_prompt, compose_explain_prompt, compose_edit_prompt
+from llm_api import run_prompt, compose_comment_prompt, compose_explain_prompt, compose_edit_prompt, \
+    compose_generatedeploycode_prompt
 
 from subprocess import Popen
 import random
@@ -26,6 +27,11 @@ app.add_middleware(
 )
 
 
+deployment_template = ""
+with open('./res/deploy_script_sample.txt', encoding='utf-8') as file:
+    deployment_template = file.read()
+
+
 class EditItem(BaseModel):
     message: str
     code: str
@@ -33,7 +39,6 @@ class EditItem(BaseModel):
 
 class smartContractItem(BaseModel):
     code: str
-
 
 @app.get("/")
 async def root():
@@ -57,6 +62,13 @@ async def comment(item: smartContractItem):
 @app.post("/explain", response_model=str)
 async def explain(item: smartContractItem):
     prompt = compose_explain_prompt(item.code)
+    result = run_prompt(prompt)
+    return result
+
+
+@app.post("/generatedeploycode", response_model=str)
+async def generatedeploycode(item: smartContractItem):
+    prompt = compose_generatedeploycode_prompt(item.code, deployment_template % extract_contract_name(item.code))
     result = run_prompt(prompt)
     return result
 
