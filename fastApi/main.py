@@ -41,6 +41,11 @@ class smartContractItem(BaseModel):
     code: str
 
 
+class deployItem(BaseModel):
+    solcode: str
+    tscode: str
+
+
 def extract_contract_name(solidity_code):
     # Regular expression to match "contract ContractName is" pattern
     contract_pattern = re.compile(r'contract\s+([a-zA-Z0-9_]+)(?:\s+is|\s*{)')
@@ -82,28 +87,24 @@ async def explain(item: smartContractItem):
 
 @app.post("/generatedeploycode", response_model=str)
 async def generatedeploycode(item: smartContractItem):
-    template = deployment_template % extract_contract_name(item.code)
+    template = deployment_template % (extract_contract_name(item.code), extract_contract_name(item.code))
     prompt = compose_generatedeploycode_prompt(item.code, template)
     result = run_prompt(prompt)
     return result
 
 @app.post("/deploy", response_model=str)
-async def explain(item: smartContractItem):
+async def deploy(item: deployItem):
     hash = random.getrandbits(128)
-    # TODO: pragma should be declared using the proper version
-    #with open(f"../hardhat3/contracts/{hash}.sol", "w") as text_file:
-    #    text_file.write(item.code)
-    #script = ""
-    #with open('./res/deploy_script_sample.txt', encoding='utf-8') as file:
-    #    script = file.read() % extract_contract_name(item.code)
-    #with open(f"../hardhat3/ignition/modules/{hash}.ts", "w") as f:
-    #    f.write(script)
+    with open(f"../hardhat3/contracts/{hash}.sol", "w") as text_file:
+        text_file.write(item.solcode)
+    with open(f"../hardhat3/ignition/modules/{hash}.ts", "w") as f:
+        f.write(item.tscode)
 
     #deploy = subprocess.Popen(["npx", "hardhat", "run", f"scripts/deployments/{hash}.ts", "--network", "dev"],
     #                          cwd="../hardhat/",
     #                          stdout=subprocess.PIPE)
 
-    # todo: run new sc
+    # todo: run new sc using the created files
     p = Popen(
         'npx hardhat ignition deploy ignition/modules/Counter.ts',
         cwd=r'../hardhat3/')

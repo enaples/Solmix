@@ -85,9 +85,10 @@ export async function explainSmartContract(current_solidity_code: string) {
         .replace(/\\"/g, '"');
 }
 
-export async function deploySmartContract(current_solidity_code: string) {
+export async function deploySmartContract(solidity_code: string, typescript_code: string) {
     const newBody = {
-        code: current_solidity_code
+        solcode: solidity_code,
+        tscode: typescript_code
     }
     const res = await fetch('http://127.0.0.1:8000/deploy', {
         method: 'POST',
@@ -96,5 +97,5 @@ export async function deploySmartContract(current_solidity_code: string) {
             'Content-type': 'application/json'
         }
     });
-    return res.ok;
+    return res.status;
 }

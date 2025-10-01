@@ -1,14 +1,8 @@
-import { ethers } from "hardhat";
+import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-async function main() {
-  const scFactory = await ethers.getContractFactory("%s");
-  const newSC = await scFactory.deploy();
-  await newSC.deployed();
+export default buildModule("%sModule", (m) => {
 
-  console.log("New smart contract deployed at address:", newSC.address);
-}
+  const sc = m.contract("%s");
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+  return { sc };
 });

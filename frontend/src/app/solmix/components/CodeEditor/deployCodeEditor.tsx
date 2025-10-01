@@ -174,8 +174,8 @@ const DeployCodeViewer: React.FC<CodeViewerPropsDeploy> = ({
 
         setShowSpinner(true);
 
-        let res = await deploySmartContract(typescriptCode);
-        console.log(res);  // todo: remove
+        let res = await deploySmartContract(code, typescriptCode);
+        console.log(res);  // todo: handle result
 
         setShowSpinner(false);
 
