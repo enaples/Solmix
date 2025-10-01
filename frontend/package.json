@@ -17,6 +17,7 @@
     "flowbite": "^3.1.2",
     "flowbite-react": "^0.11.7",
     "heroicons": "^2.2.0",
+    "lucide-react": "^0.544.0",
     "next": "^15.3.2",
     "openai": "^5.5.1",
     "poe-node-api": "^0.0.8-rc2",
