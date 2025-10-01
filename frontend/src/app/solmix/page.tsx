@@ -21,6 +21,7 @@ import DeployCodeViewer from "@/app/solmix/components/CodeEditor/deployCodeEdito
 
 export default function SolmixHome() {
     const [code, setCode] = useState<string>("no code yet");
+    const [deployCode, setDeployCode] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [detectors, setDetectors] = useState<Detector[]>([]);
 
@@ -188,9 +189,9 @@ export default function SolmixHome() {
                                 )}
                                 <DeployCodeViewer
                                     readOnly={false}
-                                    onCodeChange={setCode}
+                                    onCodeChange={setDeployCode}
                                     code={code}
-                                    typescriptCode={""}
+                                    typescriptCode={deployCode}
                                 />
                             </TabPanel>
                         </Tabs>

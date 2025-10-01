@@ -33,7 +33,7 @@ interface CodeViewerPropsDeploy {
 
 const DeployCodeViewer: React.FC<CodeViewerPropsDeploy> = ({
     code,
-    typescriptCode = "",
+    typescriptCode,
     language = "typescript",
     title = "",
     className = "",
@@ -63,7 +63,7 @@ const DeployCodeViewer: React.FC<CodeViewerPropsDeploy> = ({
         if (!typescriptCode || typescriptCode.trim() === "") {
             return placeholder;
         }
-        return code;
+        return typescriptCode;
     }, [typescriptCode, placeholder]);
 
     const codeLines = useMemo(() => {
@@ -196,12 +196,16 @@ const DeployCodeViewer: React.FC<CodeViewerPropsDeploy> = ({
         if (isEditing) {
             // Save changes
             onCodeChange?.(editableCode);
+            console.log(typescriptCode);
+            console.log(editableCode);
         } else {
             // Start editing
             setEditableCode(typescriptCode);
+            console.log(typescriptCode);
+            console.log(editableCode);
         }
         setIsEditing(!isEditing);
-    }, [isEditing, readOnly, editableCode, code, onCodeChange]);
+    }, [isEditing, readOnly, editableCode, typescriptCode, onCodeChange]);
 
     return (
         <div
