@@ -40,6 +40,20 @@ class EditItem(BaseModel):
 class smartContractItem(BaseModel):
     code: str
 
+
+def extract_contract_name(solidity_code):
+    # Regular expression to match "contract ContractName is" pattern
+    contract_pattern = re.compile(r'contract\s+([a-zA-Z0-9_]+)(?:\s+is|\s*{)')
+
+    # Search for the pattern in the code
+    match = contract_pattern.search(solidity_code)
+
+    # Return the contract name if found, otherwise None
+    if match:
+        return match.group(1)
+    else:
+        return None
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -68,23 +82,10 @@ async def explain(item: smartContractItem):
 
 @app.post("/generatedeploycode", response_model=str)
 async def generatedeploycode(item: smartContractItem):
-    prompt = compose_generatedeploycode_prompt(item.code, deployment_template % extract_contract_name(item.code))
+    template = deployment_template % extract_contract_name(item.code)
+    prompt = compose_generatedeploycode_prompt(item.code, template)
     result = run_prompt(prompt)
     return result
-
-
-def extract_contract_name(solidity_code):
-    # Regular expression to match "contract ContractName is" pattern
-    contract_pattern = re.compile(r'contract\s+([a-zA-Z0-9_]+)(?:\s+is|\s*{)')
-
-    # Search for the pattern in the code
-    match = contract_pattern.search(solidity_code)
-
-    # Return the contract name if found, otherwise None
-    if match:
-        return match.group(1)
-    else:
-        return None
 
 @app.post("/deploy", response_model=str)
 async def explain(item: smartContractItem):

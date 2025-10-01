@@ -67,9 +67,9 @@ def compose_generatedeploycode_prompt(current_code: str, deployment_template: st
     return ('You are a smart contract and solidity expert, '
             'generate a typescript code based on the template below '
             'to deploy the following smart contract using Hardhat v3.'
-            '\nUse examples parameters if needed and add comments where the user should edit.'
+            '\nUse examples parameters if needed and add comments where the user should edit them.'
             '\n\nTypescript template for deployment:'
-            f'\n{deployment_template}'
+            f'\n\"\"\"\n{deployment_template}\n\"\"\"'
             '\n\nSolidity Smart Contract:'
-            f'\n{current_code}'
+            f'\n\"\"\"\n{current_code}\n\"\"\"'
             '\n\nReturn only the Typescript code.')

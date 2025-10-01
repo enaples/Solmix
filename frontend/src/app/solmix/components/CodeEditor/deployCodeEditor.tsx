@@ -114,13 +114,12 @@ const DeployCodeViewer: React.FC<CodeViewerPropsDeploy> = ({
 
     // explain code in editor
     const handleGenerateDeployCode = useCallback(async () => {
-        // todo get code from editor
         if (!code || code.trim() === "") return;
 
         setShowSpinner(true);
 
-        let codeExplanation = deployCodeSmartContract(code);
-        let newcode = await codeExplanation;
+        let codeGeneration = deployCodeSmartContract(code);
+        let newcode = await codeGeneration;
         handleCodeEdit(newcode);
 
         setShowSpinner(false);
