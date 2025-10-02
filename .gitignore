@@ -42,3 +42,11 @@
 
 # Http
 */Http*
+
+# Solidity contracts
+*/artifacts
+*/cache
+*/typechain-types
+*/deployments
+*/imports
+*/contracts
