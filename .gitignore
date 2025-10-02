@@ -50,3 +50,10 @@
 */deployments
 */imports
 */contracts
+
+# Python
+*/.venv
+*/__pycache__
+*/*.pyc
+*/.mypy_cache
+*/.pytest_cache
