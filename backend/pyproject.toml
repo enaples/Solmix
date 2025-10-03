@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "dotenv>=0.9.9",
-    "fastapi>=0.118.0",
+    "fastapi[standard]>=0.118.0",
+    "fastapi-poe>=0.0.71",
     "openapi>=2.0.0",
     "pydantic>=2.11.9",
+    "pydantic-settings>=2.11.0",
+    "openai>=2.1.0",
 ]
