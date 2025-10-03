@@ -53,7 +53,6 @@
 
 # Python
 */.venv
-*/__pycache__
-*/*.pyc
+__pycache__
 */.mypy_cache
 */.pytest_cache
