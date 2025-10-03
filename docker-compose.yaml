@@ -8,6 +8,8 @@ services:
     container_name: slither
     working_dir: /app/backend
     command: ["slither", "--solc-remaps", "https://raw.githubusercontent.com/ethereum/remix-project/master/packages/remix-solidity/src/solidity-compiler/remappings.txt", "."]
+    binds:
+      - ./hardhat:/hardhat
     ports:
       - "3000:3000"
     environment:
