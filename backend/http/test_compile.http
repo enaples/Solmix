@@ -1,0 +1,9 @@
+// Test endpoint for compiling contracts
+
+POST http://localhost:8000/api/v1/compile
+# POST http://localhost:3030/parse-solidity
+Content-Type: application/json
+
+{
+  "code": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract SimpleStorage {\n    uint256 private data;\n\n    function set(uint256 _data) public {\n        data = _data;\n    }\n\n    function get() public view returns (uint256) {\n        return data;\n    }\n}\n"
+}

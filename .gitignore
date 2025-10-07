@@ -40,9 +40,6 @@
 */*.tsbuildinfo
 */next-env.d.ts
 
-# Http
-*/Http*
-
 # Solidity contracts
 */artifacts
 */cache

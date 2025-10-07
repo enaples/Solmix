@@ -14,8 +14,18 @@ class deployItem(BaseModel):
     solcode: str
     tscode: str
     
-class CompilationResult(BaseModel):
+class CompilationItem(BaseModel):
     success: bool
     stderr: str = ""
     stdout: str = ""
     messages: List[str]
+    
+class ParseResult(BaseModel):
+    success: bool
+    stderr: str | None = None
+    stdout: str | None = None
+    ast: dict | None = None
+
+
+class VulnerabilityItem(CompilationItem):
+    messages: dict = {}

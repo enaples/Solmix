@@ -30,4 +30,7 @@ class Settings(BaseSettings):
     HARDHAT_PATH: str = Field(default="../hardhat")
     SC_DEFAULT_NAME: str = Field(default="MyContract") # default name for new smart contracts
     
+    SLITHER_CONTAINER_NAME: str = Field(default="slither")
+    SLITHER_SC_PATH: str = Field(default="hardhat")
+    
 settings = Settings()
