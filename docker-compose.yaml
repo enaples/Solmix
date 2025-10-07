@@ -7,11 +7,7 @@ services:
     image: trailofbits/eth-security-toolbox
     container_name: slither
     working_dir: /app/backend
-    command: ["slither", "--solc-remaps", "https://raw.githubusercontent.com/ethereum/remix-project/master/packages/remix-solidity/src/solidity-compiler/remappings.txt", "."]
-    binds:
       - ./hardhat:/hardhat
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=development
 
@@ -21,7 +17,6 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     working_dir: /app
-    command: ["npm", "start"]
     ports:
       - "3000:3000"
     environment:
@@ -33,11 +28,8 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     working_dir: /app
-    command: ["npm", "start"]
     ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=development
+      - "8000:8000"
     depends_on:
       - slither
       - frontend
