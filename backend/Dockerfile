@@ -9,6 +9,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# TODO: install docker client to be able to run docker commands from inside the container
+
 # Install uv package manager
 RUN pip install uv
 
