@@ -7,7 +7,8 @@ services:
     image: trailofbits/eth-security-toolbox
     container_name: slither
     working_dir: /app/backend
-      - ./hardhat:/hardhat
+    volumes:
+      - ./hardhat:/shared
     environment:
       - NODE_ENV=development
 
@@ -28,6 +29,10 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     working_dir: /app
+    volumes:
+      - ./hardhat:/hardhat
+      # Bind also the docker.sock file to be able to run docker commands from inside the container
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
     depends_on:
