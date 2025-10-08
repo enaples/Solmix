@@ -119,7 +119,7 @@ export function addSolidityVariable(
 ): void {
   const registry = registryMap[type];
   if (!registry) {
-    console.warn(`❌ Tipo di variabile non supportato: ${type}`);
+    console.warn(`❌ Variable Type not supported: ${type}`);
     return;
   }
 

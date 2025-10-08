@@ -1,7 +1,10 @@
 "use client";
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo} from "react"; //, useRef 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
+//import { sendSolidityToServer } from "../../blockly/Server/server";
+import { sendSolidityToServer } from "@/app/solmix/blockly/Server/apiClient";
 import {
     commentSmartContract,
     explainSmartContract,
@@ -42,7 +45,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showExplainSCButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
-    readOnly = true,
+    readOnly = false, //true,
     maxHeight = "600px",
     onCodeChange,
     fileName = "contract.sol",
@@ -51,6 +54,8 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editableCode, setEditableCode] = useState(code);
+    //const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
     const [showSpinner, setShowSpinner] = useState(false);
 
     // Memoized code processing
@@ -180,6 +185,17 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         [onCodeChange]
     );
 
+    // Download code as file
+    const handleExplanation = useCallback(async () => {
+        // todo: edit code section annotating the code using a llm
+        if (!code || code.trim() === "") return;
+
+        const codeExplanation = explainSmartContract(code);
+        const newcode = await codeExplanation;
+        handleCodeEdit(newcode);
+    }, [code, handleCodeEdit]);
+
+    
     const toggleEdit = useCallback(() => {
         if (readOnly) return;
 
@@ -193,6 +209,24 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         setIsEditing(!isEditing);
     }, [isEditing, readOnly, editableCode, code, onCodeChange]);
 
+    const goServer = () => {
+        console.log("Codice Solidity generato:", code); //codeToSend);
+        console.log("Invio codice solidity al server...");
+       
+        if (isEditing){
+            setIsEditing(!isEditing);
+            window.alert(isEditing + ": isEditing is going to be set to False!");
+        } else {
+            window.alert(isEditing + ": isEditing already set to False!");
+            
+        }
+
+        sendSolidityToServer(code);
+
+        //sendSolidityToServer(code); //codeDiv.value); 
+    }
+
+    
     return (
         <div
             className={`flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm ${className}`}
@@ -316,15 +350,18 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
 
             {/* Code display area */}
             <div className="flex-1 overflow-auto" style={{ maxHeight }}>
+                {/* aggiungo '<div>' per inserire il button di update in caso isEditing sia true */}
                 {isEditing ? (
-                    // Editable textarea
-                    <textarea
-                        value={editableCode}
-                        onChange={(e) => handleCodeEdit(e.target.value)}
-                        className="w-full h-full p-4 font-mono text-sm bg-gray-900 text-gray-100 border-none outline-none resize-none"
-                        style={{ minHeight: "300px" }}
-                        spellCheck={false}
-                    />
+                    
+                        // Editable textarea
+                        <textarea 
+                            value={editableCode}
+                            onChange={(e) => handleCodeEdit(e.target.value)}
+                            className="w-full h-full p-4 font-mono text-sm bg-gray-900 text-gray-100 border-none outline-none resize-none"
+                            style={{ minHeight: "300px" }}
+                            spellCheck={false}
+                        /> 
+                    
                 ) : (
                     // Read-only display
                     // Read-only display with syntax highlighting
@@ -350,8 +387,19 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
                             {processedCode}
                         </SyntaxHighlighter>
                     </div>
+
                 )}
             </div>
+
+            {/* Button visibile solo in modalità editing */}
+                        <button onClick={goServer} 
+                        className="px-3 py-1 text-xs bg-orange-400 text-white rounded hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                            Update blocks
+                        </button>
+
+            
+
 
             {/* Footer with stats */}
             {showHeader && (

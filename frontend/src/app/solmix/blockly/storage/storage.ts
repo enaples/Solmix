@@ -1,4 +1,5 @@
-import { useEffect, useCallback, useRef } from "react";
+/*
+import { useEffect, useCallback, useRef } from 'react';
 
 // Type definitions
 interface BlocklyWorkspace {
@@ -320,3 +321,4 @@ export const useBlocklyStorage = (props?: BlocklyStorageProps) => {
 };
 
 export default useBlocklyStorage;
+*/

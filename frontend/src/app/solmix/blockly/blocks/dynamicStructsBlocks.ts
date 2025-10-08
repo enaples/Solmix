@@ -1,139 +1,121 @@
 import * as Blockly from "blockly";
-import {
-    solidityStructs,
-    solidityStructArrays,
-    structRegistry,
-} from "../dropdown/dropdown";
+import {solidityStructs, solidityStructArrays, structRegistry} from "../dropdown/dropdown"; //getSolidityStruct, 
+
 
 /**
  * Blocchi new_struct_value
  */
 Blockly.Blocks["new_struct_value"] = {
-    init(block: Blockly.Block): void {
-        // Dropdown dinamico per gli struct
-        const structDropdown = new Blockly.FieldDropdown(() => {
-            return solidityStructs.length > 0
-                ? solidityStructs.map((v) => [v.name, v.name])
-                : [["", ""]];
-        });
+  init(this: Blockly.Block): void {
+    //const block = this;
 
-        // Dropdown dinamico per gli attributi
-        const attributeDropdown = new Blockly.FieldDropdown(
-            (): [string, string][] => {
-                const selectedStruct = block.getFieldValue("VAR");
-                const attributes = structRegistry[selectedStruct] || [];
-                const options = attributes.map(
-                    (attr) => [attr.name, attr.name] as [string, string]
-                );
-                return options.length > 0 ? options : [["", ""]];
-            }
-        );
+    // Dropdown dinamico per gli struct
+    const structDropdown = new Blockly.FieldDropdown(() => {
+      return solidityStructs.length > 0
+        ? solidityStructs.map((v) => [v.name, v.name])
+        : [["", ""]];
+    });
 
-        block
-            .appendDummyInput("DUMMY")
-            .appendField(structDropdown, "VAR")
-            .appendField(attributeDropdown, "ATTRIBUTE")
-            .appendField("=")
-            .appendField(new Blockly.FieldTextInput("value"), "VALUE");
+    // Dropdown dinamico per gli attributi
+    const attributeDropdown = new Blockly.FieldDropdown(() : [string, string][] => {
+      const selectedStruct = this.getFieldValue("VAR");
+      const attributes = structRegistry[selectedStruct] || [];
+      const options = attributes.map((attr) => [attr.name, attr.name] as [string, string]);
+      return options.length > 0 ? options : [["", ""]];
+    });
 
-        block.setOutput(false);
-        block.setPreviousStatement(true, "code");
-        block.setNextStatement(true, "code");
-        block.setColour(150);
-        block.setTooltip(
-            "Assign values to the attributes of the Struct variable.\nChoose a Struct type among the ones you've defined."
-        );
-    },
+    this.appendDummyInput("DUMMY")
+      .appendField(structDropdown, "VAR")
+      .appendField(attributeDropdown, "ATTRIBUTE")
+      .appendField("=")
+      .appendField(new Blockly.FieldTextInput("value"), "VALUE");
+
+    this.setOutput(false);
+    this.setPreviousStatement(true, "code");
+    this.setNextStatement(true, "code");
+    this.setColour(150);
+    this.setTooltip(
+      "Assign values to the attributes of the Struct variable.\nChoose a Struct type among the ones you've defined."
+    );
+  }
 };
 
+
 Blockly.Blocks["structs_array"] = {
-    init(block: Blockly.Block): void {
-        const structDropdown = new Blockly.FieldDropdown(
-            (): [string, string][] => {
-                return solidityStructs.length > 0
-                    ? solidityStructs.map(
-                          (v) => [v.name, v.name] as [string, string]
-                      )
-                    : [["", ""]];
-            }
-        );
+  init(this: Blockly.Block): void {
+    //const block = this;
 
-        block
-            .appendDummyInput("DUMMY")
-            .appendField(structDropdown, "VAR")
-            .appendField("[ ]")
-            .appendField(
-                new Blockly.FieldDropdown([
-                    ["public", "TYPE_PUBLIC"],
-                    ["private", "TYPE_PRIVATE"],
-                    ["internal", "TYPE_INTERNAL"],
-                    ["external", "TYPE_EXTERNAL"],
-                ]),
-                "TYPE3"
-            )
-            .appendField(
-                new Blockly.FieldTextInput("/* insert a name */"),
-                "NAME"
-            );
+    const structDropdown = new Blockly.FieldDropdown((): [string, string][] => {
+      return solidityStructs.length > 0
+        ? solidityStructs.map((v) => [v.name, v.name] as [string, string])
+        : [["", ""]];
+    });
 
-        block.setPreviousStatement(true, "array_group");
-        block.setNextStatement(true, "array_group");
-        block.setOutput(false);
-        block.setTooltip(
-            "Define an Array variable of type Struct.\nChoose a Struct type among the ones you've defined."
-        );
-        block.setColour(150);
-    },
+    this.appendDummyInput("DUMMY")
+      .appendField(structDropdown, "VAR")
+      .appendField("[ ]")
+      .appendField(
+        new Blockly.FieldDropdown([
+          ["public", "TYPE_PUBLIC"],
+          ["private", "TYPE_PRIVATE"],
+          ["internal", "TYPE_INTERNAL"],
+          ["external", "TYPE_EXTERNAL"]
+        ]),
+        "TYPE3"
+      )
+      .appendField(new Blockly.FieldTextInput("/* insert a name */"), "NAME");
+
+    this.setPreviousStatement(true, "array_group");
+    this.setNextStatement(true, "array_group");
+    this.setOutput(false);
+    this.setTooltip(
+      "Define an Array variable of type Struct.\nChoose a Struct type among the ones you've defined."
+    );
+    this.setColour(150);
+  }
 };
 
 Blockly.Blocks["struct_push"] = {
-    init(block: Blockly.Block): void {
-        const arrayDropdown = new Blockly.FieldDropdown(
-            (): [string, string][] => {
-                return solidityStructArrays.length > 0
-                    ? solidityStructArrays.map(
-                          (v) => [v.name, v.name] as [string, string]
-                      )
-                    : [["", ""]];
-            }
-        );
+  init(this: Blockly.Block): void {
+    //const block = this;
 
-        block
-            .appendValueInput("PARAMS1")
-            .appendField(arrayDropdown, "VAR")
-            .setCheck("newstruct")
-            .appendField(".push()");
+    const arrayDropdown = new Blockly.FieldDropdown((): [string, string][] => {
+      return solidityStructArrays.length > 0
+        ? solidityStructArrays.map((v) => [v.name, v.name] as [string, string])
+        : [["", ""]];
+    });
 
-        block.setPreviousStatement(true, "code");
-        block.setNextStatement(true, "code");
-        block.setOutput(false);
-        block.setColour(150);
-        block.setTooltip(
-            "Use this block to insert a new Struct element inside the array of Structs."
-        );
-    },
+    this.appendValueInput("PARAMS1")
+      .appendField(arrayDropdown, "VAR")
+      .setCheck("newstruct")
+      .appendField(".push()");
+
+    this.setPreviousStatement(true, "code");
+    this.setNextStatement(true, "code");
+    this.setOutput(false);
+    this.setColour(150);
+    this.setTooltip(
+      "Use this block to insert a new Struct element inside the array of Structs."
+    );
+  }
 };
 
 Blockly.Blocks["new_struct"] = {
-    init(this: Blockly.Block): void {
-        const structDropdown = new Blockly.FieldDropdown(
-            (): [string, string][] => {
-                return solidityStructs.length > 0
-                    ? solidityStructs.map(
-                          (v) => [v.name, v.name] as [string, string]
-                      )
-                    : [["", ""]];
-            }
-        );
+  init(this: Blockly.Block): void {
+    const structDropdown = new Blockly.FieldDropdown((): [string, string][] => {
+      return solidityStructs.length > 0
+        ? solidityStructs.map((v) => [v.name, v.name] as [string, string])
+        : [["", ""]];
+    });
 
-        this.appendDummyInput()
-            .appendField("Initialise a new struct of type: ")
-            .appendField(structDropdown, "VAR");
+    this.appendDummyInput()
+      .appendField("Initialise a new struct of type: ")
+      .appendField(structDropdown, "VAR");
 
-        this.setOutput(true, "newstruct");
-        this.setColour(150);
-        this.setTooltip(
-            "It returns a Struct type you've defined, and its attributes.\nUse this block to initialise a new Struct variable.\nYou can also assign values to the variables's attributes."
-        );
-    },
+    this.setOutput(true, "newstruct");
+    this.setColour(150);
+    this.setTooltip(
+      "It returns a Struct type you've defined, and its attributes.\nUse this block to initialise a new Struct variable.\nYou can also assign values to the variables's attributes."
+    );
+  }
 };
