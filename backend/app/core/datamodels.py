@@ -28,4 +28,4 @@ class ParseResult(BaseModel):
 
 
 class VulnerabilityItem(CompilationItem):
-    messages: dict = {}
+    messages: dict | List = {}
