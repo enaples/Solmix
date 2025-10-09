@@ -1,4 +1,3 @@
-<<<<<<< HEAD:backend/app/utils/llm_api.py
 import time
 from pathlib import Path
 import openai
@@ -69,7 +68,7 @@ def compose_generatedeploycode_prompt(current_code: str, deployment_template: st
             '\n\nSolidity Smart Contract:'
             f'\n\"\"\"\n{current_code}\n\"\"\"'
             '\n\nReturn only the Typescript code.')
-=======
+    
 import time
 from pathlib import Path
 import openai
@@ -145,4 +144,3 @@ def compose_generatedeploycode_prompt(current_code: str, deployment_template: st
             '\n\nSolidity Smart Contract:'
             f'\n\"\"\"\n{current_code}\n\"\"\"'
             '\n\nReturn only the Typescript code.')
->>>>>>> main:fastApi/llm_api.py
