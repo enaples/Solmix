@@ -2,7 +2,6 @@
 import React, { useState, useCallback, useMemo} from "react"; //, useRef 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import {explainSmartContract} from "@/app/solmix/FloatingChat/llmAPI";
 //import { sendSolidityToServer } from "../../blockly/Server/server";
 import { sendSolidityToServer } from "@/app/solmix/blockly/Server/apiClient";
 import {
@@ -42,7 +41,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showCopyButton = true,
     showDownloadButton = true,
     showExplainCodeButton = true,
-    showExplainSCButton = true,
+    // showExplainSCButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
     readOnly = false, //true,
@@ -164,16 +163,16 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     }, [code, fileNameExplanation]);
 
     // deploy smart contract
-    const handleDeploy = useCallback(async () => {
-        if (!code || code.trim() === "") return;
+    // const handleDeploy = useCallback(async () => {
+    //     if (!code || code.trim() === "") return;
 
-        setShowSpinner(true);
+    //     setShowSpinner(true);
 
-        let res = await deploySmartContract(code);
-        console.log(res); // todo: remove
+    //     let res = await deploySmartContract(code);
+    //     console.log(res); // todo: remove
 
-        setShowSpinner(false);
-    }, [code]);
+    //     setShowSpinner(false);
+    // }, [code]);
 
     // Handle code editing
     const handleCodeEdit = useCallback(
@@ -186,14 +185,14 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     );
 
     // Download code as file
-    const handleExplanation = useCallback(async () => {
-        // todo: edit code section annotating the code using a llm
-        if (!code || code.trim() === "") return;
+    // const handleExplanation = useCallback(async () => {
+    //     // todo: edit code section annotating the code using a llm
+    //     if (!code || code.trim() === "") return;
 
-        const codeExplanation = explainSmartContract(code);
-        const newcode = await codeExplanation;
-        handleCodeEdit(newcode);
-    }, [code, handleCodeEdit]);
+    //     const codeExplanation = explainSmartContract(code);
+    //     const newcode = await codeExplanation;
+    //     handleCodeEdit(newcode);
+    // }, [code, handleCodeEdit]);
 
     
     const toggleEdit = useCallback(() => {
@@ -223,7 +222,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
 
         sendSolidityToServer(code);
 
-        //sendSolidityToServer(code); //codeDiv.value); 
+        //sendSolidityToServer(code); //codeDiv.value);
     }
 
     
