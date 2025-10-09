@@ -1,29 +1,22 @@
-# Build the docker file inside the backend and frontend directories plus build a 
-# container named slither pulling it from trailofbits/eth-security-toolbox
-
 version: '3.8'
 services:
   slither:
     image: trailofbits/eth-security-toolbox
     container_name: slither
-    working_dir: /app/backend
-    command: ["slither", "--solc-remaps", "https://raw.githubusercontent.com/ethereum/remix-project/master/packages/remix-solidity/src/solidity-compiler/remappings.txt", "."]
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
+    volumes:
+      - ./hardhat:/shared
+    command: tail -f /dev/null
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    working_dir: /app
-    command: ["npm", "start"]
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: frontend
+  #   working_dir: /app
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
 
   backend:  
     build:
@@ -31,14 +24,12 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     working_dir: /app
-    command: ["npm", "start"]
+    volumes:
+      - ./hardhat:/hardhat
+      # Bind also the docker.sock file to be able to run docker commands from inside the container
+      - /var/run/:/var/run/
     ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=development
-    depends_on:
-      - slither
-      - frontend
+      - "8000:8000"
 
 networks:
   default:

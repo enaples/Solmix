@@ -1,6 +1,0 @@
-[mongodb]
-conn_str='mongodb+srv://<username>:<password>@cluster0.tjwpq0s.mongodb.net/'
-
-[poe]
-p_b = ''
-p_lat = ''

@@ -18,15 +18,10 @@ import Link from "next/link";
 import DeployCodeViewer from "@/app/solmix/components/CodeEditor/deployCodeEditor";
 
 interface AnalysisResponse {
-    error?: string;
-    compilerError: string[] | null;
-    compilerWarn: string[] | null;
-    details: {
-        success: boolean;
-        error?: string;
-        results: any;
-    };
-    analysis: any;
+    success: true;
+    stderr: string;
+    stdout: string;
+    messages: any;
 }
 
 export default function SolmixHome() {
@@ -65,42 +60,65 @@ export default function SolmixHome() {
             // Reset previous errors/warnings
             setAnalysisError(null);
             setCompilerErrors([]);
-            setCompilerWarnings([]);
             setHasAnalysisFailed(false);
 
             try {
-                const response = await fetch(
-                    "http://localhost:8000/vulnerability-analysis",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            solidityCode: code,
-                        }),
-                    }
-                );
+                // Use NEXT_PUBLIC_ env variables or hardcode for client-side
+                const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}:${process.env.NEXT_PUBLIC_GET_PORT}${process.env.NEXT_PUBLIC_API_V1_STR}${process.env.NEXT_PUBLIC_GET_VULNERABILITY_ENDPOINT}`;
+                console.log("Fetching from:", url);
+                console.log("Code being sent for analysis:", code);
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 console.log("Fetched data:", response);
                 const data: AnalysisResponse = await response.json();
 
                 // Check if analysis failed
-                if (data.details && data.details.success === false) {
-                    setHasAnalysisFailed(true);
-                    setAnalysisError(
-                        data.details.error || data.error || "Analysis failed"
-                    );
-                    setCompilerErrors(data.compilerError || []);
-                    setCompilerWarnings(data.compilerWarn || []);
-                    setDetectors([]);
-                } else if (data.analysis && data.analysis.detectors) {
-                    // Analysis succeeded
-                    setDetectors(data.analysis.detectors);
+                if (data.success) {
                     setHasAnalysisFailed(false);
-                } else {
-                    // Fallback case
+                    setCompilerErrors(data.messages || []);
                     setDetectors([]);
+                } else {
+                    setHasAnalysisFailed(true);
+
+                    // Extract error messages from the messages array
+                    const errorMessages = Array.isArray(data.messages)
+                        ? data.messages
+                        : [];
+                    // Set the first error message as the main error
+                    const mainError =
+                        errorMessages.length > 0
+                            ? errorMessages[0]
+                            : data.stderr || "Analysis failed";
+
+                    setAnalysisError(mainError);
+
+                    // Separate compiler errors and warnings if needed
+                    // You can parse the stderr or messages array to extract these
+                    const errors = errorMessages.filter(
+                        (msg) =>
+                            msg.includes("Error") || msg.includes("ParserError")
+                    );
+                    const warnings = errorMessages.filter((msg) =>
+                        msg.includes("Warning")
+                    );
+
+                    setCompilerErrors(errors);
+                    setCompilerWarnings(warnings);
+                    setDetectors([]);
+
+                    console.error("Analysis failed:", data.stderr);
                 }
             } catch (error) {
                 console.error("Error fetching vulnerability data:", error);
