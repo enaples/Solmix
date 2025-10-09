@@ -14,7 +14,7 @@ export default function Navbar() {
                             <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm">
                                 <li>
                                     <a href="#"
-                                       className="text-gray-900 dark:text-white hover:underline font-semibold">About</a>
+                                       className="text-gray-900 dark:text-white hover:underline font-semibold"></a>
                                 </li>
                             </ul>
                         </div>

@@ -39,8 +39,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     showCopyButton = true,
     showDownloadButton = true,
     showExplainCodeButton = true,
-    showDeployCodeButton = true,
-    // showExplainSCButton = true,
+    showExplainSCButton = true,
     showHeader = true,
     placeholder = `// No code generated yet.\n// Please generate code using the editor.`,
     readOnly = true,
@@ -120,6 +119,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         URL.revokeObjectURL(url);
 
         setShowSpinner(false);
+
     }, [code, fileName]);
 
     // explain code in editor
@@ -133,6 +133,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         handleCodeEdit(newcode);
 
         setShowSpinner(false);
+
     }, [code]);
 
     // Download smart contract description
@@ -154,6 +155,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
         URL.revokeObjectURL(url);
 
         setShowSpinner(false);
+
     }, [code, fileNameExplanation]);
 
     // deploy smart contract
@@ -172,6 +174,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     const handleCodeEdit = useCallback(
         (newCode: string) => {
             setEditableCode(newCode);
+            setGlobalCode(newCode);
             onCodeChange?.(newCode);
         },
         [onCodeChange]
@@ -305,17 +308,6 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
                                 title="Download as file"
                             >
                                 Explain
-                            </button>
-                        )}
-
-                        {showDeployCodeButton && (
-                            <button
-                                onClick={handleDeploy}
-                                disabled={stats.isEmpty}
-                                className="px-3 py-1 text-xs bg-green-400 text-white rounded hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                title="Download as file"
-                            >
-                                Deploy
                             </button>
                         )}
                     </div>
