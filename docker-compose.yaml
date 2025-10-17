@@ -1,12 +1,5 @@
 version: '3.8'
 services:
-  slither:
-    image: trailofbits/eth-security-toolbox
-    container_name: slither
-    volumes:
-      - ./hardhat:/shared
-    command: tail -f /dev/null
-
   # frontend:
   #   build:
   #     context: ./frontend
@@ -26,8 +19,6 @@ services:
     working_dir: /app
     volumes:
       - ./hardhat:/hardhat
-      # Bind also the docker.sock file to be able to run docker commands from inside the container
-      - /var/run/:/var/run/
     ports:
       - "8000:8000"
 
