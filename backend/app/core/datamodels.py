@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Any
 
 class BaseItem(BaseModel):
     message: str
@@ -28,4 +28,4 @@ class ParseResult(BaseModel):
 
 
 class VulnerabilityItem(CompilationItem):
-    messages: dict | List = {}
+    messages: Any = {}

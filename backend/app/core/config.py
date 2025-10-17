@@ -17,6 +17,9 @@ def parse_cors(v: Any) -> list[str] | str:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
     
+    LOG_LEVEL: str = Field(default="INFO")
+    LOG_FILE: str = Field(default="logs/app.log")
+    
     API_V1_STR: str = "/api/v1"
     DOMAIN: str = Field(default="localhost")
     POE_API_KEY: str = Field(default="")
@@ -27,10 +30,7 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = Field(default="0.0.1")
     PROJECT_DESCRIPTION: str = Field(default="This tool helps you to edit, comment and explain Solidity smart contracts using LLMs.")
     
-    HARDHAT_PATH: str = Field(default="../hardhat")
+    HARDHAT_PATH: str = Field(default="../hardhat") # path to hardhat project
     SC_DEFAULT_NAME: str = Field(default="MyContract") # default name for new smart contracts
-    
-    SLITHER_CONTAINER_NAME: str = Field(default="slither")
-    SLITHER_SC_PATH: str = Field(default="hardhat")
     
 settings = Settings()

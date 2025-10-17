@@ -83,7 +83,7 @@ def save_smart_contract(solidity_code: str) -> None:
 def verify_compilation() -> Popen:
     p = Popen(
         f'npx hardhat compile',
-        cwd=rf"{settings.HARDHAT_PATH}/",
+        cwd=rf"{settings.HARDHAT_PATH}",
         stdout=PIPE,
         stderr=PIPE,
         shell=True,
@@ -95,7 +95,7 @@ def verify_compilation() -> Popen:
 def clean_prev_compilation() -> None:
     p = Popen(
         f'npx hardhat clean',
-        cwd=rf"{settings.HARDHAT_PATH}/",
+        cwd=f"{settings.HARDHAT_PATH}",
         stdout=PIPE,
         stderr=PIPE,
         shell=True,
