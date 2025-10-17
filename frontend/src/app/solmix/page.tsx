@@ -88,7 +88,7 @@ export default function SolmixHome() {
                 if (data.success) {
                     setHasAnalysisFailed(false);
                     setCompilerErrors(data.messages || []);
-                    setDetectors([]);
+                    setDetectors(data.messages.results.detectors);
                 } else {
                     setHasAnalysisFailed(true);
 
