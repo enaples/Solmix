@@ -180,9 +180,6 @@ export default function SolmixHome() {
                                     Vulnerability
                                 </Tab>
                                 <Tab className="px-4 py-3 cursor-pointer hover:text-orange-500 [&.react-tabs__tab--selected]:bg-orange-50 font-semibold">
-                                    Optimization
-                                </Tab>
-                                <Tab className="px-4 py-3 cursor-pointer hover:text-orange-500 [&.react-tabs__tab--selected]:bg-orange-50 font-semibold">
                                     Deploy
                                 </Tab>
                             </TabList>
@@ -268,13 +265,6 @@ export default function SolmixHome() {
                                 )}
                             </TabPanel>
 
-                            <TabPanel className="p-0 flex-grow overflow-auto">
-                                <VulCardList
-                                    data={{ detectors }}
-                                    toKeep={["Optimization"]}
-                                    defaultData={defaultOptDetectionCard}
-                                />
-                            </TabPanel>
                             <TabPanel className="p-0 flex-grow overflow-auto">
                                 {/* Spinner */}
                                 {showSpinner && (
