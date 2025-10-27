@@ -80,7 +80,7 @@ def save_smart_contract(solidity_code: str) -> None:
         text_file.write(solidity_code)
 
 
-def verify_compilation() -> Popen:
+def verify_compilation() -> CompilationItem:
     p = Popen(
         f'npx hardhat compile',
         cwd=rf"{settings.HARDHAT_PATH}",
@@ -92,7 +92,7 @@ def verify_compilation() -> Popen:
     return parse_hardhat_compilation_output(p)
 
 
-def clean_prev_compilation() -> None:
+def clean_prev_compilation() -> CompilationItem:
     p = Popen(
         f'npx hardhat clean',
         cwd=f"{settings.HARDHAT_PATH}",
@@ -102,3 +102,18 @@ def clean_prev_compilation() -> None:
         text=True
     )
     return parse_hardhat_compilation_output(p)
+
+
+def deploy_smartcontract(filename) -> str:
+    p = Popen(
+        f'npx hardhat ignition deploy ignition/modules/{filename}.ts',
+        cwd=f"{settings.HARDHAT_PATH}",
+        stdout=PIPE,
+        stderr=PIPE,
+        shell=True,
+        text=True
+    )
+    stdout, stderr = p.communicate()
+    print(stdout)
+    print(stderr)
+    return stdout + stderr
