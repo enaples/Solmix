@@ -25,7 +25,7 @@ export async function editSmartContract(user_prompt: string, current_solidity_co
         message: user_prompt,
         code: current_solidity_code
     }
-    const res = await fetch('http://127.0.0.1:8000/edit', {
+    const res = await fetch('http://127.0.0.1:8000/api/v1/edit', {
         method: 'POST',
         body: JSON.stringify(newBody),
         headers: {
@@ -41,7 +41,7 @@ export async function commentSmartContract(current_solidity_code: string) {
     const newBody = {
         code: current_solidity_code
     }
-    const res = await fetch('http://127.0.0.1:8000/comment', {
+    const res = await fetch('http://127.0.0.1:8000/api/v1/comment', {
         method: 'POST',
         body: JSON.stringify(newBody),
         headers: {
@@ -57,7 +57,7 @@ export async function deployCodeSmartContract(current_solidity_code: string) {
     const newBody = {
         code: current_solidity_code
     }
-    const res = await fetch('http://127.0.0.1:8000/generatedeploycode', {
+    const res = await fetch('http://127.0.0.1:8000/api/v1/generatedeploycode', {
         method: 'POST',
         body: JSON.stringify(newBody),
         headers: {
@@ -73,7 +73,7 @@ export async function explainSmartContract(current_solidity_code: string) {
     const newBody = {
         code: current_solidity_code
     }
-    const res = await fetch('http://127.0.0.1:8000/explain', {
+    const res = await fetch('http://127.0.0.1:8000/api/v1/explain', {
         method: 'POST',
         body: JSON.stringify(newBody),
         headers: {
@@ -90,7 +90,7 @@ export async function deploySmartContract(solidity_code: string, typescript_code
         solcode: solidity_code,
         tscode: typescript_code
     }
-    const res = await fetch('http://127.0.0.1:8000/deploy', {
+    const res = await fetch('http://127.0.0.1:8000/api/v1/deploy', {
         method: 'POST',
         body: JSON.stringify(newBody),
         headers: {
