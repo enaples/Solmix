@@ -7,7 +7,6 @@ import CodeViewer from "./components/CodeEditor/codeEditor";
 import VulCardList from "./components/CardList/VulCardList";
 import ErrAndWarnCardList from "./components/CardList/errAndWarnCardList";
 import {
-    defaultOptDetectionCard,
     defaultVulDetectionCard,
 } from "./components/CardList/types";
 import { FloatingChat } from "./FloatingChat";

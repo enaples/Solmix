@@ -46,7 +46,8 @@ node_modules
 */typechain-types
 */deployments
 */imports
-*/contracts
+*/contracts/*.sol
+*/ignition/modules/*.ts
 
 # Python
 */.venv

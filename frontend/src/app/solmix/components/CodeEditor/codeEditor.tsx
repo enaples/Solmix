@@ -178,7 +178,7 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
     const handleCodeEdit = useCallback(
         (newCode: string) => {
             setEditableCode(newCode);
-            setGlobalCode(newCode);
+            //setGlobalCode(newCode);
             onCodeChange?.(newCode);
         },
         [onCodeChange]

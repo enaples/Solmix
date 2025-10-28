@@ -3,12 +3,10 @@ import React, { useState, useCallback, useMemo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {
-    commentSmartContract,
-    explainSmartContract,
     deploySmartContract,
     deployCodeSmartContract
 } from "@/app/solmix/FloatingChat/llmAPI";
-import solidity from "@/app/solmix/blockly/generator/solidity";
+// import solidity from "@/app/solmix/blockly/generator/solidity";
 
 interface CodeViewerPropsDeploy {
     code: string;
